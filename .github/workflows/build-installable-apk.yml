@@ -1,0 +1,41 @@
+name: Build installable APK with local llama.cpp
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/offline-ai-coach]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/offline-ai-coach
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Android NDK and CMake
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls -la "$ANDROID_HOME/cmdline-tools" || true
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;27.2.12479018" "cmake;3.22.1"
+      - name: Fetch llama.cpp
+        run: git clone --depth 1 https://github.com/ggml-org/llama.cpp.git third_party/llama.cpp
+      - name: Build llama.cpp shared libraries
+        run: |
+          cmake -S third_party/llama.cpp -B third_party/llama.cpp/build-android -DCMAKE_TOOLCHAIN_FILE="$ANDROID_HOME/ndk/27.2.12479018/build/cmake/android.toolchain.cmake" -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-26 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DGGML_NATIVE=OFF -DGGML_OPENMP=OFF -DGGML_LLAMAFILE=OFF -DLLAMA_BUILD_APP=OFF -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_SERVER=OFF -DLLAMA_BUILD_COMMON=OFF -DLLAMA_OPENSSL=OFF
+          cmake --build third_party/llama.cpp/build-android --config Release --parallel 2
+      - name: Build APK
+        run: gradle assembleDebug --no-daemon
+      - name: Verify APK
+        run: test -s app/build/outputs/apk/debug/app-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bulk-note-qwen-offline-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30

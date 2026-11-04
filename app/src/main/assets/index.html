@@ -606,7 +606,10 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   function mutate(date, fn) {
     if (!S.loaded) { toast('기록을 불러오는 중이에요. 잠시 후 다시 눌러 주세요'); return false; }
     var d = S.days[date] ? S.days[date] : { sets: [], meals: [], weight: null, sample: false, routine: '', workoutEndedAt: null };
+    var wasEnded = d.workoutEndedAt || null;
     fn(d);
+    // Any later edit reopens the workout so its final review cannot become stale.
+    if (wasEnded && d.workoutEndedAt === wasEnded) d.workoutEndedAt = null;
     if (!d.sets.length && !d.meals.length && d.weight == null) delete S.days[date]; else S.days[date] = d;
     persistDay(date); renderAll(); return true;
   }

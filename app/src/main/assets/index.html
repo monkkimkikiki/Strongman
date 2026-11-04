@@ -115,7 +115,7 @@ input::placeholder{color:var(--ink3);opacity:.8}
 .grp .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
 .ghint{font-size:12px;color:var(--ink3)}
 .sets{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
-.sets li{display:grid;grid-template-columns:20px minmax(0,1fr) minmax(0,1fr) 56px 44px;gap:6px;align-items:center;padding:4px 4px;border-radius:10px}
+.sets li{display:grid;grid-template-columns:20px minmax(0,1fr) 30px minmax(0,1fr) 52px 40px;gap:6px;align-items:center;padding:4px 4px;border-radius:10px}
 .sets li.shead{font-size:12px;color:var(--ink3);text-align:center;padding-block:0}
 .sets .n{font-family:var(--font-num);font-weight:700;color:var(--ink3);font-size:18px;text-align:center}
 .sets input{height:40px;font-size:20px;text-align:center;padding-inline:4px}
@@ -840,7 +840,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
         '<div class="row" style="gap:6px;margin-top:8px;align-items:center"><label class="mini" style="white-space:nowrap">전체 무게</label><input type="number" inputmode="decimal" step="0.5" min="0" data-group-weight="' + esc(g.key) + '" value="' + fw(groupWeight) + '" aria-label="' + esc(first.ex) + ' 전체 세트 무게(kg)" style="width:88px;min-height:34px"><button type="button" class="mini" data-weight-lock="' + esc(g.key) + '" aria-pressed="' + weightLocked + '">' + (weightLocked ? '🔒 세트별 무게 잠금' : '🔓 전체 세트 연동') + '</button></div></div>' +
         '<button type="button" class="x" data-exswap="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 다른 운동으로 바꾸기">⇄</button>' +
         '<button type="button" class="x" data-exdel="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 종목 삭제">×</button></header>' +
-        '<ul class="sets"><li class="shead"><span></span><span>kg</span><span>횟수</span><span>시간</span><span></span></li>' +
+        '<ul class="sets"><li class="shead"><span></span><span>kg</span><span></span><span>횟수</span><span>시간</span><span></span></li>' +
         g.sets.map(function (s, i) {
           var dn = isDone(s), timing = T.phase === 'set' && T.setId === s.id, cell;
           if (dn) cell = '<span class="sdone">' + (s.s ? s.s + '초' : '—') + '</span>';
@@ -848,6 +848,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
           else cell = '<button type="button" class="play" data-play="' + esc(s.id) + '" aria-label="' + (i + 1) + '세트 시간 재기">▶</button>';
           return '<li class="srow' + (dn ? ' done' : '') + (s.id === nextId ? ' next' : '') + '" data-set="' + esc(s.id) + '"><span class="n">' + (i + 1) + '</span>' +
             '<input type="number" inputmode="decimal" step="0.5" min="0" data-f="w" value="' + fw(s.w) + '" aria-label="' + (i + 1) + '세트 무게(kg)">' +
+            '<button type="button" class="mini" data-set-weight-lock="' + esc(s.id) + '" aria-pressed="' + !!s.setWeightLocked + '" title="이 세트 무게 연동 잠금">' + (s.setWeightLocked ? '🔒' : '🔓') + '</button>' +
             '<input type="number" inputmode="numeric" step="1" min="0" data-f="r" value="' + (s.r || '') + '" placeholder="0" aria-label="' + (i + 1) + '세트 횟수">' +
             cell + '<button type="button" class="ck" data-chk="' + esc(s.id) + '" aria-pressed="' + dn + '" aria-label="' + (i + 1) + '세트 완료">✓</button></li>';
         }).join('') + '</ul>' + restRowHtml(g, first) +
@@ -905,18 +906,17 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     if (f === 'w') {
       var key = normEx(s.ex), d = getDay(selDate);
       var group = d.sets.filter(function (x) { return normEx(x.ex) === key; });
-      var locked = !!(group[0] && group[0].weightLocked);
-      if (locked) {
-        // Locked: only the edited set changes.
-        s.w = v;
-      } else {
-        // Unlocked: changing any set's kg synchronizes every set of this exercise.
-        group.forEach(function (x) { x.w = v; });
+      var groupLocked = !!(group[0] && group[0].weightLocked);
+      // Manual input always updates this set. Other sets follow unless individually or globally locked.
+      s.w = v;
+      if (!groupLocked) {
+        group.forEach(function (x) { if (!x.setWeightLocked) x.w = v; });
         if (group[0]) group[0].groupWeight = v;
         var rows = $('#todayList [data-set]');
         rows.forEach(function (row) {
+          var item = group.filter(function (x) { return x.id === row.getAttribute('data-set'); })[0];
           var field = row.querySelector('input[data-f="w"]');
-          if (field && group.some(function (x) { return x.id === row.getAttribute('data-set'); })) field.value = fw(v);
+          if (item && field) field.value = fw(item.w);
         });
         var master = $('#todayList [data-group-weight="' + key.replace(/"/g, '\\"') + '"]');
         if (master) master.value = fw(v);
@@ -932,10 +932,21 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     mutate(dt, function (dd) {
       var items = dd.sets.filter(function (x) { return normEx(x.ex) === key; });
       items[0].groupWeight = value;
-      if (!items[0].weightLocked) items.forEach(function (x) { x.w = value; });
+      if (!items[0].weightLocked) items.forEach(function (x) { if (!x.setWeightLocked) x.w = value; });
     });
     renderLog();
   }
+  function toggleSetWeightLock(id) {
+    var dt = selDate, st = findSet(id);
+    if (!st) return;
+    mutate(dt, function (dd) {
+      var item = dd.sets.filter(function (x) { return x.id === id; })[0];
+      if (item) item.setWeightLocked = !item.setWeightLocked;
+    });
+    var updated = findSet(id);
+    toast(updated && updated.setWeightLocked ? '이 세트는 전체 무게 변경에서 제외돼요' : '이 세트도 전체 무게 변경을 따라가요');
+  }
+
   function toggleExerciseWeightLock(key) {
     var dt = selDate, group = getDay(dt).sets.filter(function (x) { return normEx(x.ex) === key; });
     if (!group.length) return;
@@ -945,7 +956,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       first.weightLocked = !first.weightLocked;
       if (!first.weightLocked) {
         var value = first.groupWeight == null ? first.w : first.groupWeight;
-        items.forEach(function (x) { x.w = value; });
+        items.forEach(function (x) { if (!x.setWeightLocked) x.w = value; });
       }
     });
     renderLog();
@@ -995,7 +1006,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
 
   $('#todayList').addEventListener('click', function (e) {
     var t = e.target.closest('button'); if (!t) return;
-    if (t.hasAttribute('data-weight-lock')) toggleExerciseWeightLock(t.getAttribute('data-weight-lock'));
+    if (t.hasAttribute('data-set-weight-lock')) toggleSetWeightLock(t.getAttribute('data-set-weight-lock'));
+    else if (t.hasAttribute('data-weight-lock')) toggleExerciseWeightLock(t.getAttribute('data-weight-lock'));
     else if (t.hasAttribute('data-chk')) toggleDone(t.getAttribute('data-chk'));
     else if (t.hasAttribute('data-play')) startSetTimer(t.getAttribute('data-play'));
     else if (t.hasAttribute('data-sadd')) addSetTo(t.getAttribute('data-sadd'));

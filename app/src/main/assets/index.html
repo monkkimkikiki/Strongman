@@ -416,7 +416,12 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
           <button type="button" class="btn primary" id="chooseQwen">GGUF 모델 선택</button>
           <button type="button" class="btn" id="removeQwen">모델 삭제</button>
         </div>
-        <p class="note">권장 모델: Qwen2.5-1.5B-Instruct-Q4_0.gguf (약 1.1GB). 현재 단계는 모델 파일 선택·보관 기능이며, 실제 AI 답변은 추론 엔진 연결 후 활성화됩니다.</p>
+        <p class="note">권장 모델: Qwen2.5-1.5B-Instruct-Q4_0.gguf (약 1.1GB). 추론은 휴대폰에서 로컬로 실행됩니다.</p>
+        <button type="button" class="btn primary" id="loadQwen">AI 코치 시작 / 모델 불러오기</button>
+        <label class="lbl" for="qwenQuestion">AI 코치에게 질문</label>
+        <textarea id="qwenQuestion" rows="3" placeholder="예: 최근 운동 기록을 바탕으로 다음 등 운동 중량을 추천해줘" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit"></textarea>
+        <button type="button" class="btn" id="askQwen">질문 보내기</button>
+        <div id="qwenAnswer" class="notice" aria-live="polite">모델을 불러온 뒤 질문할 수 있어요.</div>
       </div>
       <div class="card form" id="backupCard">
         <h2>설정 백업 · 불러오기</h2>
@@ -1697,6 +1702,21 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   if ($('#chooseQwen')) $('#chooseQwen').addEventListener('click', function () {
     if (window.AndroidBridge && window.AndroidBridge.chooseModel) window.AndroidBridge.chooseModel();
     else toast('이 기능은 Android 앱에서 사용할 수 있어요');
+  });
+  if ($('#loadQwen')) $('#loadQwen').addEventListener('click', function () {
+    var el = $('#modelStatus'); el.textContent = '모델을 불러오는 중이에요. 첫 실행은 시간이 걸릴 수 있어요.';
+    setTimeout(function () {
+      var result = window.AndroidBridge && window.AndroidBridge.loadAI ? window.AndroidBridge.loadAI() : 'Android 앱에서만 사용할 수 있어요.';
+      el.textContent = result;
+    }, 30);
+  });
+  if ($('#askQwen')) $('#askQwen').addEventListener('click', function () {
+    var q = $('#qwenQuestion').value.trim(), out = $('#qwenAnswer');
+    if (!q) { out.textContent = '질문을 입력해 주세요.'; return; }
+    out.textContent = '답변 생성 중이에요…';
+    setTimeout(function () {
+      out.textContent = window.AndroidBridge && window.AndroidBridge.askAI ? window.AndroidBridge.askAI(q) : 'Android 앱에서만 사용할 수 있어요.';
+    }, 30);
   });
   if ($('#removeQwen')) $('#removeQwen').addEventListener('click', function () {
     if (window.AndroidBridge && window.AndroidBridge.removeModel) { window.AndroidBridge.removeModel(); renderModelStatus(); }

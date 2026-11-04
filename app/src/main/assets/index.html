@@ -1023,6 +1023,26 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     else if (act === 'rec') setRestKey(key, restRec(st.ex, st.m)); else setRestKey(key, null);
     renderLog();
   }
+  function keepFocusedFieldClearOfTimer(input) {
+    if (!input || !input.getBoundingClientRect) return;
+    // Wait for Android WebView's keyboard to resize the viewport before measuring.
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    [180, 420].forEach(function (delay) {
+      setTimeout(function () {
+        if (!input.isConnected || document.activeElement !== input) return;
+        var rect = input.getBoundingClientRect(), bar = $('#restbar'), tabs = $('.tabs');
+        var safeBottom = window.innerHeight - 12;
+        if (bar && !bar.hidden) safeBottom = Math.min(safeBottom, bar.getBoundingClientRect().top - 12);
+        if (tabs) safeBottom = Math.min(safeBottom, tabs.getBoundingClientRect().top - 10);
+        if (rect.bottom > safeBottom) window.scrollBy({ top: rect.bottom - safeBottom + 18, behavior: 'smooth' });
+        else if (rect.top < 12) window.scrollBy({ top: rect.top - 12, behavior: 'smooth' });
+      }, delay);
+    });
+  }
+  $('#todayList').addEventListener('focusin', function (e) {
+    var input = e.target;
+    if (input.matches && input.matches('input, textarea')) keepFocusedFieldClearOfTimer(input);
+  });
   $('#todayList').addEventListener('change', function (e) {
     var inp = e.target;
     if (inp.matches && inp.matches('input[data-group-weight]')) {

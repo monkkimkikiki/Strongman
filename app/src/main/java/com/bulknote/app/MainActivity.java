@@ -96,6 +96,7 @@ public class MainActivity extends Activity {
             return f.exists() ? "선택됨 · " + (f.length() / (1024 * 1024)) + "MB" : "모델을 선택해 주세요";
         }
         @JavascriptInterface public void removeModel() {
+            try { NativeInference.nativeUnload(); } catch (Throwable ignored) {}
             File f = modelFile(); if (f.exists()) f.delete();
             notifyJs("status", "모델 파일을 삭제했어요");
         }
@@ -121,7 +122,7 @@ public class MainActivity extends Activity {
                 if (!name.toLowerCase().endsWith(".gguf")) throw new Exception("GGUF 파일(.gguf)을 선택해 주세요");
                 File dest = modelFile(); if (dest.exists()) dest.delete();
                 if (!tmp.renameTo(dest)) throw new Exception("내부 저장소로 이동하지 못했어요");
-                notifyJs("status", "모델 파일 저장 완료 · " + (total / (1024 * 1024)) + "MB. 아직 추론 엔진 연결 전 단계예요.");
+                notifyJs("status", "모델 파일 저장 완료 · " + (total / (1024 * 1024)) + "MB. AI 코치 시작 버튼을 눌러주세요.");
             } catch (Exception e) {
                 if (tmp.exists()) tmp.delete();
                 notifyJs("status", "모델 저장 실패: " + e.getMessage());

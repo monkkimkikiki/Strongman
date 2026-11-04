@@ -189,7 +189,7 @@ public class MainActivity extends Activity {
             web.onResume();
             // Re-register the active countdown after the user returns from exact-alarm settings.
             web.postDelayed(() -> web.evaluateJavascript(
-                "if (typeof T !== 'undefined' && T.phase === 'rest' && typeof scheduleRestAlarm === 'function') scheduleRestAlarm();", null), 500);
+                "if (window.rearmRestAlarmAfterResume) window.rearmRestAlarmAfterResume();", null), 500);
         }
     }
     @Override protected void onDestroy() { if (web != null) web.destroy(); super.onDestroy(); }

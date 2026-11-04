@@ -25,6 +25,7 @@ public class MainActivity extends Activity {
     private static final int CREATE_EXPORT = 702;
     private String pendingExportContent = "";
     private WebView web;
+    private boolean exactAlarmSettingsPrompted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +89,16 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface public void scheduleRestNotification(final long endAtMillis) {
-            if (endAtMillis > System.currentTimeMillis()) RestAlarmReceiver.schedule(MainActivity.this, endAtMillis);
+            if (endAtMillis > System.currentTimeMillis()) {
+                RestAlarmReceiver.schedule(MainActivity.this, endAtMillis);
+                if (Build.VERSION.SDK_INT >= 31 && !exactAlarmSettingsPrompted) {
+                    AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+                    if (am != null && !am.canScheduleExactAlarms()) {
+                        exactAlarmSettingsPrompted = true;
+                        requestExactAlarmAccess();
+                    }
+                }
+            }
         }
 
         @JavascriptInterface public void cancelRestNotification() {
@@ -173,6 +183,14 @@ public class MainActivity extends Activity {
     }
 
     @Override protected void onPause() { super.onPause(); if (web != null) web.onPause(); }
-    @Override protected void onResume() { super.onResume(); if (web != null) web.onResume(); }
+    @Override protected void onResume() {
+        super.onResume();
+        if (web != null) {
+            web.onResume();
+            // Re-register the active countdown after the user returns from exact-alarm settings.
+            web.postDelayed(() -> web.evaluateJavascript(
+                "if (typeof T !== 'undefined' && T.phase === 'rest' && typeof scheduleRestAlarm === 'function') scheduleRestAlarm();", null), 500);
+        }
+    }
     @Override protected void onDestroy() { if (web != null) web.destroy(); super.onDestroy(); }
 }

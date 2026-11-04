@@ -1,6 +1,7 @@
 package com.bulknote.app;
 
 import android.app.AlarmManager;
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -132,7 +133,14 @@ public class RestAlarmReceiver extends BroadcastReceiver {
         PendingIntent pi = PendingIntent.getBroadcast(context, NOTIFICATION_ID, intent,
             PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0));
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        if (am != null) am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, endAtMillis, pi);
+        if (am != null) {
+            if (Build.VERSION.SDK_INT >= 31 && am.canScheduleExactAlarms()) {
+                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, endAtMillis, pi);
+            } else {
+                // Graceful fallback if the user has not granted exact-alarm access yet.
+                am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, endAtMillis, pi);
+            }
+        }
     }
 
     public static void cancel(Context context) {

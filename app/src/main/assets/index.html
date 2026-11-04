@@ -1695,20 +1695,38 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     if (window.AndroidBridge && window.AndroidBridge.modelStatus) el.textContent = window.AndroidBridge.modelStatus();
     else el.textContent = 'APK 설치 버전에서 사용할 수 있어요.';
   }
+  var qwenTimer = null, qwenStartedAt = 0;
+  function qwenBusy(kind, message) {
+    var out = kind === 'answer' ? $('#qwenAnswer') : $('#modelStatus');
+    if (out) out.textContent = message;
+    qwenStartedAt = Date.now();
+    if (qwenTimer) clearInterval(qwenTimer);
+    qwenTimer = setInterval(function () {
+      var sec = Math.floor((Date.now() - qwenStartedAt) / 1000);
+      var clock = Math.floor(sec / 60) + '분 ' + (sec % 60) + '초';
+      if (out && out.dataset.busy === '1') out.textContent = message + ' · 경과 ' + clock;
+    }, 1000);
+    if (out) out.dataset.busy = '1';
+  }
+  function qwenDone(kind, message) {
+    var out = kind === 'answer' ? $('#qwenAnswer') : $('#modelStatus');
+    if (qwenTimer) { clearInterval(qwenTimer); qwenTimer = null; }
+    if (out) { out.dataset.busy = '0'; out.textContent = message || '완료'; }
+  }
   window.onNativeModelEvent = function (type, message) {
-    var el = $('#modelStatus');
-    if (el) el.textContent = message || '';
+    if (type === 'loadProgress') qwenBusy('model', message);
+    else if (type === 'loadDone') qwenDone('model', message);
+    else if (type === 'answerProgress') qwenBusy('answer', message);
+    else if (type === 'answerDone') qwenDone('answer', message);
+    else { var el = $('#modelStatus'); if (el) el.textContent = message || ''; }
   };
   if ($('#chooseQwen')) $('#chooseQwen').addEventListener('click', function () {
     if (window.AndroidBridge && window.AndroidBridge.chooseModel) window.AndroidBridge.chooseModel();
     else toast('이 기능은 Android 앱에서 사용할 수 있어요');
   });
   if ($('#loadQwen')) $('#loadQwen').addEventListener('click', function () {
-    var el = $('#modelStatus'); el.textContent = '모델을 불러오는 중이에요. 첫 실행은 시간이 걸릴 수 있어요.';
-    setTimeout(function () {
-      var result = window.AndroidBridge && window.AndroidBridge.loadAI ? window.AndroidBridge.loadAI() : 'Android 앱에서만 사용할 수 있어요.';
-      el.textContent = result;
-    }, 30);
+    if (window.AndroidBridge && window.AndroidBridge.startLoadAI) window.AndroidBridge.startLoadAI();
+    else qwenDone('model', 'Android 앱에서만 사용할 수 있어요.');
   });
   if ($('#askQwen')) $('#askQwen').addEventListener('click', function () {
     var q = $('#qwenQuestion').value.trim(), out = $('#qwenAnswer');
@@ -1722,7 +1740,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       });
       var profile = {goals:{dailyKcal:S.settings.kcal,proteinGrams:S.settings.protein,weeklySetsPerMuscle:S.settings.weeklySets,restSeconds:S.settings.rest}, recentDays:context};
       var enriched = q + '\n\n[앱에 저장된 최근 운동·식단 기록 JSON]\n' + JSON.stringify(profile);
-      out.textContent = window.AndroidBridge && window.AndroidBridge.askAI ? window.AndroidBridge.askAI(enriched) : 'Android 앱에서만 사용할 수 있어요.';
+      if (window.AndroidBridge && window.AndroidBridge.startAskAI) window.AndroidBridge.startAskAI(enriched);
+      else qwenDone('answer', 'Android 앱에서만 사용할 수 있어요.');
     }, 30);
   });
   if ($('#removeQwen')) $('#removeQwen').addEventListener('click', function () {

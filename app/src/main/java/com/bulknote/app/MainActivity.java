@@ -25,7 +25,6 @@ public class MainActivity extends Activity {
     private static final int CREATE_EXPORT = 702;
     private String pendingExportContent = "";
     private WebView web;
-    private boolean exactAlarmSettingsPrompted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,12 +90,11 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void scheduleRestNotification(final long endAtMillis) {
             if (endAtMillis > System.currentTimeMillis()) {
                 RestAlarmReceiver.schedule(MainActivity.this, endAtMillis);
-                if (Build.VERSION.SDK_INT >= 31 && !exactAlarmSettingsPrompted) {
+                if (Build.VERSION.SDK_INT >= 31) {
                     AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-                    if (am != null && !am.canScheduleExactAlarms()) {
-                        exactAlarmSettingsPrompted = true;
-                        requestExactAlarmAccess();
-                    }
+                    // Never silently rely on an inexact Doze-delayed alarm. Ask again on
+                    // each new rest session until the user grants exact-alarm access.
+                    if (am != null && !am.canScheduleExactAlarms()) requestExactAlarmAccess();
                 }
             }
         }

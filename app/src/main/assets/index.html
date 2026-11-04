@@ -1694,7 +1694,40 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   /* ---------- settings tab ---------- */
   var GF = { gKcal: ['kcal', 1000, 8000], gProt: ['protein', 20, 400], gSets: ['weeklySets', 1, 40], gRest: ['rest', 10, 600] };
   function fillSettings() { Object.keys(GF).forEach(function (id) { var el = $('#' + id); if (document.activeElement !== el) el.value = S.settings[GF[id][0]]; }); }
-/* ---------- backup / restore, app version ---------- */
+  function renderStoreNote() {
+    $('#storeNote').textContent = mode === 'cloud'
+      ? '이 계정의 개인 저장 공간에 기록돼요. 같은 계정으로 다른 기기에서 이 페이지를 열면 이어서 쓸 수 있어요.'
+      : mode === 'local' ? '지금은 이 브라우저에만 저장돼요. 다른 기기나 브라우저에서는 보이지 않고, 사이트 데이터를 지우면 함께 사라져요.' : '저장 위치를 확인하고 있어요.';
+  }
+  function latestWeight() {
+    var ds = Object.keys(S.days).filter(function (d) { return S.days[d].weight != null; }).sort();
+    return ds.length ? S.days[ds[ds.length - 1]].weight : null;
+  }
+  function renderSettings() {
+    fillSettings(); renderStoreNote();
+    $('#bkShare').hidden = !(window.AndroidBridge && window.AndroidBridge.share);
+    $('#appCard').hidden = !IS_APP;
+    if (IS_APP) $('#appNote').textContent = '설치된 버전: 빌드 #' + BUILD + '. 새 버전이 나오면 아래 버튼으로 받아 설치하세요. 같은 앱 위에 덮어 설치되고 기록과 설정은 그대로 유지돼요. (GitHub 로그인이 필요할 수 있어요)';
+    var n = sampleDays().length;
+    $('#sampleClear').disabled = !n; $('#sampleClear').textContent = n ? '예시 지우기 (' + n + '일)' : '예시 지우기';
+    $('#calcProt').disabled = latestWeight() == null;
+    $('#calcNote').textContent = latestWeight() == null ? '분석 탭에서 체중을 먼저 기록하면 계산할 수 있어요. 일반적인 범위는 체중 1kg당 1.6~2.2g이에요.' : '체중 1kg당 1.6~2.2g이 일반적인 범위예요. 이 버튼은 최근 체중 ' + fw(latestWeight()) + 'kg에 1.8g을 곱해요.';
+  }
+  Object.keys(GF).forEach(function (id) {
+    $('#' + id).addEventListener('change', function () {
+      var f = GF[id], v = parseFloat(this.value), msg = $('#goalMsg');
+      if (isNaN(v) || v < f[1] || v > f[2]) { msg.textContent = f[1] + '~' + f[2] + ' 사이로 입력해 주세요'; this.value = S.settings[f[0]]; return; }
+      msg.textContent = ''; S.settings[f[0]] = Math.round(v); persistSettings(); toast('목표를 저장했어요');
+    });
+  });
+  $('#goalForm').addEventListener('submit', function (e) { e.preventDefault(); });
+  $('#calcProt').addEventListener('click', function () {
+    var w = latestWeight(); if (w == null) return;
+    S.settings.protein = Math.round(w * 1.8); persistSettings(); fillSettings(); toast('단백질 목표를 ' + S.settings.protein + 'g으로 정했어요');
+  });
+
+
+  /* ---------- backup / restore, app version ---------- */
   var BUILD = '__BUILD__', IS_APP = BUILD.charAt(0) !== '_';
   var RELEASE_URL = 'https://github.com/monkkimkikiki/Strongman/releases/tag/latest';
   function openExternal(url) {

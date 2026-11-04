@@ -13,6 +13,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import java.io.File;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -24,6 +25,11 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Remove the legacy local Qwen model file after retiring the unreliable in-app AI feature.
+        File oldModel = new File(getFilesDir(), "qwen-model.gguf");
+        File oldModelTemp = new File(getFilesDir(), "qwen-model.tmp");
+        if (oldModel.exists()) oldModel.delete();
+        if (oldModelTemp.exists()) oldModelTemp.delete();
         web = new WebView(this);
         setContentView(web);
         WebSettings settings = web.getSettings();

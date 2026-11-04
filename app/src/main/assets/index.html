@@ -1728,6 +1728,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     else if (type === 'loadDone') qwenDone('model', message);
     else if (type === 'answerProgress') qwenBusy('answer', message);
     else if (type === 'answerDone') qwenDone('answer', message);
+    else if (type === 'exportDone') { var exportEl = $('#exportMsg'); if (exportEl) exportEl.textContent = message || ''; }
     else { var el = $('#modelStatus'); if (el) el.textContent = message || ''; }
   };
   if ($('#chooseQwen')) $('#chooseQwen').addEventListener('click', function () {

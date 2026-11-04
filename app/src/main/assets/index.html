@@ -738,7 +738,12 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   $('#rbMinus').addEventListener('click', function () { if (T.phase === 'rest') { T.restEnd = Math.max(Date.now() + 1000, T.restEnd - 15000); saveT(); scheduleRestAlarm(); tick(); } });
   $('#rbPlus').addEventListener('click', function () { if (T.phase === 'rest') { T.restEnd += 15000; saveT(); scheduleRestAlarm(); tick(); } });
   $('#rbSkip').addEventListener('click', function () { T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); tick(); renderLog(); });
-  document.addEventListener('visibilitychange', function () { if (!document.hidden && T.phase !== 'idle') lockOn(); });
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+      if (T.phase !== 'idle') lockOn();
+      if (tab === 'log' && selDate === today()) setTimeout(scrollToActiveExercise, 180);
+    }
+  });
   if (T.phase === 'rest') scheduleRestAlarm();
   setInterval(tick, 250);
 
@@ -830,7 +835,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       var first = g.sets[0], ls = lastSession(first.ex, selDate), hint = '';
       if (ls) hint = '지난번 ' + fmtShort(ls.date) + ' · ' + ls.sets.slice(0, 4).map(function (s) { return fw(s.w) + '×' + s.r; }).join(', ') + (ls.sets.length > 4 ? ' 외 ' + (ls.sets.length - 4) : '');
       var lk = libFind(first.ex);
-      return '<article class="card grp"><header><div class="tt"><h3>' + esc(first.ex) + '</h3><div class="meta"><span class="tag">' + esc(first.m) + '</span>' + (lk ? '<span class="tag">' + esc(lk.eq) + '</span>' : '') + (hint ? '<span class="ghint">' + esc(hint) + '</span>' : '') + '</div></div>' +
+      return '<article class="card grp" data-exercise="' + esc(g.key) + '"><header><div class="tt"><h3>' + esc(first.ex) + '</h3><div class="meta"><span class="tag">' + esc(first.m) + '</span>' + (lk ? '<span class="tag">' + esc(lk.eq) + '</span>' : '') + (hint ? '<span class="ghint">' + esc(hint) + '</span>' : '') + '</div></div>' +
         '<button type="button" class="x" data-exswap="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 다른 운동으로 바꾸기">⇄</button>' +
         '<button type="button" class="x" data-exdel="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 종목 삭제">×</button></header>' +
         '<ul class="sets"><li class="shead"><span></span><span>kg</span><span>횟수</span><span>시간</span><span></span></li>' +
@@ -849,6 +854,24 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   }
 
   function findSet(id) { var d = S.days[selDate]; if (!d) return null; for (var i = 0; i < d.sets.length; i++) if (d.sets[i].id === id) return d.sets[i]; return null; }
+
+  function activeExerciseKey() {
+    var d = getDay(selDate), gs = groupsOf(d);
+    for (var i = 0; i < gs.length; i++) {
+      if (gs[i].sets.some(function (x) { return !isDone(x); })) return gs[i].key;
+    }
+    return gs.length ? gs[gs.length - 1].key : null;
+  }
+  function scrollToActiveExercise(behavior) {
+    if (tab !== 'log' || selDate !== today() || inRowFocus()) return;
+    var key = activeExerciseKey();
+    if (!key) return;
+    var cards = $('#todayList [data-exercise]'), target = null;
+    for (var i = 0; i < cards.length; i++) {
+      if (cards[i].getAttribute('data-exercise') === key) { target = cards[i]; break; }
+    }
+    if (target) target.scrollIntoView({ behavior: behavior || 'smooth', block: 'start' });
+  }
   function toggleDone(id) {
     var st = findSet(id), dt = selDate; if (!st) return;
     prepAudio();
@@ -860,6 +883,10 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       startRest(restFor(st.ex), tipLabel(nextTip(dt)));
       var now = findSet(id), warn = now ? setFeedback(now, dt).filter(function (f) { return f.tone === 'warn'; })[0] : null;
       if (warn) toast(warn.text.length > 70 ? warn.text.slice(0, 68) + '…' : warn.text);
+      var doneGroup = groupsOf(getDay(dt)).filter(function (g) { return g.key === normEx(st.ex); })[0];
+      if (doneGroup && doneGroup.sets.every(isDone)) {
+        setTimeout(function () { scrollToActiveExercise('smooth'); }, 100);
+      }
     }
   }
   function startSetTimer(id) {
@@ -2025,6 +2052,10 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   $('#todayBtn').addEventListener('click', function () { setDate(today()); });
   $('#dateInput').addEventListener('change', function () { if (this.value) setDate(this.value); });
   var rz; window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { if (tab === 'stats') renderWeight(); }, 150); });
+
+  window.restoreWorkoutPosition = function () {
+    if (tab === 'log' && selDate === today()) setTimeout(function () { scrollToActiveExercise('smooth'); }, 80);
+  };
 
   /* ---------- init ---------- */
   fillSettings(); renderAll(); tick();

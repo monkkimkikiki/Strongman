@@ -1,6 +1,8 @@
 package com.bulknote.app;
 
 import android.app.Activity;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,6 +32,9 @@ public class MainActivity extends Activity {
         File oldModelTemp = new File(getFilesDir(), "qwen-model.tmp");
         if (oldModel.exists()) oldModel.delete();
         if (oldModelTemp.exists()) oldModelTemp.delete();
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 703);
+        }
         web = new WebView(this);
         setContentView(web);
         WebSettings settings = web.getSettings();
@@ -60,6 +65,14 @@ public class MainActivity extends Activity {
 
     private class Bridge {
         @JavascriptInterface public String ping() { return "BulkNote AndroidBridge OK"; }
+
+        @JavascriptInterface public void scheduleRestNotification(final long endAtMillis) {
+            if (endAtMillis > System.currentTimeMillis()) RestAlarmReceiver.schedule(MainActivity.this, endAtMillis);
+        }
+
+        @JavascriptInterface public void cancelRestNotification() {
+            RestAlarmReceiver.cancel(MainActivity.this);
+        }
 
         @JavascriptInterface public void vibrateShort() {
             try {

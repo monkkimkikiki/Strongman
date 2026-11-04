@@ -81,14 +81,14 @@ public class MainActivity extends Activity {
                     if (manager != null) {
                         Vibrator vibrator = manager.getDefaultVibrator();
                         if (vibrator != null && vibrator.hasVibrator())
-                            vibrator.vibrate(VibrationEffect.createOneShot(110, VibrationEffect.DEFAULT_AMPLITUDE));
+                            vibrator.vibrate(VibrationEffect.createWaveform(new long[]{0, 300, 100, 300}, -1));
                     }
                 } else {
                     Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
                     if (vibrator != null && vibrator.hasVibrator()) {
                         if (Build.VERSION.SDK_INT >= 26)
                             vibrator.vibrate(VibrationEffect.createOneShot(110, VibrationEffect.DEFAULT_AMPLITUDE));
-                        else vibrator.vibrate(110);
+                        else vibrator.vibrate(new long[]{0, 300, 100, 300}, -1);
                     }
                 }
             } catch (Exception ignored) {}

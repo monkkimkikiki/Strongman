@@ -1726,7 +1726,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   });
   if ($('#loadQwen')) $('#loadQwen').addEventListener('click', function () {
     if (window.AndroidBridge && window.AndroidBridge.startLoadAI) window.AndroidBridge.startLoadAI();
-    else qwenDone('model', 'Android 앱에서만 사용할 수 있어요.');
+    else qwenDone('model', '앱 연결 오류: AndroidBridge가 없습니다. 설치된 벌크업 노트 앱을 완전히 종료한 뒤 다시 실행해 주세요.');
   });
   if ($('#askQwen')) $('#askQwen').addEventListener('click', function () {
     var q = $('#qwenQuestion').value.trim(), out = $('#qwenAnswer');
@@ -1741,7 +1741,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       var profile = {goals:{dailyKcal:S.settings.kcal,proteinGrams:S.settings.protein,weeklySetsPerMuscle:S.settings.weeklySets,restSeconds:S.settings.rest}, recentDays:context};
       var enriched = q + '\n\n[앱에 저장된 최근 운동·식단 기록 JSON]\n' + JSON.stringify(profile);
       if (window.AndroidBridge && window.AndroidBridge.startAskAI) window.AndroidBridge.startAskAI(enriched);
-      else qwenDone('answer', 'Android 앱에서만 사용할 수 있어요.');
+      else qwenDone('answer', '앱 연결 오류: AndroidBridge가 없습니다. 설치된 벌크업 노트 앱을 완전히 종료한 뒤 다시 실행해 주세요.');
     }, 30);
   });
   if ($('#removeQwen')) $('#removeQwen').addEventListener('click', function () {

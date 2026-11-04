@@ -835,7 +835,9 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       var first = g.sets[0], ls = lastSession(first.ex, selDate), hint = '';
       if (ls) hint = '지난번 ' + fmtShort(ls.date) + ' · ' + ls.sets.slice(0, 4).map(function (s) { return fw(s.w) + '×' + s.r; }).join(', ') + (ls.sets.length > 4 ? ' 외 ' + (ls.sets.length - 4) : '');
       var lk = libFind(first.ex);
-      return '<article class="card grp" data-exercise="' + esc(g.key) + '"><header><div class="tt"><h3>' + esc(first.ex) + '</h3><div class="meta"><span class="tag">' + esc(first.m) + '</span>' + (lk ? '<span class="tag">' + esc(lk.eq) + '</span>' : '') + (hint ? '<span class="ghint">' + esc(hint) + '</span>' : '') + '</div></div>' +
+      var groupWeight = first.groupWeight == null ? first.w : first.groupWeight, weightLocked = !!first.weightLocked;
+      return '<article class="card grp" data-exercise="' + esc(g.key) + '"><header><div class="tt"><h3>' + esc(first.ex) + '</h3><div class="meta"><span class="tag">' + esc(first.m) + '</span>' + (lk ? '<span class="tag">' + esc(lk.eq) + '</span>' : '') + (hint ? '<span class="ghint">' + esc(hint) + '</span>' : '') + '</div>' +
+        '<div class="row" style="gap:6px;margin-top:8px;align-items:center"><label class="mini" style="white-space:nowrap">전체 무게</label><input type="number" inputmode="decimal" step="0.5" min="0" data-group-weight="' + esc(g.key) + '" value="' + fw(groupWeight) + '" aria-label="' + esc(first.ex) + ' 전체 세트 무게(kg)" style="width:88px;min-height:34px"><button type="button" class="mini" data-weight-lock="' + esc(g.key) + '" aria-pressed="' + weightLocked + '">' + (weightLocked ? '🔒 세트별 무게 잠금' : '🔓 전체 세트 연동') + '</button></div></div>' +
         '<button type="button" class="x" data-exswap="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 다른 운동으로 바꾸기">⇄</button>' +
         '<button type="button" class="x" data-exdel="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 종목 삭제">×</button></header>' +
         '<ul class="sets"><li class="shead"><span></span><span>kg</span><span>횟수</span><span>시간</span><span></span></li>' +
@@ -902,6 +904,33 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     if (isNaN(v) || v < 0) v = 0;
     s[f] = v; persistDay(selDate); renderHeader(); renderWoTop();
   }
+  function setExerciseGroupWeight(key, raw) {
+    var value = parseFloat(raw);
+    if (isNaN(value) || value < 0) value = 0;
+    var dt = selDate, group = getDay(dt).sets.filter(function (x) { return normEx(x.ex) === key; });
+    if (!group.length) return;
+    mutate(dt, function (dd) {
+      var items = dd.sets.filter(function (x) { return normEx(x.ex) === key; });
+      items[0].groupWeight = value;
+      if (!items[0].weightLocked) items.forEach(function (x) { x.w = value; });
+    });
+    renderLog();
+  }
+  function toggleExerciseWeightLock(key) {
+    var dt = selDate, group = getDay(dt).sets.filter(function (x) { return normEx(x.ex) === key; });
+    if (!group.length) return;
+    mutate(dt, function (dd) {
+      var items = dd.sets.filter(function (x) { return normEx(x.ex) === key; });
+      var first = items[0];
+      first.weightLocked = !first.weightLocked;
+      if (!first.weightLocked) {
+        var value = first.groupWeight == null ? first.w : first.groupWeight;
+        items.forEach(function (x) { x.w = value; });
+      }
+    });
+    renderLog();
+    toast(group[0].weightLocked ? '세트별 무게를 유지해요' : '전체 세트에 같은 무게를 적용했어요');
+  }
   function addSetTo(key) {
     var dt = selDate, d = getDay(dt), idx = -1, last = null;
     d.sets.forEach(function (s, i) { if (normEx(s.ex) === key) { idx = i; last = s; } });
@@ -946,7 +975,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
 
   $('#todayList').addEventListener('click', function (e) {
     var t = e.target.closest('button'); if (!t) return;
-    if (t.hasAttribute('data-chk')) toggleDone(t.getAttribute('data-chk'));
+    if (t.hasAttribute('data-weight-lock')) toggleExerciseWeightLock(t.getAttribute('data-weight-lock'));
+    else if (t.hasAttribute('data-chk')) toggleDone(t.getAttribute('data-chk'));
     else if (t.hasAttribute('data-play')) startSetTimer(t.getAttribute('data-play'));
     else if (t.hasAttribute('data-sadd')) addSetTo(t.getAttribute('data-sadd'));
     else if (t.hasAttribute('data-sdel')) delLastSet(t.getAttribute('data-sdel'));
@@ -962,7 +992,12 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     renderLog();
   }
   $('#todayList').addEventListener('change', function (e) {
-    var inp = e.target; if (!inp.matches || !inp.matches('input[data-f]')) return;
+    var inp = e.target;
+    if (inp.matches && inp.matches('input[data-group-weight]')) {
+      setExerciseGroupWeight(inp.getAttribute('data-group-weight'), inp.value);
+      return;
+    }
+    if (!inp.matches || !inp.matches('input[data-f]')) return;
     var li = inp.closest('[data-set]'); if (li) setField(li.getAttribute('data-set'), inp.getAttribute('data-f'), inp.value);
   });
 

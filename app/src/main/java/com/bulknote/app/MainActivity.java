@@ -5,6 +5,8 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.Settings;
+import android.app.AlarmManager;
 import android.os.Bundle;
 import android.os.Build;
 import android.os.VibrationEffect;
@@ -65,6 +67,25 @@ public class MainActivity extends Activity {
 
     private class Bridge {
         @JavascriptInterface public String ping() { return "BulkNote AndroidBridge OK"; }
+
+        @JavascriptInterface public boolean hasExactAlarmAccess() {
+            if (Build.VERSION.SDK_INT < 31) return true;
+            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+            return am != null && am.canScheduleExactAlarms();
+        }
+
+        @JavascriptInterface public void requestExactAlarmAccess() {
+            if (Build.VERSION.SDK_INT < 31) return;
+            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (am != null && !am.canScheduleExactAlarms()) {
+                try {
+                    Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                        Uri.parse("package:" + getPackageName()));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } catch (Exception ignored) {}
+            }
+        }
 
         @JavascriptInterface public void scheduleRestNotification(final long endAtMillis) {
             if (endAtMillis > System.currentTimeMillis()) RestAlarmReceiver.schedule(MainActivity.this, endAtMillis);

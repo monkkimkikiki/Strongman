@@ -408,6 +408,16 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
         <h2>저장 위치</h2>
         <p id="storeNote" class="note"></p>
       </div>
+      <div class="card form" id="offlineAiCard">
+        <h2>오프라인 AI 코치 · Qwen</h2>
+        <p class="note">휴대폰에 보관한 GGUF 모델을 선택해 연결할 준비를 합니다. 모델 파일은 앱 내부 저장소로 복사되며 외부 서버로 전송되지 않습니다.</p>
+        <p class="note" id="modelStatus" aria-live="polite">모델 상태를 확인하고 있어요.</p>
+        <div class="row">
+          <button type="button" class="btn primary" id="chooseQwen">GGUF 모델 선택</button>
+          <button type="button" class="btn" id="removeQwen">모델 삭제</button>
+        </div>
+        <p class="note">권장 모델: Qwen2.5-1.5B-Instruct-Q4_0.gguf (약 1.1GB). 현재 단계는 모델 파일 선택·보관 기능이며, 실제 AI 답변은 추론 엔진 연결 후 활성화됩니다.</p>
+      </div>
       <div class="card form" id="backupCard">
         <h2>설정 백업 · 불러오기</h2>
         <p class="note">루틴, 즐겨찾기, 내 음식·내 운동, 운동별 휴식, 목표 설정을 글자로 복사해 두었다가 새로 설치한 앱이나 다른 기기에 붙여넣어 불러올 수 있어요. 메모 앱이나 카카오톡 ‘나와의 채팅’에 붙여 두면 편해요.</p>
@@ -1674,6 +1684,24 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   /* ---------- settings tab ---------- */
   var GF = { gKcal: ['kcal', 1000, 8000], gProt: ['protein', 20, 400], gSets: ['weeklySets', 1, 40], gRest: ['rest', 10, 600] };
   function fillSettings() { Object.keys(GF).forEach(function (id) { var el = $('#' + id); if (document.activeElement !== el) el.value = S.settings[GF[id][0]]; }); }
+  function renderModelStatus() {
+    var el = $('#modelStatus');
+    if (!el) return;
+    if (window.AndroidBridge && window.AndroidBridge.modelStatus) el.textContent = window.AndroidBridge.modelStatus();
+    else el.textContent = 'APK 설치 버전에서 사용할 수 있어요.';
+  }
+  window.onNativeModelEvent = function (type, message) {
+    var el = $('#modelStatus');
+    if (el) el.textContent = message || '';
+  };
+  if ($('#chooseQwen')) $('#chooseQwen').addEventListener('click', function () {
+    if (window.AndroidBridge && window.AndroidBridge.chooseModel) window.AndroidBridge.chooseModel();
+    else toast('이 기능은 Android 앱에서 사용할 수 있어요');
+  });
+  if ($('#removeQwen')) $('#removeQwen').addEventListener('click', function () {
+    if (window.AndroidBridge && window.AndroidBridge.removeModel) { window.AndroidBridge.removeModel(); renderModelStatus(); }
+  });
+
   function renderStoreNote() {
     $('#storeNote').textContent = mode === 'cloud'
       ? '이 계정의 개인 저장 공간에 기록돼요. 같은 계정으로 다른 기기에서 이 페이지를 열면 이어서 쓸 수 있어요.'
@@ -1684,7 +1712,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     return ds.length ? S.days[ds[ds.length - 1]].weight : null;
   }
   function renderSettings() {
-    fillSettings(); renderStoreNote();
+    fillSettings(); renderStoreNote(); renderModelStatus();
     $('#bkShare').hidden = !(window.AndroidBridge && window.AndroidBridge.share);
     $('#appCard').hidden = !IS_APP;
     if (IS_APP) $('#appNote').textContent = '설치된 버전: 빌드 #' + BUILD + '. 새 버전이 나오면 아래 버튼으로 받아 설치하세요. 같은 앱 위에 덮어 설치되고 기록과 설정은 그대로 유지돼요. (GitHub 로그인이 필요할 수 있어요)';

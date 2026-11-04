@@ -696,6 +696,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     return { phase: 'idle' };
   })();
   function saveT() { try { localStorage.setItem(TK, JSON.stringify(T)); } catch (e) {} }
+  function scheduleRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.scheduleRestNotification && T.phase === 'rest') AndroidBridge.scheduleRestNotification(T.restEnd); } catch (e) {} }
+  function cancelRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.cancelRestNotification) AndroidBridge.cancelRestNotification(); } catch (e) {} }
   var wl = null;
   function lockOn() { try { if (navigator.wakeLock && !wl) { navigator.wakeLock.request('screen').then(function (l) { wl = l; l.addEventListener('release', function () { wl = null; }); }).catch(function () {}); } } catch (e) {} }
   function lockOff() { try { if (wl) wl.release(); } catch (e) {} wl = null; }
@@ -706,8 +708,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     try { if (window.AndroidBridge && window.AndroidBridge.vibrateShort) window.AndroidBridge.vibrateShort(); else if (navigator.vibrate) navigator.vibrate(110); } catch (e) {}
   }
   var mmss = function (sec) { sec = Math.max(0, sec); return pad(Math.floor(sec / 60)) + ':' + pad(Math.floor(sec % 60)); };
-  function startRest(sec, tip) { T = { phase: 'rest', restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '' }; saveT(); lockOn(); tick(); }
-  function finishRest() { T = { phase: 'idle' }; saveT(); lockOff(); beep(); toast('휴식이 끝났어요. 다음 세트를 해 보세요'); tick(); }
+  function startRest(sec, tip) { T = { phase: 'rest', restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '' }; saveT(); scheduleRestAlarm(); lockOn(); tick(); }
+  function finishRest() { T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); beep(); toast('휴식이 끝났어요. 다음 세트를 해 보세요'); tick(); }
   function showTip(txt) { var el = $('#rbTip'), v = txt || ''; if (el.textContent !== v) el.textContent = v; el.hidden = !v; }
   function tick() {
     var now = Date.now(), bar = $('#restbar'), vis = T.phase !== 'idle';
@@ -729,10 +731,11 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       $('#rbMinus').hidden = false; $('#rbPlus').hidden = false; $('#rbSkip').textContent = '건너뛰기';
     }
   }
-  $('#rbMinus').addEventListener('click', function () { if (T.phase === 'rest') { T.restEnd = Math.max(Date.now() + 1000, T.restEnd - 15000); saveT(); tick(); } });
-  $('#rbPlus').addEventListener('click', function () { if (T.phase === 'rest') { T.restEnd += 15000; saveT(); tick(); } });
-  $('#rbSkip').addEventListener('click', function () { T = { phase: 'idle' }; saveT(); lockOff(); tick(); renderLog(); });
+  $('#rbMinus').addEventListener('click', function () { if (T.phase === 'rest') { T.restEnd = Math.max(Date.now() + 1000, T.restEnd - 15000); saveT(); scheduleRestAlarm(); tick(); } });
+  $('#rbPlus').addEventListener('click', function () { if (T.phase === 'rest') { T.restEnd += 15000; saveT(); scheduleRestAlarm(); tick(); } });
+  $('#rbSkip').addEventListener('click', function () { T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); tick(); renderLog(); });
   document.addEventListener('visibilitychange', function () { if (!document.hidden && T.phase !== 'idle') lockOn(); });
+  if (T.phase === 'rest') scheduleRestAlarm();
   setInterval(tick, 250);
 
   /* ---------- workout tab ---------- */

@@ -100,7 +100,8 @@ public class RestAlarmActivity extends Activity {
     }
 
     @Override public void onBackPressed() {
-        dismissAlarm();
+        // Back only closes the full-screen view; the persistent notification remains
+        // until the user chooses one of the explicit alarm actions.
         super.onBackPressed();
     }
 }

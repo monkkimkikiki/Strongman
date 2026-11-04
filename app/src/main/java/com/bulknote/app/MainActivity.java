@@ -96,6 +96,17 @@ public class MainActivity extends Activity {
                     // each new rest session until the user grants exact-alarm access.
                     if (am != null && !am.canScheduleExactAlarms()) requestExactAlarmAccess();
                 }
+                if (Build.VERSION.SDK_INT >= 34) {
+                    android.app.NotificationManager nm = (android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    if (nm != null && !nm.canUseFullScreenIntent()) {
+                        try {
+                            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
+                                Uri.parse("package:" + getPackageName()));
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        } catch (Exception ignored) {}
+                    }
+                }
             }
         }
 

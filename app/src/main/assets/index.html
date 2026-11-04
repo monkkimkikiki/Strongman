@@ -693,7 +693,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   var T = (function () {
     try {
       var j = JSON.parse(localStorage.getItem(TK));
-      if (j && j.phase === 'rest' && j.restEnd > Date.now()) return j;
+      if (j && j.phase === 'rest') return j.restEnd > Date.now() ? j : { phase: 'done', tip: j.tip || '' };
+      if (j && j.phase === 'done') return j;
       if (j && j.phase === 'set' && Date.now() - j.start < 3600000) return j;
     } catch (e) {}
     return { phase: 'idle' };
@@ -713,7 +714,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   }
   var mmss = function (sec) { sec = Math.max(0, sec); return pad(Math.floor(sec / 60)) + ':' + pad(Math.floor(sec % 60)); };
   function startRest(sec, tip) { T = { phase: 'rest', restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '' }; saveT(); scheduleRestAlarm(); lockOn(); tick(); }
-  function finishRest() { T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); beep(); toast('휴식이 끝났어요. 다음 세트를 해 보세요'); tick(); }
+  function finishRest() { T = { phase: 'done', tip: T.tip || '' }; saveT(); cancelRestAlarm(); lockOff(); beep(); toast('휴식이 끝났어요. 위젯의 닫기를 누르면 사라져요'); tick(); }
   function showTip(txt) { var el = $('#rbTip'), v = txt || ''; if (el.textContent !== v) el.textContent = v; el.hidden = !v; }
   function tick() {
     var now = Date.now(), bar = $('#restbar'), vis = T.phase !== 'idle';
@@ -733,6 +734,13 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       d2.textContent = mmss(Math.ceil(left)); d2.className = 'rb-digits' + (left <= 10 ? ' low' : '');
       showTip(T.tip);
       $('#rbMinus').hidden = false; $('#rbPlus').hidden = false; $('#rbSkip').textContent = '건너뛰기';
+    } else if (T.phase === 'done') {
+      $('#rbLabel').textContent = '휴식 종료';
+      $('#rbDigits').textContent = '00:00';
+      $('#rbDigits').className = 'rb-digits low';
+      $('#rbMinus').hidden = true; $('#rbPlus').hidden = true;
+      $('#rbSkip').textContent = '닫기';
+      showTip(T.tip);
     }
   }
   $('#rbMinus').addEventListener('click', function () { if (T.phase === 'rest') { T.restEnd = Math.max(Date.now() + 1000, T.restEnd - 15000); saveT(); scheduleRestAlarm(); tick(); } });

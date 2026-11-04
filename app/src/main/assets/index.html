@@ -115,10 +115,11 @@ input::placeholder{color:var(--ink3);opacity:.8}
 .grp .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
 .ghint{font-size:12px;color:var(--ink3)}
 .sets{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
-.sets li{display:grid;grid-template-columns:20px minmax(0,1fr) 30px minmax(0,1fr) 52px 40px;gap:6px;align-items:center;padding:4px 4px;border-radius:10px}
+.sets li{display:grid;grid-template-columns:20px minmax(0,1fr) 26px minmax(0,1fr) 52px 40px;gap:5px;align-items:center;padding:4px 4px;border-radius:10px}
 .sets li.shead{font-size:12px;color:var(--ink3);text-align:center;padding-block:0}
 .sets .n{font-family:var(--font-num);font-weight:700;color:var(--ink3);font-size:18px;text-align:center}
 .sets input{height:40px;font-size:20px;text-align:center;padding-inline:4px}
+.sets button[data-set-weight-lock]{width:26px;min-width:26px;height:28px;padding:0;justify-self:center;border-radius:6px;font-size:12px;line-height:1}
 .srow.next{background:var(--accent-wash)}
 .srow.done input{background:transparent;color:var(--ink2)}
 .play{height:40px;width:100%;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:13px;color:var(--ink2)}
@@ -128,6 +129,7 @@ input::placeholder{color:var(--ink3);opacity:.8}
 .srow.done .ck{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .gfoot{display:flex;gap:8px;margin-top:10px}
 .mini{height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);padding-inline:12px;font-size:13px;font-weight:500}
+.weight-lock-mini{flex:0 0 34px;width:34px;height:32px;padding:0;font-size:14px;line-height:1}
 .restrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 .restrow .lbl{margin-right:auto}
 .restrow .st{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:18px;line-height:1}
@@ -845,7 +847,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       var lk = libFind(first.ex);
       var groupWeight = first.groupWeight == null ? first.w : first.groupWeight, weightLocked = !!first.weightLocked;
       return '<article class="card grp" data-exercise="' + esc(g.key) + '"><header><div class="tt"><h3>' + esc(first.ex) + '</h3><div class="meta"><span class="tag">' + esc(first.m) + '</span>' + (lk ? '<span class="tag">' + esc(lk.eq) + '</span>' : '') + (hint ? '<span class="ghint">' + esc(hint) + '</span>' : '') + '</div>' +
-        '<div class="row" style="gap:6px;margin-top:8px;align-items:center"><label class="mini" style="white-space:nowrap">전체 무게</label><input type="number" inputmode="decimal" step="0.5" min="0" data-group-weight="' + esc(g.key) + '" value="' + fw(groupWeight) + '" aria-label="' + esc(first.ex) + ' 전체 세트 무게(kg)" style="width:88px;min-height:34px"><button type="button" class="mini" data-weight-lock="' + esc(g.key) + '" aria-pressed="' + weightLocked + '">' + (weightLocked ? '🔒 세트별 무게 잠금' : '🔓 전체 세트 연동') + '</button></div></div>' +
+        '<div class="row" style="gap:6px;margin-top:8px;align-items:center"><label class="mini" style="white-space:nowrap">전체 무게</label><input type="number" inputmode="decimal" step="0.5" min="0" data-group-weight="' + esc(g.key) + '" value="' + fw(groupWeight) + '" aria-label="' + esc(first.ex) + ' 전체 세트 무게(kg)" style="width:88px;min-height:34px"><button type="button" class="mini weight-lock-mini" data-weight-lock="' + esc(g.key) + '" aria-label="' + (weightLocked ? '전체 세트 무게 잠금 해제' : '전체 세트 무게 연동 잠금') + '" title="' + (weightLocked ? '전체 세트 무게 잠금 해제' : '전체 세트 무게 연동 잠금') + '" aria-pressed="' + weightLocked + '">' + (weightLocked ? '🔒' : '🔓') + '</button></div></div>' +
         '<button type="button" class="x" data-exswap="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 다른 운동으로 바꾸기">⇄</button>' +
         '<button type="button" class="x" data-exdel="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 종목 삭제">×</button></header>' +
         '<ul class="sets"><li class="shead"><span></span><span>kg</span><span></span><span>횟수</span><span>시간</span><span></span></li>' +

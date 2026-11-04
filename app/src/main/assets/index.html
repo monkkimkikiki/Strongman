@@ -1718,9 +1718,9 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       var recent = Object.keys(S.days).filter(function (d) { return !S.days[d].sample; }).sort().slice(-14);
       var context = recent.map(function (d) {
         var day = S.days[d];
-        return {date:d, routine:day.routine || '', weight:day.weight, sets:(day.sets || []).filter(isDone).map(function(s){return {exercise:s.ex,kg:s.w,reps:s.r,set:s.s};}).slice(0,24), meals:(day.meals || []).map(function(m){return {name:m.name,kcal:m.kcal,protein:m.p};}).slice(0,8)};
+        return {date:d, routine:day.routine || '', weight:day.weight, sets:(day.sets || []).filter(isDone).map(function(s){return {exercise:s.ex,kg:s.w,reps:s.r,durationSec:s.s};}).slice(0,24), meals:(day.meals || []).map(function(m){return {name:m.name,kcal:m.kcal,protein:m.p};}).slice(0,8)};
       });
-      var profile = {goals:{weight:S.settings.goalWeight,protein:S.settings.protein,weeklySets:S.settings.weeklySets}, recentDays:context};
+      var profile = {goals:{dailyKcal:S.settings.kcal,proteinGrams:S.settings.protein,weeklySetsPerMuscle:S.settings.weeklySets,restSeconds:S.settings.rest}, recentDays:context};
       var enriched = q + '\n\n[앱에 저장된 최근 운동·식단 기록 JSON]\n' + JSON.stringify(profile);
       out.textContent = window.AndroidBridge && window.AndroidBridge.askAI ? window.AndroidBridge.askAI(enriched) : 'Android 앱에서만 사용할 수 있어요.';
     }, 30);

@@ -700,6 +700,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   })();
   function saveT() { try { localStorage.setItem(TK, JSON.stringify(T)); } catch (e) {} }
   function scheduleRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.scheduleRestNotification && T.phase === 'rest') AndroidBridge.scheduleRestNotification(T.restEnd); } catch (e) {} }
+  window.rearmRestAlarmAfterResume = function () { if (T.phase === 'rest' && T.restEnd > Date.now()) scheduleRestAlarm(); };
   function cancelRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.cancelRestNotification) AndroidBridge.cancelRestNotification(); } catch (e) {} }
   var wl = null;
   function lockOn() { try { if (navigator.wakeLock && !wl) { navigator.wakeLock.request('screen').then(function (l) { wl = l; l.addEventListener('release', function () { wl = null; }); }).catch(function () {}); } } catch (e) {} }

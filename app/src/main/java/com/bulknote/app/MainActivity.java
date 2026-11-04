@@ -43,6 +43,13 @@ public class MainActivity extends Activity {
     }
 
     private File modelFile() { return new File(getFilesDir(), "qwen-model.gguf"); }
+
+    private class NativeInference {
+        static { System.loadLibrary("bulknote-ai"); }
+        static native int nativeLoad(String path);
+        static native String nativeGenerate(String prompt);
+        static native void nativeUnload();
+    }
     private void notifyJs(final String method, final String value) {
         if (web == null) return;
         final String safe = org.json.JSONObject.quote(value == null ? "" : value);
@@ -67,6 +74,22 @@ public class MainActivity extends Activity {
                 i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"application/octet-stream", "application/x-gguf"});
                 startActivityForResult(i, PICK_MODEL);
             });
+        }
+        @JavascriptInterface public String loadAI() {
+            File f = modelFile();
+            if (!f.exists()) return "먼저 GGUF 모델을 선택해 주세요.";
+            try {
+                int code = NativeInference.nativeLoad(f.getAbsolutePath());
+                return code == 0 ? "AI 코치 준비 완료" : "모델 로드 실패 (코드 " + code + ")";
+            } catch (Throwable e) { return "AI 초기화 실패: " + e.getMessage(); }
+        }
+        @JavascriptInterface public String askAI(String prompt) {
+            if (prompt == null || prompt.trim().isEmpty()) return "질문을 입력해 주세요.";
+            try { return NativeInference.nativeGenerate(prompt); }
+            catch (Throwable e) { return "AI 답변 생성 실패: " + e.getMessage(); }
+        }
+        @JavascriptInterface public void unloadAI() {
+            try { NativeInference.nativeUnload(); } catch (Throwable ignored) {}
         }
         @JavascriptInterface public String modelStatus() {
             File f = modelFile();

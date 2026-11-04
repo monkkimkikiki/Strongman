@@ -8,7 +8,7 @@
 2. 이 폴더의 파일을 전부 올려요. `.github` 폴더가 빠지기 쉬워요.
    빠졌다면 저장소에서 Add file > Create new file 로 `.github/workflows/build.yml` 을 만들고 내용을 붙여 넣어요.
 3. 저장소의 Actions 탭 > "Build APK" > Run workflow 를 눌러요. 3~5분 걸려요.
-4. 끝나면 실행 결과 화면 아래 Artifacts 의 `bulknote-apk` 를 받아서 압축을 풀면 `app-debug.apk` 가 나와요.
+4. 끝나면 저장소 오른쪽 Releases 의 `벌크업 노트 APK` 에서 `bulknote.apk` 를 바로 받을 수 있어요.
 5. 폰으로 옮겨 설치해요. "출처를 알 수 없는 앱 설치"를 허용해야 해요.
 
 ## 방법 B. Android Studio

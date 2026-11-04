@@ -5,6 +5,9 @@ on:
   push:
     branches: [main, master]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,3 +26,10 @@ jobs:
         with:
           name: bulknote-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk bulknote.apk
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest bulknote.apk --title "벌크업 노트 APK" --notes "폰에서 bulknote.apk 를 받아 설치하세요. (개인용 debug 서명)" --target ${{ github.sha }}

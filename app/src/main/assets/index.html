@@ -902,7 +902,27 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     var s = findSet(id); if (!s) return;
     var v = f === 'w' ? parseFloat(raw) : parseInt(raw, 10);
     if (isNaN(v) || v < 0) v = 0;
-    s[f] = v; persistDay(selDate); renderHeader(); renderWoTop();
+    if (f === 'w') {
+      var key = normEx(s.ex), d = getDay(selDate);
+      var group = d.sets.filter(function (x) { return normEx(x.ex) === key; });
+      var locked = !!(group[0] && group[0].weightLocked);
+      if (locked) {
+        // Locked: only the edited set changes.
+        s.w = v;
+      } else {
+        // Unlocked: changing any set's kg synchronizes every set of this exercise.
+        group.forEach(function (x) { x.w = v; });
+        if (group[0]) group[0].groupWeight = v;
+        var rows = $('#todayList [data-set]');
+        rows.forEach(function (row) {
+          var field = row.querySelector('input[data-f="w"]');
+          if (field && group.some(function (x) { return x.id === row.getAttribute('data-set'); })) field.value = fw(v);
+        });
+        var master = $('#todayList [data-group-weight="' + key.replace(/"/g, '\\"') + '"]');
+        if (master) master.value = fw(v);
+      }
+    } else s[f] = v;
+    persistDay(selDate); renderHeader(); renderWoTop();
   }
   function setExerciseGroupWeight(key, raw) {
     var value = parseFloat(raw);

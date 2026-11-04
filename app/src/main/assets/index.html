@@ -563,7 +563,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
 
   /* ---------- state & storage ---------- */
   var S = { days: {}, settings: clone(DEF), loaded: false, slow: false };
-  var EMPTY = { sets: [], meals: [], weight: null, sample: false, routine: '' };
+  var EMPTY = { sets: [], meals: [], weight: null, sample: false, routine: '', workoutEndedAt: null };
   var mode = 'boot';
   var cloud = null, latest = null, pending = 0, chain = {};
   var LS = 'bulknote_v1', TK = 'bulknote_timer';
@@ -571,8 +571,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   var selDate = today(), tab = 'log';
 
   function getDay(d) { return S.days[d] || EMPTY; }
-  function pack(d) { return { sets: clone(d.sets), meals: clone(d.meals), weight: d.weight == null ? null : d.weight, sample: !!d.sample, routine: d.routine || '' }; }
-  function unpack(v) { return { sets: v.sets || [], meals: v.meals || [], weight: v.weight == null ? null : v.weight, sample: !!v.sample, routine: v.routine || '' }; }
+  function pack(d) { return { sets: clone(d.sets), meals: clone(d.meals), weight: d.weight == null ? null : d.weight, sample: !!d.sample, routine: d.routine || '', workoutEndedAt: d.workoutEndedAt || null }; }
+  function unpack(v) { return { sets: v.sets || [], meals: v.meals || [], weight: v.weight == null ? null : v.weight, sample: !!v.sample, routine: v.routine || '', workoutEndedAt: v.workoutEndedAt || null }; }
   function lib() { return BUILTIN.concat((S.settings.custom || []).map(function (c) { return { name: c.name, m: c.m, eq: c.eq || '직접', custom: true }; })); }
   function libFind(name) { var k = normEx(name), L = lib(); for (var i = 0; i < L.length; i++) if (normEx(L[i].name) === k) return L[i]; return null; }
 
@@ -605,7 +605,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   }
   function mutate(date, fn) {
     if (!S.loaded) { toast('기록을 불러오는 중이에요. 잠시 후 다시 눌러 주세요'); return false; }
-    var d = S.days[date] ? S.days[date] : { sets: [], meals: [], weight: null, sample: false, routine: '' };
+    var d = S.days[date] ? S.days[date] : { sets: [], meals: [], weight: null, sample: false, routine: '', workoutEndedAt: null };
     fn(d);
     if (!d.sets.length && !d.meals.length && d.weight == null) delete S.days[date]; else S.days[date] = d;
     persistDay(date); renderAll(); return true;
@@ -614,8 +614,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     var snap = S.days[dt] ? clone(S.days[dt]) : null;
     if (mutate(dt, fn)) toast(msg, function () {
       mutate(dt, function (d) {
-        if (snap) { d.sets = snap.sets; d.meals = snap.meals; d.weight = snap.weight; d.sample = snap.sample; d.routine = snap.routine || ''; }
-        else { d.sets = []; d.meals = []; d.weight = null; d.routine = ''; }
+        if (snap) { d.sets = snap.sets; d.meals = snap.meals; d.weight = snap.weight; d.sample = snap.sample; d.routine = snap.routine || ''; d.workoutEndedAt = snap.workoutEndedAt || null; }
+        else { d.sets = []; d.meals = []; d.weight = null; d.routine = ''; d.workoutEndedAt = null; }
       });
     });
   }
@@ -773,6 +773,22 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   }
   $('#todayList').addEventListener('focusout', function () { setTimeout(function () { if (listDirty && !inRowFocus()) renderLog(); }, 0); });
 
+  function finishWorkout() {
+    var dt = selDate, d = getDay(dt);
+    if (!d.sets.length) { toast('먼저 운동 종목을 추가해 주세요'); return; }
+    if (d.workoutEndedAt) { coachUI.dayKey = dt; coachUI.day = true; renderCoach(); toast('이미 종료한 운동이에요'); return; }
+    var done = d.sets.filter(isDone).length, left = d.sets.length - done;
+    var msg = left > 0
+      ? '아직 완료하지 않은 세트가 ' + left + '개 있어요.\n미완료 세트는 제외하고 운동을 종료할까요?'
+      : '오늘 운동을 종료하고 운동 평가를 확인할까요?';
+    if (!window.confirm(msg)) return;
+    if (T.phase !== 'idle') { T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); tick(); }
+    if (mutate(dt, function (dd) { dd.workoutEndedAt = Date.now(); })) {
+      coachUI.dayKey = dt; coachUI.day = true; renderCoach();
+      toast('오늘 운동을 종료했어요. 운동 평가를 확인해 보세요');
+      var box = $('#coachCard'); if (box) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
   function renderWoTop() {
     var d = getDay(selDate), foot = $('#woFoot'), head = $('#woHead');
     if (!d.sets.length) {
@@ -792,7 +808,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     var done = d.sets.filter(isDone), vol = done.reduce(function (a, s) { return a + s.w * s.r; }, 0), pct = done.length / d.sets.length * 100;
     head.innerHTML = '<div class="card"><div class="phead"><div style="min-width:0"><div class="ptitle">' + esc(d.routine || (selDate === today() ? '오늘 운동' : fmtShort(selDate) + ' 운동')) + '</div><div class="psub">볼륨 ' + nf(vol) + 'kg 완료</div></div><div class="pnum">' + done.length + '<small> / ' + d.sets.length + '세트</small></div></div>' +
       '<div class="meter" role="meter" aria-label="완료한 세트" aria-valuemin="0" aria-valuemax="' + d.sets.length + '" aria-valuenow="' + done.length + '"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
-    foot.innerHTML = '<button type="button" class="btn" data-act="wo-add">종목 추가</button>';
+    foot.innerHTML = '<button type="button" class="btn" data-act="wo-add">종목 추가</button>' + (d.workoutEndedAt ? '<div class="notice" style="margin-top:10px">' + esc(fmtShort(selDate)) + ' 운동 종료 · 평가가 저장됐어요</div><button type="button" class="btn" style="margin-top:8px" data-act="wo-review">운동 평가 다시 보기</button>' : '<button type="button" class="btn primary" style="margin-top:10px;width:100%" data-act="wo-finish">운동 종료</button>');
   }
 
   function restRowHtml(g, first) {
@@ -1363,7 +1379,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   function renderCoach() {
     var box = $('#coachCard'), d = getDay(selDate), isToday = selDate === today(), ws = weekStart(selDate), t0 = today();
     var allDone = d.sets.length > 0 && d.sets.every(isDone), sunday = isToday && parse(t0).getDay() === 0;
-    var dayOpen = coachUI.dayKey === selDate && coachUI.day != null ? coachUI.day : (isToday && allDone);
+    var dayOpen = coachUI.dayKey === selDate && coachUI.day != null ? coachUI.day : (!!d.workoutEndedAt || (isToday && allDone));
     var weekOpen = coachUI.weekKey === ws && coachUI.week != null ? coachUI.week : sunday;
     var h = '<h2>코치</h2>';
     if (isToday && d.sets.length) {
@@ -1966,6 +1982,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     else if (act === 'rt-del') deleteRoutine(id);
     else if (act === 'lib-open') openPicker('browse');
     else if (act === 'wo-add') openPicker('workout');
+    else if (act === 'wo-finish') finishWorkout();
+    else if (act === 'wo-review') { coachUI.dayKey = selDate; coachUI.day = true; setTab('log'); renderCoach(); $('#coachCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     else if (act === 'ed-close') sheetClose($('#editor'));
     else if (act === 'ed-save') saveEditor();
     else if (act === 'ed-add') openPicker('routine');

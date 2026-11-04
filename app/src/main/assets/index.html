@@ -408,20 +408,15 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
         <h2>저장 위치</h2>
         <p id="storeNote" class="note"></p>
       </div>
-      <div class="card form" id="offlineAiCard">
-        <h2>오프라인 AI 코치 · Qwen</h2>
-        <p class="note">GGUF 모델을 휴대폰에서 직접 실행합니다. 운동·식단 기록을 질문에 자동 첨부하며 외부 서버로 전송하지 않습니다.</p>
-        <p class="note" id="modelStatus" aria-live="polite">모델 상태를 확인하고 있어요.</p>
+      <div class="card form" id="analysisExportCard">
+        <h2>운동·식단 분석 파일 내보내기</h2>
+        <p class="note">주간·월간·전체 기록을 JSON 파일로 저장해 ChatGPT에 첨부하면 운동 진행, 부위별 운동량, 식단, 체중 변화를 종합 분석할 수 있어요.</p>
         <div class="row">
-          <button type="button" class="btn primary" id="chooseQwen">GGUF 모델 선택</button>
-          <button type="button" class="btn" id="removeQwen">모델 삭제</button>
+          <button type="button" class="btn" id="exportWeek">주간 분석</button>
+          <button type="button" class="btn" id="exportMonth">월간 분석</button>
         </div>
-        <p class="note">권장 모델: Qwen2.5-1.5B-Instruct-Q4_0.gguf (약 1.1GB). 추론은 휴대폰에서 로컬로 실행됩니다.</p>
-        <button type="button" class="btn primary" id="loadQwen">AI 코치 시작 / 모델 불러오기</button>
-        <label class="lbl" for="qwenQuestion">AI 코치에게 질문</label>
-        <textarea id="qwenQuestion" rows="3" placeholder="예: 최근 운동 기록을 바탕으로 다음 등 운동 중량을 추천해줘" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit"></textarea>
-        <button type="button" class="btn" id="askQwen">질문 보내기</button>
-        <div id="qwenAnswer" class="notice" aria-live="polite">모델을 불러온 뒤 질문할 수 있어요.</div>
+        <button type="button" class="btn primary" id="exportAll">전체 기록 분석 파일</button>
+        <p class="note" id="exportMsg" aria-live="polite">주간·월간은 현재 선택된 날짜가 포함된 기간을 기준으로 내보냅니다.</p>
       </div>
       <div class="card form" id="backupCard">
         <h2>설정 백업 · 불러오기</h2>
@@ -718,7 +713,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   function prepAudio() { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.resume) ac.resume(); } catch (e) {} }
   function beep() {
     try { var o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = 880; g.gain.value = 0.15; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.25); } catch (e) {}
-    try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (e) {}
+    try { if (window.AndroidBridge && window.AndroidBridge.vibrateShort) window.AndroidBridge.vibrateShort(); else if (navigator.vibrate) navigator.vibrate(110); } catch (e) {}
   }
   var mmss = function (sec) { sec = Math.max(0, sec); return pad(Math.floor(sec / 60)) + ':' + pad(Math.floor(sec % 60)); };
   function startRest(sec, tip) { T = { phase: 'rest', restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '' }; saveT(); lockOn(); tick(); }
@@ -1699,100 +1694,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   /* ---------- settings tab ---------- */
   var GF = { gKcal: ['kcal', 1000, 8000], gProt: ['protein', 20, 400], gSets: ['weeklySets', 1, 40], gRest: ['rest', 10, 600] };
   function fillSettings() { Object.keys(GF).forEach(function (id) { var el = $('#' + id); if (document.activeElement !== el) el.value = S.settings[GF[id][0]]; }); }
-  function renderModelStatus() {
-    var el = $('#modelStatus');
-    if (!el) return;
-    if (window.AndroidBridge && window.AndroidBridge.modelStatus) el.textContent = window.AndroidBridge.modelStatus();
-    else el.textContent = 'APK 설치 버전에서 사용할 수 있어요.';
-  }
-  var qwenTimer = null, qwenStartedAt = 0;
-  function qwenBusy(kind, message) {
-    var out = kind === 'answer' ? $('#qwenAnswer') : $('#modelStatus');
-    if (out) out.textContent = message;
-    qwenStartedAt = Date.now();
-    if (qwenTimer) clearInterval(qwenTimer);
-    qwenTimer = setInterval(function () {
-      var sec = Math.floor((Date.now() - qwenStartedAt) / 1000);
-      var clock = Math.floor(sec / 60) + '분 ' + (sec % 60) + '초';
-      if (out && out.dataset.busy === '1') out.textContent = message + ' · 경과 ' + clock;
-    }, 1000);
-    if (out) out.dataset.busy = '1';
-  }
-  function qwenDone(kind, message) {
-    var out = kind === 'answer' ? $('#qwenAnswer') : $('#modelStatus');
-    if (qwenTimer) { clearInterval(qwenTimer); qwenTimer = null; }
-    if (out) { out.dataset.busy = '0'; out.textContent = message || '완료'; }
-  }
-  window.onNativeModelEvent = function (type, message) {
-    if (type === 'loadProgress') qwenBusy('model', message);
-    else if (type === 'loadDone') qwenDone('model', message);
-    else if (type === 'answerProgress') qwenBusy('answer', message);
-    else if (type === 'answerDone') qwenDone('answer', message);
-    else if (type === 'exportDone') { var exportEl = $('#exportMsg'); if (exportEl) exportEl.textContent = message || ''; }
-    else { var el = $('#modelStatus'); if (el) el.textContent = message || ''; }
-  };
-  if ($('#chooseQwen')) $('#chooseQwen').addEventListener('click', function () {
-    if (window.AndroidBridge && window.AndroidBridge.chooseModel) window.AndroidBridge.chooseModel();
-    else toast('이 기능은 Android 앱에서 사용할 수 있어요');
-  });
-  if ($('#loadQwen')) $('#loadQwen').addEventListener('click', function () {
-    if (window.AndroidBridge && window.AndroidBridge.startLoadAI) window.AndroidBridge.startLoadAI();
-    else qwenDone('model', '앱 연결 오류: AndroidBridge가 없습니다. 설치된 벌크업 노트 앱을 완전히 종료한 뒤 다시 실행해 주세요.');
-  });
-  if ($('#askQwen')) $('#askQwen').addEventListener('click', function () {
-    var q = $('#qwenQuestion').value.trim(), out = $('#qwenAnswer');
-    if (!q) { out.textContent = '질문을 입력해 주세요.'; return; }
-    out.textContent = '답변 생성 중이에요…';
-    setTimeout(function () {
-      var recent = Object.keys(S.days).filter(function (d) { return !S.days[d].sample; }).sort().slice(-14);
-      var context = recent.map(function (d) {
-        var day = S.days[d];
-        return {date:d, routine:day.routine || '', weight:day.weight, sets:(day.sets || []).filter(isDone).map(function(s){return {exercise:s.ex,kg:s.w,reps:s.r,durationSec:s.s};}).slice(0,24), meals:(day.meals || []).map(function(m){return {name:m.name,kcal:m.kcal,protein:m.p};}).slice(0,8)};
-      });
-      var profile = {goals:{dailyKcal:S.settings.kcal,proteinGrams:S.settings.protein,weeklySetsPerMuscle:S.settings.weeklySets,restSeconds:S.settings.rest}, recentDays:context};
-      var enriched = q + '\n\n[앱에 저장된 최근 운동·식단 기록 JSON]\n' + JSON.stringify(profile);
-      if (window.AndroidBridge && window.AndroidBridge.startAskAI) window.AndroidBridge.startAskAI(enriched);
-      else qwenDone('answer', '앱 연결 오류: AndroidBridge가 없습니다. 설치된 벌크업 노트 앱을 완전히 종료한 뒤 다시 실행해 주세요.');
-    }, 30);
-  });
-  if ($('#removeQwen')) $('#removeQwen').addEventListener('click', function () {
-    if (window.AndroidBridge && window.AndroidBridge.removeModel) { window.AndroidBridge.removeModel(); renderModelStatus(); }
-  });
-
-  function renderStoreNote() {
-    $('#storeNote').textContent = mode === 'cloud'
-      ? '이 계정의 개인 저장 공간에 기록돼요. 같은 계정으로 다른 기기에서 이 페이지를 열면 이어서 쓸 수 있어요.'
-      : mode === 'local' ? '지금은 이 브라우저에만 저장돼요. 다른 기기나 브라우저에서는 보이지 않고, 사이트 데이터를 지우면 함께 사라져요.' : '저장 위치를 확인하고 있어요.';
-  }
-  function latestWeight() {
-    var ds = Object.keys(S.days).filter(function (d) { return S.days[d].weight != null; }).sort();
-    return ds.length ? S.days[ds[ds.length - 1]].weight : null;
-  }
-  function renderSettings() {
-    fillSettings(); renderStoreNote(); renderModelStatus();
-    $('#bkShare').hidden = !(window.AndroidBridge && window.AndroidBridge.share);
-    $('#appCard').hidden = !IS_APP;
-    if (IS_APP) $('#appNote').textContent = '설치된 버전: 빌드 #' + BUILD + '. 새 버전이 나오면 아래 버튼으로 받아 설치하세요. 같은 앱 위에 덮어 설치되고 기록과 설정은 그대로 유지돼요. (GitHub 로그인이 필요할 수 있어요)';
-    var n = sampleDays().length;
-    $('#sampleClear').disabled = !n; $('#sampleClear').textContent = n ? '예시 지우기 (' + n + '일)' : '예시 지우기';
-    $('#calcProt').disabled = latestWeight() == null;
-    $('#calcNote').textContent = latestWeight() == null ? '분석 탭에서 체중을 먼저 기록하면 계산할 수 있어요. 일반적인 범위는 체중 1kg당 1.6~2.2g이에요.' : '체중 1kg당 1.6~2.2g이 일반적인 범위예요. 이 버튼은 최근 체중 ' + fw(latestWeight()) + 'kg에 1.8g을 곱해요.';
-  }
-  Object.keys(GF).forEach(function (id) {
-    $('#' + id).addEventListener('change', function () {
-      var f = GF[id], v = parseFloat(this.value), msg = $('#goalMsg');
-      if (isNaN(v) || v < f[1] || v > f[2]) { msg.textContent = f[1] + '~' + f[2] + ' 사이로 입력해 주세요'; this.value = S.settings[f[0]]; return; }
-      msg.textContent = ''; S.settings[f[0]] = Math.round(v); persistSettings(); toast('목표를 저장했어요');
-    });
-  });
-  $('#goalForm').addEventListener('submit', function (e) { e.preventDefault(); });
-  $('#calcProt').addEventListener('click', function () {
-    var w = latestWeight(); if (w == null) return;
-    S.settings.protein = Math.round(w * 1.8); persistSettings(); fillSettings(); toast('단백질 목표를 ' + S.settings.protein + 'g으로 정했어요');
-  });
-
-
-  /* ---------- backup / restore, app version ---------- */
+/* ---------- backup / restore, app version ---------- */
   var BUILD = '__BUILD__', IS_APP = BUILD.charAt(0) !== '_';
   var RELEASE_URL = 'https://github.com/monkkimkikiki/Strongman/releases/tag/latest';
   function openExternal(url) {

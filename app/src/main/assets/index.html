@@ -410,7 +410,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       </div>
       <div class="card form" id="offlineAiCard">
         <h2>오프라인 AI 코치 · Qwen</h2>
-        <p class="note">휴대폰에 보관한 GGUF 모델을 선택해 연결할 준비를 합니다. 모델 파일은 앱 내부 저장소로 복사되며 외부 서버로 전송되지 않습니다.</p>
+        <p class="note">GGUF 모델을 휴대폰에서 직접 실행합니다. 운동·식단 기록을 질문에 자동 첨부하며 외부 서버로 전송하지 않습니다.</p>
         <p class="note" id="modelStatus" aria-live="polite">모델 상태를 확인하고 있어요.</p>
         <div class="row">
           <button type="button" class="btn primary" id="chooseQwen">GGUF 모델 선택</button>
@@ -1715,7 +1715,14 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     if (!q) { out.textContent = '질문을 입력해 주세요.'; return; }
     out.textContent = '답변 생성 중이에요…';
     setTimeout(function () {
-      out.textContent = window.AndroidBridge && window.AndroidBridge.askAI ? window.AndroidBridge.askAI(q) : 'Android 앱에서만 사용할 수 있어요.';
+      var recent = Object.keys(S.days).filter(function (d) { return !S.days[d].sample; }).sort().slice(-14);
+      var context = recent.map(function (d) {
+        var day = S.days[d];
+        return {date:d, routine:day.routine || '', weight:day.weight, sets:(day.sets || []).filter(isDone).map(function(s){return {exercise:s.ex,kg:s.w,reps:s.r,set:s.s};}).slice(0,24), meals:(day.meals || []).map(function(m){return {name:m.name,kcal:m.kcal,protein:m.p};}).slice(0,8)};
+      });
+      var profile = {goals:{weight:S.settings.goalWeight,protein:S.settings.protein,weeklySets:S.settings.weeklySets}, recentDays:context};
+      var enriched = q + '\n\n[앱에 저장된 최근 운동·식단 기록 JSON]\n' + JSON.stringify(profile);
+      out.textContent = window.AndroidBridge && window.AndroidBridge.askAI ? window.AndroidBridge.askAI(enriched) : 'Android 앱에서만 사용할 수 있어요.';
     }, 30);
   });
   if ($('#removeQwen')) $('#removeQwen').addEventListener('click', function () {

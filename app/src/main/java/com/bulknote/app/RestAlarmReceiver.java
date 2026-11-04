@@ -103,9 +103,10 @@ public class RestAlarmReceiver extends BroadcastReceiver {
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentTitle("휴식 종료")
             .setContentText("다음 세트를 시작할 시간입니다.")
-            .setContentIntent(contentIntent(context))
-            .setAutoCancel(true)
-            .setOngoing(false)
+            .setContentIntent(alarmScreenIntent(context))
+            // Keep the finished-rest alert visible until the user explicitly dismisses it.
+            .setAutoCancel(false)
+            .setOngoing(true)
             .setOnlyAlertOnce(false)
             .setCategory(Notification.CATEGORY_ALARM)
             .setFullScreenIntent(alarmScreenIntent(context), true)

@@ -19,9 +19,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: maxim-lobanov/setup-android@v1
       - name: Install Android NDK and CMake
-        run: yes | sdkmanager --install "ndk;27.2.12479018" "cmake;3.22.1"
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls -la "$ANDROID_HOME/cmdline-tools" || true
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;27.2.12479018" "cmake;3.22.1"
       - name: Fetch llama.cpp
         run: git clone --depth 1 https://github.com/ggml-org/llama.cpp.git third_party/llama.cpp
       - name: Build llama.cpp shared libraries

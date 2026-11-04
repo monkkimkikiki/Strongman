@@ -19,6 +19,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      - uses: maxim-lobanov/setup-android@v1
       - name: Install Android NDK and CMake
         run: yes | sdkmanager --install "ndk;27.2.12479018" "cmake;3.22.1"
       - name: Fetch llama.cpp

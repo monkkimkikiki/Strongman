@@ -16,7 +16,7 @@ extern "C" JNIEXPORT jint JNICALL Java_com_bulknote_app_MainActivity_00024Native
 }
 extern "C" JNIEXPORT jstring JNICALL Java_com_bulknote_app_MainActivity_00024NativeInference_nativeGenerate(JNIEnv* env,jobject,jstring prompt){
  std::lock_guard<std::mutex> lock(g_mutex);if(!g_model||!g_ctx)return env->NewStringUTF("모델이 아직 준비되지 않았어요.");
- std::string user=fromJ(env,prompt);std::string full="<|im_start|>user\n"+user+"<|im_end|>\n<|im_start|>assistant\n";
+ std::string user=fromJ(env,prompt);std::string full="<|im_start|>system\n너는 사용자의 개인 오프라인 헬스 코치다. 제공된 운동 및 식단 기록을 근거로 한국어로 답한다. 기록에 없는 수치는 지어내지 말고, 근거가 부족하면 부족하다고 말한다. 과부하와 회복을 균형 있게 고려하고 부상 통증이 있으면 무리한 운동을 권하지 않는다. 답변은 핵심 결론, 기록 근거, 다음 행동 순서로 간결하게 작성한다.<|im_end|>\n<|im_start|>user\n"+user+"<|im_end|>\n<|im_start|>assistant\n";
  const llama_vocab*vocab=llama_model_get_vocab(g_model);std::vector<llama_token> tokens(full.size()+32);
  int n=llama_tokenize(vocab,full.c_str(),(int)full.size(),tokens.data(),(int)tokens.size(),true,true);
  if(n<0){tokens.resize((size_t)-n);n=llama_tokenize(vocab,full.c_str(),(int)full.size(),tokens.data(),(int)tokens.size(),true,true);}

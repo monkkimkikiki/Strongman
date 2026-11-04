@@ -119,7 +119,7 @@ input::placeholder{color:var(--ink3);opacity:.8}
 .sets li.shead{font-size:12px;color:var(--ink3);text-align:center;padding-block:0}
 .sets .n{font-family:var(--font-num);font-weight:700;color:var(--ink3);font-size:18px;text-align:center}
 .sets input{height:40px;font-size:20px;text-align:center;padding-inline:4px}
-.sets button[data-set-weight-lock]{box-sizing:border-box;width:18px;min-width:18px;height:24px;padding:0;justify-self:center;border-radius:5px;font-size:10px;line-height:1}
+.set-weight-lock{box-sizing:border-box;width:18px;min-width:18px;height:24px;padding:0;justify-self:center;border:1px solid var(--line);border-radius:5px;background:var(--surface);display:flex;align-items:center;justify-content:center}.set-weight-lock.is-unlocked,.weight-lock-mini.is-unlocked{background:#fff;border-color:#d7dce2;color:#667085}.set-weight-lock.is-locked,.weight-lock-mini.is-locked{background:#eef1f5;border-color:#aeb7c4;color:#344054}.lock-glyph{position:relative;display:block;width:9px;height:7px;border:1.4px solid currentColor;border-radius:2px;margin-top:3px}.lock-glyph:before{content:"";position:absolute;width:5px;height:5px;left:0.6px;top:-6px;border:1.4px solid currentColor;border-bottom:0;border-radius:5px 5px 0 0}.is-unlocked .lock-glyph:before{left:3px;transform:rotate(22deg);transform-origin:left bottom}
 .srow.next{background:var(--accent-wash)}
 .srow.done input{background:transparent;color:var(--ink2)}
 .play{height:40px;width:100%;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:13px;color:var(--ink2)}
@@ -129,7 +129,7 @@ input::placeholder{color:var(--ink3);opacity:.8}
 .srow.done .ck{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .gfoot{display:flex;gap:8px;margin-top:10px}
 .mini{height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);padding-inline:12px;font-size:13px;font-weight:500}
-.weight-lock-mini{flex:0 0 34px;width:34px;height:32px;padding:0;font-size:14px;line-height:1}
+.group-weight-line{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;margin-top:8px;min-width:0}.group-weight-line label{white-space:nowrap;font-size:13px;color:var(--ink2);font-weight:500}.group-weight-line input{box-sizing:border-box;width:76px;min-width:0;height:32px;min-height:32px;padding:0 6px;font-size:18px;line-height:1;text-align:center;font-variant-numeric:tabular-nums}.weight-lock-mini{flex:0 0 28px;width:28px;height:28px;padding:0;border:1px solid #d7dce2;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;color:#667085}
 .restrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 .restrow .lbl{margin-right:auto}
 .restrow .st{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:18px;line-height:1}
@@ -310,7 +310,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
 .toast button{border:0;background:transparent;color:inherit;font-weight:600;text-decoration:underline;padding:4px}
 .tip{position:fixed;left:0;top:0;z-index:90;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;line-height:1.4;padding:6px 9px;border-radius:7px;max-width:260px}
 @media (prefers-reduced-motion:reduce){.bf,.meter i{transition:none}}
-@media (max-width:360px){.rb-digits{font-size:34px}.sets li{grid-template-columns:18px minmax(0,1fr) 16px minmax(0,1fr) 46px 34px;gap:3px}.sets button[data-set-weight-lock]{width:16px;min-width:16px;height:22px;font-size:9px}}
+@media (max-width:360px){.rb-digits{font-size:34px}.sets li{grid-template-columns:18px minmax(0,1fr) 16px minmax(0,1fr) 46px 34px;gap:3px}.set-weight-lock{width:16px;min-width:16px;height:22px}}
 </style>
 
 <div class="app">
@@ -847,7 +847,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       var lk = libFind(first.ex);
       var groupWeight = first.groupWeight == null ? first.w : first.groupWeight, weightLocked = !!first.weightLocked;
       return '<article class="card grp" data-exercise="' + esc(g.key) + '"><header><div class="tt"><h3>' + esc(first.ex) + '</h3><div class="meta"><span class="tag">' + esc(first.m) + '</span>' + (lk ? '<span class="tag">' + esc(lk.eq) + '</span>' : '') + (hint ? '<span class="ghint">' + esc(hint) + '</span>' : '') + '</div>' +
-        '<div class="row" style="gap:6px;margin-top:8px;align-items:center"><label class="mini" style="white-space:nowrap">전체 무게</label><input type="number" inputmode="decimal" step="0.5" min="0" data-group-weight="' + esc(g.key) + '" value="' + fw(groupWeight) + '" aria-label="' + esc(first.ex) + ' 전체 세트 무게(kg)" style="width:88px;min-height:34px"><button type="button" class="mini weight-lock-mini" data-weight-lock="' + esc(g.key) + '" aria-label="' + (weightLocked ? '전체 세트 무게 잠금 해제' : '전체 세트 무게 연동 잠금') + '" title="' + (weightLocked ? '전체 세트 무게 잠금 해제' : '전체 세트 무게 연동 잠금') + '" aria-pressed="' + weightLocked + '">' + (weightLocked ? '🔒' : '🔓') + '</button></div></div>' +
+        '<div class="group-weight-line"><label>전체 무게</label><input type="number" inputmode="decimal" step="0.5" min="0" data-group-weight="' + esc(g.key) + '" value="' + fw(groupWeight) + '" aria-label="' + esc(first.ex) + ' 전체 세트 무게(kg)"><button type="button" class="weight-lock-mini ' + (weightLocked ? 'is-locked' : 'is-unlocked') + '" data-weight-lock="' + esc(g.key) + '" aria-label="' + (weightLocked ? '전체 세트 무게 잠금 해제' : '전체 세트 무게 연동 잠금') + '" title="' + (weightLocked ? '전체 세트 무게 잠금 해제' : '전체 세트 무게 연동 잠금') + '" aria-pressed="' + weightLocked + '"><span class="lock-glyph" aria-hidden="true"></span></button></div></div>' +
         '<button type="button" class="x" data-exswap="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 다른 운동으로 바꾸기">⇄</button>' +
         '<button type="button" class="x" data-exdel="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 종목 삭제">×</button></header>' +
         '<ul class="sets"><li class="shead"><span></span><span>kg</span><span></span><span>횟수</span><span>시간</span><span></span></li>' +
@@ -858,7 +858,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
           else cell = '<button type="button" class="play" data-play="' + esc(s.id) + '" aria-label="' + (i + 1) + '세트 시간 재기">▶</button>';
           return '<li class="srow' + (dn ? ' done' : '') + (s.id === nextId ? ' next' : '') + '" data-set="' + esc(s.id) + '"><span class="n">' + (i + 1) + '</span>' +
             '<input type="number" inputmode="decimal" step="0.5" min="0" data-f="w" value="' + fw(s.w) + '" aria-label="' + (i + 1) + '세트 무게(kg)">' +
-            '<button type="button" class="mini" data-set-weight-lock="' + esc(s.id) + '" aria-pressed="' + !!s.setWeightLocked + '" title="이 세트 무게 연동 잠금">' + (s.setWeightLocked ? '🔒' : '🔓') + '</button>' +
+            '<button type="button" class="set-weight-lock ' + (s.setWeightLocked ? 'is-locked' : 'is-unlocked') + '" data-set-weight-lock="' + esc(s.id) + '" aria-pressed="' + !!s.setWeightLocked + '" title="이 세트 무게 연동 잠금"><span class="lock-glyph" aria-hidden="true"></span></button>' +
             '<input type="number" inputmode="numeric" step="1" min="0" data-f="r" value="' + (s.r || '') + '" placeholder="0" aria-label="' + (i + 1) + '세트 횟수">' +
             cell + '<button type="button" class="ck" data-chk="' + esc(s.id) + '" aria-pressed="' + dn + '" aria-label="' + (i + 1) + '세트 완료">✓</button></li>';
         }).join('') + '</ul>' + restRowHtml(g, first) +

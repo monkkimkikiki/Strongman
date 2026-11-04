@@ -19,9 +19,12 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
     private static final int PICK_MODEL = 701;
+    private static final int CREATE_EXPORT = 702;
+    private String pendingExportName = "BulkNote_Analysis.json";
     private WebView web;
     private volatile boolean copyingModel = false;
     private volatile boolean aiBusy = false;
+    private volatile String pendingExportContent = "";
     private final ExecutorService aiExecutor = Executors.newSingleThreadExecutor();
 
     @Override
@@ -64,6 +67,19 @@ public class MainActivity extends Activity {
 
     private class Bridge {
         @JavascriptInterface public String ping() { return "BulkNote AndroidBridge OK"; }
+        @JavascriptInterface public void saveTextFile(final String fileName, final String content) {
+            pendingExportContent = content == null ? "" : content;
+            runOnUiThread(() -> {
+                try {
+                    pendingExportName = (fileName == null || fileName.trim().isEmpty()) ? "BulkNote_Analysis.json" : fileName;
+                    Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                    i.addCategory(Intent.CATEGORY_OPENABLE);
+                    i.setType("application/json");
+                    i.putExtra(Intent.EXTRA_TITLE, pendingExportName);
+                    startActivityForResult(i, CREATE_EXPORT);
+                } catch (Exception e) { notifyJs("exportDone", "파일 저장 창을 열지 못했어요: " + e.getMessage()); }
+            });
+        }
         @JavascriptInterface public void share(final String text) {
             runOnUiThread(() -> {
                 Intent i = new Intent(Intent.ACTION_SEND); i.setType("text/plain");
@@ -127,6 +143,19 @@ public class MainActivity extends Activity {
 
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CREATE_EXPORT) {
+            if (resultCode != RESULT_OK || data == null || data.getData() == null) { notifyJs("exportDone", "저장을 취소했어요."); return; }
+            final Uri outUri = data.getData();
+            final String content = pendingExportContent;
+            new Thread(() -> {
+                try (java.io.OutputStream out = getContentResolver().openOutputStream(outUri)) {
+                    if (out == null) throw new Exception("저장 위치를 열 수 없어요");
+                    out.write(content.getBytes(java.nio.charset.StandardCharsets.UTF_8)); out.flush();
+                    notifyJs("exportDone", "분석 파일 저장 완료! 이 채팅에 파일을 첨부해 주세요.");
+                } catch (Exception e) { notifyJs("exportDone", "파일 저장 실패: " + e.getMessage()); }
+            }).start();
+            return;
+        }
         if (requestCode != PICK_MODEL || resultCode != RESULT_OK || data == null || data.getData() == null) return;
         final Uri uri = data.getData();
         new Thread(() -> {

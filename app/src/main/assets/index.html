@@ -115,17 +115,17 @@ input::placeholder{color:var(--ink3);opacity:.8}
 .grp .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
 .ghint{font-size:12px;color:var(--ink3)}
 .sets{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
-.sets li{display:grid;grid-template-columns:20px minmax(0,1fr) 26px minmax(0,1fr) 52px 40px;gap:5px;align-items:center;padding:4px 4px;border-radius:10px}
+.sets li{display:grid;grid-template-columns:20px minmax(0,1fr) 18px minmax(0,1fr) 52px 40px;gap:4px;align-items:center;padding:4px 4px;border-radius:10px}
 .sets li.shead{font-size:12px;color:var(--ink3);text-align:center;padding-block:0}
 .sets .n{font-family:var(--font-num);font-weight:700;color:var(--ink3);font-size:18px;text-align:center}
 .sets input{height:40px;font-size:20px;text-align:center;padding-inline:4px}
-.sets button[data-set-weight-lock]{width:26px;min-width:26px;height:28px;padding:0;justify-self:center;border-radius:6px;font-size:12px;line-height:1}
+.sets button[data-set-weight-lock]{box-sizing:border-box;width:18px;min-width:18px;height:24px;padding:0;justify-self:center;border-radius:5px;font-size:10px;line-height:1}
 .srow.next{background:var(--accent-wash)}
 .srow.done input{background:transparent;color:var(--ink2)}
 .play{height:40px;width:100%;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:13px;color:var(--ink2)}
 .live{font-family:var(--font-num);font-weight:700;font-size:20px;color:var(--accent);text-align:center;font-variant-numeric:tabular-nums}
 .sdone{font-size:13px;color:var(--ink2);text-align:center;font-variant-numeric:tabular-nums}
-.ck{height:40px;width:44px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:20px;color:var(--ink3);line-height:1}
+.ck{box-sizing:border-box;height:40px;width:100%;min-width:0;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:20px;color:var(--ink3);line-height:1}
 .srow.done .ck{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .gfoot{display:flex;gap:8px;margin-top:10px}
 .mini{height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);padding-inline:12px;font-size:13px;font-weight:500}

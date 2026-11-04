@@ -435,6 +435,16 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
         <div class="msg" id="bkMsg" role="alert"></div>
         <button type="button" class="btn primary" id="bkImport">불러오기 (현재 설정을 덮어써요)</button>
       </div>
+      <div class="card form" id="analysisExportCard">
+        <h2>운동·식단 분석 파일 내보내기</h2>
+        <p class="note">선택한 기간의 운동 세트·중량·횟수·운동량, 식단 칼로리·단백질, 체중, 루틴과 기간별 요약을 JSON 파일로 저장합니다. 저장한 파일을 ChatGPT에 첨부하면 상세 분석과 다음 운동 조언을 받을 수 있어요.</p>
+        <div class="row">
+          <button type="button" class="btn" id="exportWeek">주간 분석</button>
+          <button type="button" class="btn" id="exportMonth">월간 분석</button>
+        </div>
+        <button type="button" class="btn primary" id="exportAll">전체 기록 분석 파일</button>
+        <p class="note" id="exportMsg" aria-live="polite">주간·월간은 현재 선택된 날짜가 포함된 기간을 기준으로 내보냅니다.</p>
+      </div>
       <div class="card" id="appCard" hidden>
         <h2>앱 업데이트</h2>
         <p class="note" id="appNote" style="margin-bottom:12px"></p>
@@ -1860,6 +1870,90 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     msg.textContent = ''; $('#bkText').value = ''; applyBackup(pb);
   });
   $('#appUpdate').addEventListener('click', function () { openExternal(RELEASE_URL); });
+
+  /* ---------- analysis export ---------- */
+  function exportDateKey(d) {
+    var y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+  function exportAnalysis(period) {
+    if (!S.loaded) { toast('기록을 불러오는 중이에요. 잠시 후 다시 눌러 주세요'); return; }
+    var anchor = new Date((selDate || today()) + 'T12:00:00');
+    var start = '', end = '';
+    if (period === 'week') {
+      var dow = (anchor.getDay() + 6) % 7;
+      anchor.setDate(anchor.getDate() - dow);
+      start = exportDateKey(anchor);
+      anchor.setDate(anchor.getDate() + 6);
+      end = exportDateKey(anchor);
+    } else if (period === 'month') {
+      anchor.setDate(1); start = exportDateKey(anchor);
+      anchor.setMonth(anchor.getMonth() + 1); anchor.setDate(0); end = exportDateKey(anchor);
+    } else {
+      var keys = Object.keys(S.days).filter(function (d) { return !S.days[d].sample; }).sort();
+      start = keys[0] || today(); end = keys[keys.length - 1] || today();
+    }
+    var allKeys = Object.keys(S.days).filter(function (d) {
+      return d >= start && d <= end && !S.days[d].sample;
+    }).sort();
+    var days = allKeys.map(function (date) {
+      var d = S.days[date], sets = (d.sets || []).filter(isDone).map(function (s) {
+        return { exercise: s.ex || '', weightKg: s.w == null ? null : +s.w, reps: s.r == null ? null : +s.r, durationSec: s.s == null ? null : +s.s, completed: true };
+      });
+      var meals = (d.meals || []).map(function (m) { return { name: m.name || '', kcal: +m.kcal || 0, proteinG: +m.p || 0, loggedAt: m.t || null }; });
+      return { date: date, routine: d.routine || '', bodyWeightKg: d.weight == null ? null : +d.weight, sets: sets, meals: meals };
+    });
+    var exerciseMap = {}, totalSets = 0, totalVolume = 0, workoutDays = 0, mealDays = 0, totalKcal = 0, totalProtein = 0, weights = [];
+    days.forEach(function (d) {
+      if (d.sets.length) workoutDays++;
+      if (d.meals.length) mealDays++;
+      if (d.bodyWeightKg != null) weights.push({ date: d.date, kg: d.bodyWeightKg });
+      d.sets.forEach(function (s) {
+        totalSets++;
+        var key = s.exercise || '이름 없는 운동';
+        if (!exerciseMap[key]) exerciseMap[key] = { exercise: key, sets: 0, volumeKg: 0, bestWeightKg: null };
+        var x = exerciseMap[key]; x.sets++;
+        if (s.weightKg != null && s.reps != null) x.volumeKg += s.weightKg * s.reps;
+        if (s.weightKg != null && (x.bestWeightKg == null || s.weightKg > x.bestWeightKg)) x.bestWeightKg = s.weightKg;
+      });
+      d.meals.forEach(function (m) { totalKcal += m.kcal; totalProtein += m.proteinG; });
+    });
+    totalVolume = Object.keys(exerciseMap).reduce(function (sum, k) { return sum + exerciseMap[k].volumeKg; }, 0);
+    var report = {
+      app: 'BulkNote', exportVersion: 1, exportedAt: new Date().toISOString(),
+      period: { type: period, startDate: start, endDate: end, selectedDate: selDate },
+      summary: {
+        recordedDays: days.length, workoutDays: workoutDays, totalCompletedSets: totalSets,
+        totalVolumeKgReps: Math.round(totalVolume), exerciseSummary: Object.keys(exerciseMap).map(function (k) { return exerciseMap[k]; }).sort(function (a,b) { return b.volumeKg - a.volumeKg; }),
+        dietDays: mealDays, totalCalories: Math.round(totalKcal), averageCaloriesPerDietDay: mealDays ? Math.round(totalKcal / mealDays) : null,
+        totalProteinG: Math.round(totalProtein), averageProteinPerDietDay: mealDays ? Math.round(totalProtein / mealDays) : null,
+        bodyWeightEntries: weights
+      },
+      goals: clone(S.settings),
+      days: days,
+      note: '운동량은 중량(kg) x 반복횟수의 합이며 체중운동·시간기반 운동은 포함되지 않을 수 있습니다. 기록되지 않은 값은 추정하지 마세요.'
+    };
+    var json = JSON.stringify(report, null, 2);
+    var fileName = 'BulkNote_' + period + '_' + start + '_' + end + '.json';
+    var msg = $('#exportMsg');
+    try {
+      if (window.AndroidBridge && typeof window.AndroidBridge.saveTextFile === 'function') {
+        window.AndroidBridge.saveTextFile(fileName, json);
+        msg.textContent = '파일 저장 위치를 선택해 주세요. 저장 후 이 채팅에 JSON 파일을 첨부하면 됩니다.';
+      } else {
+        var blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+        var url = URL.createObjectURL(blob), a = document.createElement('a');
+        a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+        msg.textContent = '분석 파일을 다운로드했어요.';
+      }
+    } catch (e) {
+      msg.textContent = '내보내기 오류: ' + (e && e.message ? e.message : e);
+    }
+  }
+  $('#exportWeek').addEventListener('click', function () { exportAnalysis('week'); });
+  $('#exportMonth').addEventListener('click', function () { exportAnalysis('month'); });
+  $('#exportAll').addEventListener('click', function () { exportAnalysis('all'); });
 
   /* ---------- sample data ---------- */
   function sampleDays() { return Object.keys(S.days).filter(function (d) { return S.days[d].sample; }); }

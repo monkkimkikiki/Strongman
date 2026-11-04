@@ -14,11 +14,15 @@ import android.provider.OpenableColumns;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
     private static final int PICK_MODEL = 701;
     private WebView web;
     private volatile boolean copyingModel = false;
+    private volatile boolean aiBusy = false;
+    private final ExecutorService aiExecutor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,18 +79,34 @@ public class MainActivity extends Activity {
                 startActivityForResult(i, PICK_MODEL);
             });
         }
-        @JavascriptInterface public String loadAI() {
-            File f = modelFile();
-            if (!f.exists()) return "먼저 GGUF 모델을 선택해 주세요.";
-            try {
-                int code = NativeInference.nativeLoad(f.getAbsolutePath());
-                return code == 0 ? "AI 코치 준비 완료" : "모델 로드 실패 (코드 " + code + ")";
-            } catch (Throwable e) { return "AI 초기화 실패: " + e.getMessage(); }
+        @JavascriptInterface public void startLoadAI() {
+            final File f = modelFile();
+            if (!f.exists()) { notifyJs("loadDone", "먼저 GGUF 모델을 선택해 주세요."); return; }
+            if (aiBusy) { notifyJs("loadDone", "AI 작업이 이미 진행 중이에요."); return; }
+            aiBusy = true;
+            notifyJs("loadProgress", "모델을 메모리에 올리는 중입니다. 첫 실행은 수 분 걸릴 수 있어요.");
+            aiExecutor.execute(() -> {
+                try {
+                    int code = NativeInference.nativeLoad(f.getAbsolutePath());
+                    notifyJs("loadDone", code == 0 ? "AI 코치 준비 완료" : "모델 로드 실패 (코드 " + code + ")");
+                } catch (Throwable e) {
+                    notifyJs("loadDone", "AI 초기화 실패: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+                } finally { aiBusy = false; }
+            });
         }
-        @JavascriptInterface public String askAI(String prompt) {
-            if (prompt == null || prompt.trim().isEmpty()) return "질문을 입력해 주세요.";
-            try { return NativeInference.nativeGenerate(prompt); }
-            catch (Throwable e) { return "AI 답변 생성 실패: " + e.getMessage(); }
+        @JavascriptInterface public void startAskAI(final String prompt) {
+            if (prompt == null || prompt.trim().isEmpty()) { notifyJs("answerDone", "질문을 입력해 주세요."); return; }
+            if (aiBusy) { notifyJs("answerDone", "다른 AI 작업이 진행 중이에요. 완료될 때까지 기다려 주세요."); return; }
+            aiBusy = true;
+            notifyJs("answerProgress", "질문을 처리하고 있어요. 모델 크기와 휴대폰 성능에 따라 수 분 걸릴 수 있습니다.");
+            aiExecutor.execute(() -> {
+                try {
+                    String answer = NativeInference.nativeGenerate(prompt);
+                    notifyJs("answerDone", answer == null || answer.trim().isEmpty() ? "답변이 비어 있어요. 질문을 짧게 바꿔 다시 시도해 주세요." : answer);
+                } catch (Throwable e) {
+                    notifyJs("answerDone", "AI 답변 생성 실패: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+                } finally { aiBusy = false; }
+            });
         }
         @JavascriptInterface public void unloadAI() {
             try { NativeInference.nativeUnload(); } catch (Throwable ignored) {}
@@ -132,5 +152,5 @@ public class MainActivity extends Activity {
 
     @Override protected void onPause() { super.onPause(); if (web != null) web.onPause(); }
     @Override protected void onResume() { super.onResume(); if (web != null) web.onResume(); }
-    @Override protected void onDestroy() { if (web != null) web.destroy(); super.onDestroy(); }
+    @Override protected void onDestroy() { aiExecutor.shutdownNow(); if (web != null) web.destroy(); super.onDestroy(); }
 }

@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.os.VibratorManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -67,6 +71,24 @@ public class MainActivity extends Activity {
 
     private class Bridge {
         @JavascriptInterface public String ping() { return "BulkNote AndroidBridge OK"; }
+        @JavascriptInterface public void vibrateShort() {
+            try {
+                if (Build.VERSION.SDK_INT >= 31) {
+                    VibratorManager manager = (VibratorManager) getSystemService(VIBRATOR_MANAGER_SERVICE);
+                    if (manager != null) {
+                        Vibrator v = manager.getDefaultVibrator();
+                        if (v != null && v.hasVibrator()) v.vibrate(VibrationEffect.createOneShot(110, VibrationEffect.DEFAULT_AMPLITUDE));
+                    }
+                } else {
+                    Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                    if (v != null && v.hasVibrator()) {
+                        if (Build.VERSION.SDK_INT >= 26) v.vibrate(VibrationEffect.createOneShot(110, VibrationEffect.DEFAULT_AMPLITUDE));
+                        else v.vibrate(110);
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+
         @JavascriptInterface public void saveTextFile(final String fileName, final String content) {
             pendingExportContent = content == null ? "" : content;
             runOnUiThread(() -> {

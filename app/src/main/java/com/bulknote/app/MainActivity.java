@@ -32,6 +32,8 @@ public class MainActivity extends Activity {
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
+        s.setAllowFileAccess(true);
+        s.setAllowContentAccess(true);
         web.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri u = request.getUrl();
@@ -61,6 +63,7 @@ public class MainActivity extends Activity {
     }
 
     private class Bridge {
+        @JavascriptInterface public String ping() { return "BulkNote AndroidBridge OK"; }
         @JavascriptInterface public void share(final String text) {
             runOnUiThread(() -> {
                 Intent i = new Intent(Intent.ACTION_SEND); i.setType("text/plain");

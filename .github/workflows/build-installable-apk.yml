@@ -19,9 +19,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
       - name: Install Android NDK and CMake
-        run: sdkmanager "ndk;27.2.12479018" "cmake;3.22.1"
+        run: yes | sdkmanager --install "ndk;27.2.12479018" "cmake;3.22.1"
       - name: Fetch llama.cpp
         run: git clone --depth 1 https://github.com/ggml-org/llama.cpp.git third_party/llama.cpp
       - name: Build llama.cpp shared libraries

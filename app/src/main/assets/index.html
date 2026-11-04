@@ -132,6 +132,9 @@ input::placeholder{color:var(--ink3);opacity:.8}
 .restrow .lbl{margin-right:auto}
 .restrow .st{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:18px;line-height:1}
 .restrow b{font-family:var(--font-num);min-width:52px;text-align:center;font-size:18px;font-variant-numeric:tabular-nums}
+textarea{width:100%;min-height:92px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:10px 12px;font-size:14px;line-height:1.4;resize:vertical;font-family:inherit;color:var(--ink)}
+.chk{display:flex;align-items:center;gap:10px;min-height:44px;font-size:14px}
+.chk input{width:20px;height:20px;flex:none}
 #coachCard h2{margin-bottom:8px}
 .cb{padding:10px 0;border-top:1px solid var(--line)}
 .cb:first-of-type{border-top:0;padding-top:0}
@@ -404,6 +407,23 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       <div class="card">
         <h2>저장 위치</h2>
         <p id="storeNote" class="note"></p>
+      </div>
+      <div class="card form" id="backupCard">
+        <h2>설정 백업 · 불러오기</h2>
+        <p class="note">루틴, 즐겨찾기, 내 음식·내 운동, 운동별 휴식, 목표 설정을 글자로 복사해 두었다가 새로 설치한 앱이나 다른 기기에 붙여넣어 불러올 수 있어요. 메모 앱이나 카카오톡 ‘나와의 채팅’에 붙여 두면 편해요.</p>
+        <label class="chk"><input type="checkbox" id="bkDays"><span>운동·식단·체중 기록도 포함</span></label>
+        <div class="row">
+          <button type="button" class="btn" id="bkCopy">백업 복사</button>
+          <button type="button" class="btn" id="bkShare" hidden>공유하기</button>
+        </div>
+        <div class="field"><label class="lbl" for="bkText">불러올 백업 붙여넣기</label><textarea id="bkText" placeholder="복사해 둔 백업 글자를 여기에 붙여넣어 주세요" autocomplete="off" spellcheck="false"></textarea></div>
+        <div class="msg" id="bkMsg" role="alert"></div>
+        <button type="button" class="btn primary" id="bkImport">불러오기 (현재 설정을 덮어써요)</button>
+      </div>
+      <div class="card" id="appCard" hidden>
+        <h2>앱 업데이트</h2>
+        <p class="note" id="appNote" style="margin-bottom:12px"></p>
+        <button type="button" class="btn" id="appUpdate">최신 앱(APK) 받으러 가기</button>
       </div>
       <div class="card">
         <h2>예시 기록</h2>
@@ -901,6 +921,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
         '<p class="rtx">' + esc(r.items.map(function (i) { return i.ex; }).join(', ')) + '</p>' +
         '<div class="row"><button type="button" class="btn primary" data-act="rt-start" data-id="' + esc(r.id) + '">' + label + ' 시작</button>' +
         '<button type="button" class="btn" data-act="rt-edit" data-id="' + esc(r.id) + '">편집</button>' +
+        '<button type="button" class="btn" data-act="rt-dup" data-id="' + esc(r.id) + '">복사</button>' +
         '<button type="button" class="btn" data-act="rt-del" data-id="' + esc(r.id) + '">삭제</button></div></article>';
     }).join('');
   }
@@ -913,6 +934,12 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     });
     persistSettings(); renderAll(); toast(made ? '예시 루틴 ' + made + '개를 넣었어요. 편집해서 내 루틴으로 바꿔 보세요' : '예시 루틴이 이미 있어요');
   }
+  function dupRoutine(id) {
+    var r = (S.settings.routines || []).filter(function (x) { return x.id === id; })[0]; if (!r) return;
+    var base = r.name.replace(/ 복사( \d+)?$/, ''), n = 1, nm = base + ' 복사';
+    while (S.settings.routines.some(function (x) { return x.name === nm; })) { n++; nm = base + ' 복사 ' + n; }
+    openEditor(null, { name: nm, items: r.items });
+  }
   function deleteRoutine(id) {
     var R = S.settings.routines, i = R.findIndex(function (r) { return r.id === id; }); if (i < 0) return;
     var item = clone(R[i]); R.splice(i, 1); persistSettings(); renderAll();
@@ -923,10 +950,10 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   var ed = null;
   function sheetOpen(el) { el.hidden = false; document.body.classList.add('noscroll'); el.scrollTop = 0; }
   function sheetClose(el) { el.hidden = true; if ($('#editor').hidden && $('#picker').hidden && $('#calSheet').hidden) document.body.classList.remove('noscroll'); }
-  function openEditor(id) {
+  function openEditor(id, preset) {
     var r = id ? (S.settings.routines || []).filter(function (x) { return x.id === id; })[0] : null;
-    ed = r ? clone(r) : { id: null, name: '', items: [] };
-    $('#edName').value = ed.name; $('#edMsg').textContent = ''; $('#edTitle').textContent = r ? '루틴 편집' : '새 루틴';
+    ed = r ? clone(r) : preset ? { id: null, name: preset.name, items: clone(preset.items) } : { id: null, name: '', items: [] };
+    $('#edName').value = ed.name; $('#edMsg').textContent = ''; $('#edTitle').textContent = r ? '루틴 편집' : preset ? '루틴 복사' : '새 루틴';
     renderEditor(); sheetOpen($('#editor'));
   }
   function renderEditor() {
@@ -1658,6 +1685,9 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   }
   function renderSettings() {
     fillSettings(); renderStoreNote();
+    $('#bkShare').hidden = !(window.AndroidBridge && window.AndroidBridge.share);
+    $('#appCard').hidden = !IS_APP;
+    if (IS_APP) $('#appNote').textContent = '설치된 버전: 빌드 #' + BUILD + '. 새 버전이 나오면 아래 버튼으로 받아 설치하세요. 같은 앱 위에 덮어 설치되고 기록과 설정은 그대로 유지돼요. (GitHub 로그인이 필요할 수 있어요)';
     var n = sampleDays().length;
     $('#sampleClear').disabled = !n; $('#sampleClear').textContent = n ? '예시 지우기 (' + n + '일)' : '예시 지우기';
     $('#calcProt').disabled = latestWeight() == null;
@@ -1675,6 +1705,87 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     var w = latestWeight(); if (w == null) return;
     S.settings.protein = Math.round(w * 1.8); persistSettings(); fillSettings(); toast('단백질 목표를 ' + S.settings.protein + 'g으로 정했어요');
   });
+
+
+  /* ---------- backup / restore, app version ---------- */
+  var BUILD = '__BUILD__', IS_APP = BUILD.charAt(0) !== '_';
+  var RELEASE_URL = 'https://github.com/monkkimkikiki/Strongman/releases/tag/latest';
+  function openExternal(url) {
+    try { if (window.AndroidBridge && window.AndroidBridge.open) { window.AndroidBridge.open(url); return; } } catch (e) {}
+    window.open(url, '_blank', 'noopener');
+  }
+  function b64enc(t) { return btoa(unescape(encodeURIComponent(t))); }
+  function b64dec(t) { return decodeURIComponent(escape(atob(t))); }
+  function backupText(withDays) {
+    var obj = { app: 'bulknote', v: 1, at: new Date().toISOString(), settings: clone(S.settings) };
+    if (withDays) { obj.days = {}; Object.keys(S.days).forEach(function (d) { if (!S.days[d].sample) obj.days[d] = pack(S.days[d]); }); }
+    return 'BULKNOTE1:' + b64enc(JSON.stringify(obj));
+  }
+  function parseBackup(raw) {
+    var text = String(raw || '').trim(); if (!text) throw new Error('붙여넣은 내용이 없어요');
+    var obj, flat = text.replace(/\s+/g, ''), at = flat.indexOf('BULKNOTE1:');
+    try {
+      if (at >= 0) obj = JSON.parse(b64dec(flat.slice(at + 10)));
+      else if (text.charAt(0) === '{') obj = JSON.parse(text);
+    } catch (e) { obj = null; }
+    if (!obj || obj.app !== 'bulknote' || !obj.settings || typeof obj.settings !== 'object') throw new Error('백업 형식이 아니에요. 복사한 글자를 처음부터 끝까지 그대로 붙여넣어 주세요');
+    var st = Object.assign(clone(DEF), clone(obj.settings));
+    ['routines', 'custom', 'favEx', 'favFood', 'myFood'].forEach(function (k) { if (!Array.isArray(st[k])) st[k] = []; });
+    if (!st.restEx || typeof st.restEx !== 'object' || Array.isArray(st.restEx)) st.restEx = {};
+    ['kcal', 'protein', 'weeklySets', 'rest'].forEach(function (k) { if (typeof st[k] !== 'number' || !isFinite(st[k])) st[k] = DEF[k]; });
+    st.routines = st.routines.filter(function (r) { return r && typeof r.name === 'string' && Array.isArray(r.items); }).map(function (r) {
+      return { id: r.id || uid(), name: r.name, items: r.items.filter(function (it) { return it && typeof it.ex === 'string'; }).map(function (it) { return { ex: it.ex, m: it.m, n: +it.n || 3, r: +it.r || 10 }; }) };
+    });
+    var days = {}, nd = 0;
+    if (obj.days && typeof obj.days === 'object') Object.keys(obj.days).forEach(function (d) {
+      var v = obj.days[d]; if (!/^\d{4}-\d{2}-\d{2}$/.test(d) || !v || !Array.isArray(v.sets)) return;
+      days[d] = { sets: v.sets.filter(function (x) { return x && typeof x === 'object'; }), meals: Array.isArray(v.meals) ? v.meals.filter(function (x) { return x && typeof x === 'object'; }) : [], weight: typeof v.weight === 'number' ? v.weight : null, sample: false, routine: String(v.routine || '') };
+      nd++;
+    });
+    return { settings: st, days: days, nd: nd };
+  }
+  function applyBackup(pb) {
+    var prevSettings = clone(S.settings), prevDays = {};
+    Object.keys(pb.days).forEach(function (d) { prevDays[d] = S.days[d] ? clone(S.days[d]) : null; });
+    S.settings = pb.settings; persistSettings();
+    Object.keys(pb.days).forEach(function (d) { S.days[d] = pb.days[d]; persistDay(d); });
+    fillSettings(); renderAll();
+    toast('불러왔어요 · 루틴 ' + pb.settings.routines.length + '개' + (pb.nd ? ' · 기록 ' + pb.nd + '일' : ''), function () {
+      S.settings = prevSettings; persistSettings();
+      Object.keys(prevDays).forEach(function (d) { if (prevDays[d]) S.days[d] = prevDays[d]; else delete S.days[d]; persistDay(d); });
+      fillSettings(); renderAll();
+    });
+  }
+  function copyText(txt) {
+    return new Promise(function (resolve) {
+      var viaArea = function () {
+        try {
+          var ta = document.createElement('textarea'); ta.value = txt; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0';
+          document.body.appendChild(ta); ta.focus(); ta.select(); ta.setSelectionRange(0, txt.length);
+          var ok = document.execCommand('copy'); document.body.removeChild(ta); resolve(!!ok);
+        } catch (e) { resolve(false); }
+      };
+      try { if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(txt).then(function () { resolve(true); }, viaArea); return; } } catch (e) {}
+      viaArea();
+    });
+  }
+  $('#bkCopy').addEventListener('click', function () {
+    var txt = backupText($('#bkDays').checked), msg = $('#bkMsg');
+    copyText(txt).then(function (ok) {
+      if (ok) { msg.textContent = ''; toast('백업을 복사했어요 (' + nf(txt.length) + '글자). 메모나 카카오톡 나와의 채팅에 붙여 두세요'); }
+      else { var ta = $('#bkText'); ta.value = txt; ta.focus(); ta.select(); msg.textContent = '자동 복사가 안 돼요. 아래 칸의 글자를 길게 눌러 전체 선택 후 복사해 주세요'; }
+    });
+  });
+  $('#bkShare').addEventListener('click', function () {
+    try { window.AndroidBridge.share(backupText($('#bkDays').checked)); } catch (e) { toast('공유를 열 수 없어요. 백업 복사를 이용해 주세요'); }
+  });
+  $('#bkImport').addEventListener('click', function () {
+    var msg = $('#bkMsg');
+    if (!S.loaded) { toast('기록을 불러오는 중이에요. 잠시 후 다시 눌러 주세요'); return; }
+    var pb; try { pb = parseBackup($('#bkText').value); } catch (e) { msg.textContent = e.message; return; }
+    msg.textContent = ''; $('#bkText').value = ''; applyBackup(pb);
+  });
+  $('#appUpdate').addEventListener('click', function () { openExternal(RELEASE_URL); });
 
   /* ---------- sample data ---------- */
   function sampleDays() { return Object.keys(S.days).filter(function (d) { return S.days[d].sample; }); }
@@ -1748,6 +1859,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     else if (act === 'tpl-add') addTemplates();
     else if (act === 'rt-start') startRoutine(id);
     else if (act === 'rt-edit') openEditor(id);
+    else if (act === 'rt-dup') dupRoutine(id);
     else if (act === 'rt-del') deleteRoutine(id);
     else if (act === 'lib-open') openPicker('browse');
     else if (act === 'wo-add') openPicker('workout');

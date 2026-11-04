@@ -430,16 +430,6 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
         <div class="msg" id="bkMsg" role="alert"></div>
         <button type="button" class="btn primary" id="bkImport">불러오기 (현재 설정을 덮어써요)</button>
       </div>
-      <div class="card form" id="analysisExportCard">
-        <h2>운동·식단 분석 파일 내보내기</h2>
-        <p class="note">선택한 기간의 운동 세트·중량·횟수·운동량, 식단 칼로리·단백질, 체중, 루틴과 기간별 요약을 JSON 파일로 저장합니다. 저장한 파일을 ChatGPT에 첨부하면 상세 분석과 다음 운동 조언을 받을 수 있어요.</p>
-        <div class="row">
-          <button type="button" class="btn" id="exportWeek">주간 분석</button>
-          <button type="button" class="btn" id="exportMonth">월간 분석</button>
-        </div>
-        <button type="button" class="btn primary" id="exportAll">전체 기록 분석 파일</button>
-        <p class="note" id="exportMsg" aria-live="polite">주간·월간은 현재 선택된 날짜가 포함된 기간을 기준으로 내보냅니다.</p>
-      </div>
       <div class="card" id="appCard" hidden>
         <h2>앱 업데이트</h2>
         <p class="note" id="appNote" style="margin-bottom:12px"></p>
@@ -1808,6 +1798,12 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   $('#appUpdate').addEventListener('click', function () { openExternal(RELEASE_URL); });
 
   /* ---------- analysis export ---------- */
+  window.onNativeModelEvent = function (type, message) {
+    if (type === 'exportDone') {
+      var el = $('#exportMsg');
+      if (el) el.textContent = message || '';
+    }
+  };
   function exportDateKey(d) {
     var y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
     return y + '-' + m + '-' + day;

@@ -4,32 +4,16 @@
 <style>
 /* Layout concept: 한 손으로 쓰는 헬스장 기록장. 위에 날짜, 가운데 한 칸 콘텐츠, 아래 탭 5개. 타이머는 화면 아래에 떠서 어느 탭에서나 보인다. 숫자는 좁은 고딕으로 크게. */
 :root{
-  --bg:#F2F4F3; --surface:#FFFFFF; --surface2:#E8EFEE; --line:#D5E0DE;
-  --ink:#172322; --ink2:#435653; --ink3:#687B77;
-  --accent:#477B78; --accent-ink:#FFFFFF; --accent-wash:#DDECEA; --star:#C18A43;
-  --ai-user:#E1ECEF; --ai-assistant:#EAF2EF; --ai-border:#C9DED8; --highlight:#C18A43;
-  --warn:#A8520A; --warn-wash:#FBE9D6; --good:#13763F; --good-wash:#D7F0E1; --danger:#B3261E;
+  --bg:#F6F8FB; --surface:#FFFFFF; --surface2:#F1F3F6; --line:#E1E5EC;
+  --ink:#202733; --ink2:#596579; --ink3:#8993A3;
+  --accent:#356FE5; --accent-ink:#FFFFFF; --accent-wash:#EAF1FF; --star:#C18A43;
+  --ai-user:#EAF1FF; --ai-assistant:#FFFFFF; --ai-border:#DCE5F5; --highlight:#356FE5;
+  --warn:#A8520A; --warn-wash:#FFF3E5; --good:#13763F; --good-wash:#E7F6ED; --danger:#B3261E;
+  color-scheme:light;
   --font-body:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;
   --font-num:'Barlow Condensed','Arial Narrow','Apple SD Gothic Neo',sans-serif;
 }
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#101819; --surface:#192423; --surface2:#243330; --line:#344440;
-    --ink:#EAF1EE; --ink2:#B7C8C2; --ink3:#8FA59D;
-    --accent:#91C4B8; --accent-ink:#10201D; --accent-wash:#29443F; --star:#E7B66D;
-    --ai-user:#263E46; --ai-assistant:#223A34; --ai-border:#3B6258; --highlight:#E7B66D;
-    --warn:#F2A65A; --warn-wash:#3A2814; --good:#55C48B; --good-wash:#12301F; --danger:#F2837D;
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#101819; --surface:#192423; --surface2:#243330; --line:#344440;
-  --ink:#EAF1EE; --ink2:#B7C8C2; --ink3:#8FA59D;
-  --accent:#91C4B8; --accent-ink:#10201D; --accent-wash:#29443F; --star:#E7B66D;
-  --ai-user:#263E46; --ai-assistant:#223A34; --ai-border:#3B6258; --highlight:#E7B66D;
-  --warn:#F2A65A; --warn-wash:#3A2814; --good:#55C48B; --good-wash:#12301F; --danger:#F2837D;
-  color-scheme:dark;
-}
+:root[data-theme="dark"]{ color-scheme:light; }
 *{box-sizing:border-box}
 body{
   background:var(--bg); color:var(--ink); font:15px/1.5 var(--font-body);

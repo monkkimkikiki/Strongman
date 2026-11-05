@@ -1018,7 +1018,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     var dt = selDate, d = getDay(dt), idx = -1, last = null;
     d.sets.forEach(function (s, i) { if (normEx(s.ex) === key) { idx = i; last = s; } });
     if (!last) return;
-    mutate(dt, function (dd) { dd.sets.splice(idx + 1, 0, { id: uid(), m: last.m, ex: last.ex, w: last.w, r: last.r, s: null, done: false, t: Date.now() }); });
+    mutate(dt, function (dd) { dd.sets.splice(idx + 1, 0, { id: uid(), m: last.m, ex: last.ex, mode: last.mode || 'reps', targetSec: last.targetSec || null, w: last.w, r: last.r, s: null, done: false, t: Date.now() }); });
   }
   function delLastSet(key) {
     var dt = selDate, d = getDay(dt), idx = -1;
@@ -1322,7 +1322,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     withUndo('‘' + nu.name + '’(으)로 바꿨어요', dt, function (dd) {
       var i = 0;
       dd.sets.forEach(function (s) {
-        if (normEx(s.ex) === key && !isDone(s)) { s.ex = nu.name; s.m = nu.m; s.w = fresh[i].w; s.r = fresh[i].r; s.s = null; i++; }
+        if (normEx(s.ex) === key && !isDone(s)) { s.ex = nu.name; s.m = nu.m; s.mode = 'reps'; s.targetSec = null; s.w = fresh[i].w; s.r = fresh[i].r; s.s = null; i++; }
       });
     });
     return true;

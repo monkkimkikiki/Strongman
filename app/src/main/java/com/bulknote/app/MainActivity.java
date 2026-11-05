@@ -130,7 +130,7 @@ public class MainActivity extends Activity {
                     conn=(HttpURLConnection)url.openConnection(); conn.setRequestMethod("POST");
                     conn.setConnectTimeout(10000); conn.setReadTimeout(25000); conn.setDoOutput(true);
                     conn.setRequestProperty("Authorization","Bearer "+key); conn.setRequestProperty("Content-Type","application/json; charset=utf-8");
-                    JSONObject body=new JSONObject(); body.put("model","openai/gpt-oss-20b"); body.put("temperature",0.25); body.put("max_tokens",260); body.put("stream",false);
+                    JSONObject body=new JSONObject(); body.put("model","openai/gpt-oss-20b"); body.put("temperature",0.25); body.put("max_tokens",700); body.put("stream",false);
                     JSONArray msgs=new JSONArray();
                     msgs.put(new JSONObject().put("role","system").put("content","너는 한국어 근력운동·벌크업 코치다. 제공된 기록에 근거해 짧고 구체적으로 답한다. 기록에 없는 수치나 자세를 추측하지 않는다. 답변은 핵심부터 말하고 3~6문장 또는 짧은 목록으로 작성한다. 통증·부상·질환은 진단하지 말고 중단 및 전문가 상담을 안내한다. 과도한 중량 증가나 위험한 운동을 권하지 않는다."));
                     String userText="기록 요약(JSON):\n"+(context==null?"{}":context)+"\n\n질문: "+(question==null?"":question);

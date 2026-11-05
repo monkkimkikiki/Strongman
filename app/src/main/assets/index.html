@@ -511,6 +511,18 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   </div>
 </div>
 
+<div class="sheet" id="routinePreview" role="dialog" aria-modal="true" aria-labelledby="routinePreviewTitle" hidden>
+  <div class="sheet-in">
+    <div class="sheet-top">
+      <span class="spacer"></span>
+      <h2 id="routinePreviewTitle">시작 전 루틴 확인</h2>
+      <button type="button" class="x" data-act="rt-preview-cancel" aria-label="닫기">×</button>
+    </div>
+    <div id="routinePreviewContent" class="tab"></div>
+  </div>
+  <div class="sheet-foot" id="routinePreviewActions"></div>
+</div>
+
 <div class="sheet" id="routineSwap" role="dialog" aria-modal="true" aria-labelledby="routineSwapTitle" hidden>
   <div class="sheet-in">
     <div class="sheet-top">
@@ -1035,9 +1047,34 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     });
     if (ok) toast(added ? added + '종목을 추가했어요' + (skipped ? ' (이미 있는 ' + skipped + '종목은 건너뜀)' : '') : '이미 있는 종목이에요');
   }
+  var previewRoutineId = null;
   function startRoutine(rid) {
-    var r = (S.settings.routines || []).filter(function (x) { return x.id === rid; })[0]; if (!r) return;
+    previewRoutineId = rid;
+    renderRoutinePreview();
+    sheetOpen($('#routinePreview'));
+  }
+  function renderRoutinePreview(showChooser) {
+    var R = S.settings.routines || [], r = R.filter(function (x) { return x.id === previewRoutineId; })[0];
+    if (!r) { sheetClose($('#routinePreview')); return; }
+    $('#routinePreviewTitle').textContent = showChooser ? '다른 루틴 선택' : '시작 전 루틴 확인';
+    if (showChooser) {
+      $('#routinePreviewContent').innerHTML = '<p class="note">원하는 루틴을 선택하면 종목 구성을 다시 확인할 수 있어요.</p>' + R.map(function (x) {
+        var n = x.items.reduce(function (a, it) { return a + (it.n || 0); }, 0);
+        return '<button type="button" class="card rt" style="width:100%;text-align:left" data-act="rt-preview-pick" data-id="' + esc(x.id) + '"><header><h3>' + esc(x.name) + '</h3><span class="cnt">' + x.items.length + '종목 · ' + n + '세트</span></header><p class="rtx">' + esc(x.items.map(function (it) { return it.ex; }).join(', ')) + '</p></button>';
+      }).join('');
+      $('#routinePreviewActions').innerHTML = '<button type="button" class="btn" data-act="rt-preview-cancel">취소</button>';
+      return;
+    }
+    var sets = r.items.reduce(function (a, it) { return a + (it.n || 0); }, 0);
+    $('#routinePreviewContent').innerHTML = '<div class="card"><header class="phead"><div><h3>' + esc(r.name) + '</h3><p class="note" style="margin-top:4px">' + r.items.length + '종목 · ' + sets + '세트</p></div></header><div class="startlist">' + r.items.map(function (it, i) {
+      return '<div class="startrow"><div class="tx"><b>' + (i + 1) + '. ' + esc(it.ex) + '</b><span>' + (it.n || 3) + '세트 · ' + (it.r || 10) + '회' + (it.m ? ' · ' + esc(it.m) : '') + '</span></div></div>';
+    }).join('') + '</div></div><p class="note">시작을 누르면 위 구성으로 오늘 운동이 만들어져요. 아직 운동 기록은 변경되지 않았어요.</p>';
+    $('#routinePreviewActions').innerHTML = '<div class="row"><button type="button" class="btn" data-act="rt-preview-choose">다른 루틴 선택</button><button type="button" class="btn" data-act="rt-preview-cancel">취소</button></div><button type="button" class="btn primary" data-act="rt-preview-start">이 루틴으로 시작</button>';
+  }
+  function applyRoutineStart() {
+    var rid = previewRoutineId, r = (S.settings.routines || []).filter(function (x) { return x.id === rid; })[0]; if (!r) return;
     var dt = selDate, made = 0;
+    sheetClose($('#routinePreview'));
     var ok = mutate(dt, function (d) {
       var have = {}; d.sets.forEach(function (s) { have[normEx(s.ex)] = 1; });
       r.items.forEach(function (it) {
@@ -1178,7 +1215,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   /* routine editor */
   var ed = null;
   function sheetOpen(el) { el.hidden = false; document.body.classList.add('noscroll'); el.scrollTop = 0; }
-  function sheetClose(el) { el.hidden = true; if ($('#editor').hidden && $('#picker').hidden && $('#calSheet').hidden && $('#routineSwap').hidden) document.body.classList.remove('noscroll'); }
+  function sheetClose(el) { el.hidden = true; if ($('#editor').hidden && $('#picker').hidden && $('#calSheet').hidden && $('#routineSwap').hidden && $('#routinePreview').hidden) document.body.classList.remove('noscroll'); }
   function openEditor(id, preset) {
     var r = id ? (S.settings.routines || []).filter(function (x) { return x.id === id; })[0] : null;
     ed = r ? clone(r) : preset ? { id: null, name: preset.name, items: clone(preset.items) } : { id: null, name: '', items: [] };
@@ -2283,6 +2320,10 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     else if (act === 'routine-new') { if (tab !== 'routine') setTab('routine'); openEditor(null); }
     else if (act === 'tpl-add') addTemplates();
     else if (act === 'rt-start') startRoutine(id);
+    else if (act === 'rt-preview-choose') renderRoutinePreview(true);
+    else if (act === 'rt-preview-pick') { previewRoutineId = id; renderRoutinePreview(false); $('#routinePreview').scrollTop = 0; }
+    else if (act === 'rt-preview-cancel') sheetClose($('#routinePreview'));
+    else if (act === 'rt-preview-start') applyRoutineStart();
     else if (act === 'wo-change') openRoutineSwap();
     else if (act === 'rt-replace') replaceRoutine(id);
     else if (act === 'rt-swap-close') sheetClose($('#routineSwap'));

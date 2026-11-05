@@ -113,16 +113,21 @@ public class RestAlarmReceiver extends BroadcastReceiver {
     public static void showWorkoutStatus(Context context, String title, String detail) {
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
-        Notification.Builder b = builder(context, false)
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+        Notification.Builder b = Build.VERSION.SDK_INT >= 26
+            ? new Notification.Builder(context, WORKOUT_CHANNEL_ID)
+            : builder(context, false);
+        b.setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentTitle(title == null || title.trim().isEmpty() ? "운동 진행 중" : title)
             .setContentText(detail == null || detail.trim().isEmpty() ? "운동을 종료하면 사라집니다." : detail)
             .setContentIntent(contentIntent(context))
             .setCategory(Notification.CATEGORY_PROGRESS)
+            .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setOngoing(true)
             .setAutoCancel(false)
             .setOnlyAlertOnce(true)
             .setShowWhen(false);
+        if (Build.VERSION.SDK_INT >= 26) b.setSilent(true);
+        else b.setPriority(Notification.PRIORITY_LOW);
         nm.notify(WORKOUT_NOTIFICATION_ID, b.build());
     }
 

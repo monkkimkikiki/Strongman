@@ -214,6 +214,14 @@ public class MainActivity extends Activity {
             RestAlarmReceiver.cancel(MainActivity.this);
         }
 
+        @JavascriptInterface public void showWorkoutStatus(String title, String detail) {
+            RestAlarmReceiver.showWorkoutStatus(MainActivity.this, title, detail);
+        }
+
+        @JavascriptInterface public void stopWorkoutStatus() {
+            RestAlarmReceiver.stopWorkoutStatus(MainActivity.this);
+        }
+
         @JavascriptInterface public void vibrateShort() {
             try {
                 if (Build.VERSION.SDK_INT >= 31) {

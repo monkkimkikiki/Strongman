@@ -1539,7 +1539,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       var d = S.days[ds], done = (d.sets || []).filter(isDone);
       var by = {};
       done.forEach(function(s){ var k=s.ex||'기타'; if(!by[k]) by[k]={sets:0,volume:0,details:[]}; by[k].sets++; by[k].volume+=(Number(s.w)||0)*(Number(s.r)||0); if(by[k].details.length<4) by[k].details.push((s.w||0)+'kg×'+(s.r||0)); });
-      return {date:ds, workout:(d.sets||[]).length?{completedSets:done.length, exercises:Object.keys(by).map(function(k){return {name:k,sets:by[k].sets,volume:Math.round(by[k].volume),examples:by[k].details};})}:null, weight:d.weight, meals:(d.meals||[]).map(function(m){return {name:m.name,kcal:m.kcal,protein:m.protein};})};
+      return {date:ds, workout:(d.sets||[]).length?{completedSets:done.length, exercises:Object.keys(by).map(function(k){return {name:k,sets:by[k].sets,volume:Math.round(by[k].volume),examples:by[k].details};})}:null, weight:d.weight, meals:(d.meals||[]).map(function(m){return {name:m.name,kcal:m.kcal,protein:m.p};})};
     });
     return JSON.stringify({selectedDate:selDate, recentDays:rows});
   }
@@ -1618,7 +1618,6 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       }
       return;
     }
-    var b = e.target.closest('[data-coach]'); if (!b) return;
     var b = e.target.closest('[data-coach]'); if (!b) return;
     var ws = weekStart(selDate);
     if (b.getAttribute('data-coach') === 'day') { coachUI.dayKey = selDate; coachUI.day = b.getAttribute('aria-expanded') !== 'true'; }

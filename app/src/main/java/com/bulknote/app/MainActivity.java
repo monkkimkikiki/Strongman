@@ -214,6 +214,10 @@ public class MainActivity extends Activity {
             RestAlarmReceiver.cancel(MainActivity.this);
         }
 
+        @JavascriptInterface public void cancelScheduledRestAlarm() {
+            RestAlarmReceiver.cancelScheduled(MainActivity.this);
+        }
+
         @JavascriptInterface public void showWorkoutStatus(String title, String detail) {
             RestAlarmReceiver.showWorkoutStatus(MainActivity.this, title, detail);
         }

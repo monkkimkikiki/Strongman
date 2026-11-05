@@ -1091,6 +1091,28 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     if (ok) { if (tab !== 'log') setTab('log'); toast(made ? r.name + ' 루틴을 불러왔어요' : '이미 모두 들어 있는 루틴이에요'); }
   }
 
+  function applyRoutineToToday(rid) {
+    var r = (S.settings.routines || []).filter(function (x) { return x.id === rid; })[0];
+    if (!r) return;
+    var dt = selDate, added = 0, skipped = 0;
+    var ok = mutate(dt, function (d) {
+      var have = {};
+      d.sets.forEach(function (x) { have[normEx(x.ex)] = true; });
+      r.items.forEach(function (it) {
+        var key = normEx(it.ex);
+        if (have[key]) { skipped++; return; }
+        makeSetsFor(it, dt).forEach(function (set) { d.sets.push(set); });
+        have[key] = true;
+        added++;
+      });
+      if (!d.routine) d.routine = r.name;
+    });
+    if (ok) {
+      if (tab !== 'log') setTab('log');
+      toast(added ? r.name + '에서 ' + added + '종목을 오늘 운동에 반영했어요' + (skipped ? ' · 이미 있는 ' + skipped + '종목은 유지했어요' : '') : '이 루틴의 종목은 이미 오늘 운동에 있어요');
+    }
+  }
+
   function openRoutineSwap() {
     var R = S.settings.routines || [];
     if (!R.length) {
@@ -1191,6 +1213,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       return '<article class="card rt"><header><h3>' + esc(r.name) + '</h3><span class="cnt">' + r.items.length + '종목 · ' + sets + '세트</span></header>' +
         '<p class="rtx">' + esc(r.items.map(function (i) { return i.ex + (i.mode === 'time' ? ' ' + (i.n || 3) + '×' + mmss(i.durationSec || 60) : ''); }).join(', ')) + '</p>' +
         '<div class="row"><button type="button" class="btn primary" data-act="rt-start" data-id="' + esc(r.id) + '">' + label + ' 시작</button>' +
+        '<button type="button" class="btn" data-act="rt-apply-today" data-id="' + esc(r.id) + '">오늘 운동에 반영</button>' +
         '<button type="button" class="btn" data-act="rt-edit" data-id="' + esc(r.id) + '">편집</button>' +
         '<button type="button" class="btn" data-act="rt-dup" data-id="' + esc(r.id) + '">복사</button>' +
         '<button type="button" class="btn" data-act="rt-del" data-id="' + esc(r.id) + '">삭제</button></div></article>';
@@ -2345,6 +2368,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     else if (act === 'rt-preview-cancel') sheetClose($('#routinePreview'));
     else if (act === 'rt-preview-start') applyRoutineStart();
     else if (act === 'wo-change') openRoutineSwap();
+    else if (act === 'rt-apply-today') applyRoutineToToday(id);
     else if (act === 'rt-replace') replaceRoutine(id);
     else if (act === 'rt-swap-close') sheetClose($('#routineSwap'));
     else if (act === 'rt-edit') openEditor(id);

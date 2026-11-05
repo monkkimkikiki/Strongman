@@ -761,7 +761,11 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   })();
   function saveT() { try { localStorage.setItem(TK, JSON.stringify(T)); } catch (e) {} }
   function scheduleRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.scheduleRestNotification && T.phase === 'rest') AndroidBridge.scheduleRestNotification(T.restEnd); } catch (e) {} }
-  window.rearmRestAlarmAfterResume = function () { if (T.phase === 'rest' && T.restEnd > Date.now()) scheduleRestAlarm(); };
+  function scheduleExerciseAlarm() { try { if (window.AndroidBridge && AndroidBridge.scheduleExerciseNotification && T.phase === 'set' && T.targetSec) AndroidBridge.scheduleExerciseNotification(T.start + T.targetSec * 1000); } catch (e) {} }
+  window.rearmRestAlarmAfterResume = function () {
+    if (T.phase === 'rest' && T.restEnd > Date.now()) scheduleRestAlarm();
+    if (T.phase === 'set' && T.targetSec && T.start + T.targetSec * 1000 > Date.now()) scheduleExerciseAlarm();
+  };
   function cancelRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.cancelRestNotification) AndroidBridge.cancelRestNotification(); } catch (e) {} }
   var wl = null;
   function lockOn() { try { if (navigator.wakeLock && !wl) { navigator.wakeLock.request('screen').then(function (l) { wl = l; l.addEventListener('release', function () { wl = null; }); }).catch(function () {}); } } catch (e) {} }
@@ -783,7 +787,10 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       var sec = (now - T.start) / 1000, dg = $('#rbDigits'), remaining = T.targetSec ? Math.max(0, T.targetSec - sec) : null;
       $('#rbLabel').textContent = T.targetSec ? (remaining <= 0 ? '목표 시간 완료 · 운동 완료를 체크하세요' : (T.label || '시간 운동 진행 중')) : (T.label || '세트 진행 중');
       dg.textContent = mmss(T.targetSec ? remaining : sec); dg.className = 'rb-digits run' + (T.targetSec && remaining <= 10 ? ' low' : '');
-      if (T.targetSec && remaining <= 0 && !T.alerted) { T.alerted = true; beep(); saveT(); }
+      if (T.targetSec && remaining <= 0 && !T.alerted) {
+        T.alerted = true; saveT();
+        if (!(window.AndroidBridge && AndroidBridge.scheduleExerciseNotification)) beep();
+      }
       $('#rbMinus').hidden = true; $('#rbPlus').hidden = true; $('#rbSkip').textContent = '취소';
       var lv = document.querySelector('[data-live="' + T.setId + '"]'); if (lv) lv.textContent = mmss(T.targetSec ? remaining : sec);
       showTip(T.tip);
@@ -963,6 +970,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     var sec = st.s;
     if (T.phase === 'set' && T.setId === id) sec = Math.max(1, Math.round((Date.now() - T.start) / 1000));
     if (mutate(dt, function (dd) { dd.sets.forEach(function (x) { if (x.id === id) { x.done = true; x.s = sec || null; x.t = Date.now(); } }); })) {
+      if (T.phase === 'set' && T.setId === id) cancelRestAlarm();
       startRest(restFor(st.ex), tipLabel(nextTip(dt)));
       var now = findSet(id), warn = now ? setFeedback(now, dt).filter(function (f) { return f.tone === 'warn'; })[0] : null;
       if (warn) toast(warn.text.length > 70 ? warn.text.slice(0, 68) + '…' : warn.text);
@@ -977,7 +985,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     prepAudio();
     var g = groupsOf(getDay(selDate)).filter(function (x) { return x.key === normEx(st.ex); })[0], idx = g ? g.sets.indexOf(st) + 1 : 1;
     var cue = cueFor(st.ex, st.m);
-    T = { phase: 'set', setId: id, start: Date.now(), targetSec: st.mode === 'time' ? (st.targetSec || 60) : null, alerted: false, label: st.ex + ' ' + idx + '세트', tip: '지금 · ' + (idx === 1 ? cue.k : cue.t[(idx - 1) % cue.t.length]) }; saveT(); lockOn(); renderLog(); tick();
+    T = { phase: 'set', setId: id, start: Date.now(), targetSec: st.mode === 'time' ? (st.targetSec || 60) : null, alerted: false, label: st.ex + ' ' + idx + '세트', tip: '지금 · ' + (idx === 1 ? cue.k : cue.t[(idx - 1) % cue.t.length]) }; saveT(); if (T.targetSec) scheduleExerciseAlarm(); lockOn(); renderLog(); tick();
   }
   function setField(id, f, raw) {
     var s = findSet(id); if (!s) return;

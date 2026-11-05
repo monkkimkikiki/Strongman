@@ -123,7 +123,6 @@ public class RestAlarmReceiver extends BroadcastReceiver {
             .setAutoCancel(false)
             .setOnlyAlertOnce(true)
             .setShowWhen(false);
-        if (Build.VERSION.SDK_INT >= 26) b.setSilent(true);
         nm.notify(WORKOUT_NOTIFICATION_ID, b.build());
     }
 

@@ -511,6 +511,18 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   </div>
 </div>
 
+<div class="sheet" id="routineSwap" role="dialog" aria-modal="true" aria-labelledby="routineSwapTitle" hidden>
+  <div class="sheet-in">
+    <div class="sheet-top">
+      <button type="button" class="chip" data-act="rt-swap-close">닫기</button>
+      <h2 id="routineSwapTitle">오늘 루틴 변경</h2>
+      <span class="spacer"></span>
+    </div>
+    <p class="note">새 루틴을 선택하면 오늘 운동 종목과 세트 구성이 교체돼요. 이미 입력한 세트 기록은 변경되지만, 바로 실행취소할 수 있어요.</p>
+    <div id="routineSwapList" class="tab"></div>
+  </div>
+</div>
+
 <div class="sheet" id="calSheet" role="dialog" aria-modal="true" aria-labelledby="calTitle" hidden>
   <div class="sheet-in">
     <div class="sheet-top">
@@ -849,7 +861,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     var done = d.sets.filter(isDone), vol = done.reduce(function (a, s) { return a + s.w * s.r; }, 0), pct = done.length / d.sets.length * 100;
     head.innerHTML = '<div class="card"><div class="phead"><div style="min-width:0"><div class="ptitle">' + esc(d.routine || (selDate === today() ? '오늘 운동' : fmtShort(selDate) + ' 운동')) + '</div><div class="psub">볼륨 ' + nf(vol) + 'kg 완료</div></div><div class="pnum">' + done.length + '<small> / ' + d.sets.length + '세트</small></div></div>' +
       '<div class="meter" role="meter" aria-label="완료한 세트" aria-valuemin="0" aria-valuemax="' + d.sets.length + '" aria-valuenow="' + done.length + '"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
-    foot.innerHTML = '<button type="button" class="btn" data-act="wo-add">종목 추가</button>' + (d.workoutEndedAt ? '<div class="notice" style="margin-top:10px">' + esc(fmtShort(selDate)) + ' 운동 종료 · 평가가 저장됐어요</div><button type="button" class="btn" style="margin-top:8px" data-act="wo-review">운동 평가 다시 보기</button>' : '<button type="button" class="btn primary" style="margin-top:10px;width:100%" data-act="wo-finish">운동 종료</button>');
+    foot.innerHTML = '<div class="row"><button type="button" class="btn" data-act="wo-add">종목 추가</button><button type="button" class="btn" data-act="wo-change">루틴 변경</button></div>' + (d.workoutEndedAt ? '<div class="notice" style="margin-top:10px">' + esc(fmtShort(selDate)) + ' 운동 종료 · 평가가 저장됐어요</div><button type="button" class="btn" style="margin-top:8px" data-act="wo-review">운동 평가 다시 보기</button>' : '<button type="button" class="btn primary" style="margin-top:10px;width:100%" data-act="wo-finish">운동 종료</button>');
   }
 
   function restRowHtml(g, first) {
@@ -1037,6 +1049,43 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     if (ok) { if (tab !== 'log') setTab('log'); toast(made ? r.name + ' 루틴을 불러왔어요' : '이미 모두 들어 있는 루틴이에요'); }
   }
 
+  function openRoutineSwap() {
+    var R = S.settings.routines || [];
+    if (!R.length) {
+      toast('먼저 루틴 탭에서 루틴을 만들어 주세요');
+      setTab('routine');
+      return;
+    }
+    var d = getDay(selDate);
+    $('#routineSwapList').innerHTML = R.map(function (r) {
+      var sets = r.items.reduce(function (a, it) { return a + (it.n || 0); }, 0);
+      return '<div class="card rt"><header><h3>' + esc(r.name) + '</h3><span class="cnt">' + r.items.length + '종목 · ' + sets + '세트</span></header>' +
+        '<p class="rtx">' + esc(r.items.map(function (it) { return it.ex; }).join(', ')) + '</p>' +
+        '<button type="button" class="btn primary" style="width:100%" data-act="rt-replace" data-id="' + esc(r.id) + '">이 루틴으로 변경</button></div>';
+    }).join('');
+    sheetOpen($('#routineSwap'));
+  }
+
+  function replaceRoutine(rid) {
+    var r = (S.settings.routines || []).filter(function (x) { return x.id === rid; })[0];
+    if (!r) return;
+    var dt = selDate, d = getDay(dt);
+    var done = d.sets.filter(isDone).length;
+    var msg = '오늘 운동을 "' + r.name + '" 루틴으로 교체할까요?\\n\\n현재 ' + d.sets.length + '세트 중 완료한 ' + done + '세트를 포함해 기존 운동 세트 기록은 새 루틴으로 바뀝니다.\\n식단과 체중 기록은 유지되며, 변경 직후 실행취소할 수 있어요.';
+    if (!window.confirm(msg)) return;
+    if (T.phase !== 'idle') { T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); tick(); }
+    sheetClose($('#routineSwap'));
+    withUndo(r.name + ' 루틴으로 변경했어요', dt, function (dd) {
+      dd.sets = [];
+      r.items.forEach(function (it) {
+        makeSetsFor(it, dt).forEach(function (set) { dd.sets.push(set); });
+      });
+      dd.routine = r.name;
+      dd.workoutEndedAt = null;
+    });
+    if (tab !== 'log') setTab('log');
+  }
+
   $('#todayList').addEventListener('click', function (e) {
     var t = e.target.closest('button'); if (!t) return;
     if (t.hasAttribute('data-set-weight-lock')) toggleSetWeightLock(t.getAttribute('data-set-weight-lock'));
@@ -1129,7 +1178,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   /* routine editor */
   var ed = null;
   function sheetOpen(el) { el.hidden = false; document.body.classList.add('noscroll'); el.scrollTop = 0; }
-  function sheetClose(el) { el.hidden = true; if ($('#editor').hidden && $('#picker').hidden && $('#calSheet').hidden) document.body.classList.remove('noscroll'); }
+  function sheetClose(el) { el.hidden = true; if ($('#editor').hidden && $('#picker').hidden && $('#calSheet').hidden && $('#routineSwap').hidden) document.body.classList.remove('noscroll'); }
   function openEditor(id, preset) {
     var r = id ? (S.settings.routines || []).filter(function (x) { return x.id === id; })[0] : null;
     ed = r ? clone(r) : preset ? { id: null, name: preset.name, items: clone(preset.items) } : { id: null, name: '', items: [] };
@@ -2204,6 +2253,9 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     else if (act === 'routine-new') { if (tab !== 'routine') setTab('routine'); openEditor(null); }
     else if (act === 'tpl-add') addTemplates();
     else if (act === 'rt-start') startRoutine(id);
+    else if (act === 'wo-change') openRoutineSwap();
+    else if (act === 'rt-replace') replaceRoutine(id);
+    else if (act === 'rt-swap-close') sheetClose($('#routineSwap'));
     else if (act === 'rt-edit') openEditor(id);
     else if (act === 'rt-dup') dupRoutine(id);
     else if (act === 'rt-del') deleteRoutine(id);

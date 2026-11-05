@@ -115,7 +115,7 @@ public class RestAlarmReceiver extends BroadcastReceiver {
             .setContentTitle(title == null || title.trim().isEmpty() ? "운동 진행 중" : title)
             .setContentText(detail == null || detail.trim().isEmpty() ? "운동을 종료하면 사라집니다." : detail)
             .setContentIntent(contentIntent(context))
-            .setCategory(Notification.CATEGORY_WORKOUT)
+            .setCategory(Notification.CATEGORY_PROGRESS)
             .setOngoing(true)
             .setAutoCancel(false)
             .setOnlyAlertOnce(true)

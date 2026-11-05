@@ -1235,10 +1235,18 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
         '<button type="button" class="x" data-ei="swap" data-i="' + i + '" aria-label="' + esc(it.ex) + ' 다른 운동으로 바꾸기">⇄</button><button type="button" class="x" data-ei="rm" data-i="' + i + '" aria-label="종목 빼기">×</button></div></div>' +
         '<div class="steps"><div class="mode-toggle"><button type="button" data-ei="mode-reps" data-i="' + i + '" aria-pressed="' + (!timeMode) + '">횟수 기준</button><button type="button" data-ei="mode-time" data-i="' + i + '" aria-pressed="' + timeMode + '">시간 기준</button></div>' +
         '<div class="stp"><span class="lbl">세트 수</span><button type="button" data-ei="sdec" data-i="' + i + '">−</button><b>' + (it.n || 3) + '</b><button type="button" data-ei="sinc" data-i="' + i + '">+</button></div>' +
-        (timeMode ? '<div class="duration-editor"><span class="lbl">1세트 목표 시간</span><button type="button" data-ei="tdec" data-i="' + i + '">−15초</button><b>' + mmss(it.durationSec || 60) + '</b><button type="button" data-ei="tinc" data-i="' + i + '">+15초</button></div>' :
+        (timeMode ? '<div class="duration-editor" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span class="lbl" style="width:100%">1세트 목표 시간 직접 입력</span><label style="display:flex;align-items:center;gap:4px"><input type="number" min="0" max="60" step="1" inputmode="numeric" data-ei-time="min" data-i="' + i + '" value="' + Math.floor((it.durationSec || 60) / 60) + '" style="width:68px;text-align:center">분</label><label style="display:flex;align-items:center;gap:4px"><input type="number" min="0" max="59" step="1" inputmode="numeric" data-ei-time="sec" data-i="' + i + '" value="' + ((it.durationSec || 60) % 60) + '" style="width:68px;text-align:center">초</label><span class="note">총 ' + mmss(it.durationSec || 60) + '</span></div>' :
         '<div class="stp"><span class="lbl">목표 횟수</span><button type="button" data-ei="rdec" data-i="' + i + '">−</button><b>' + (it.r || 10) + '</b><button type="button" data-ei="rinc" data-i="' + i + '">+</button></div>') + '</div></div>';
     }).join('');
   }
+  $('#edItems').addEventListener('change', function (e) {
+    var inp = e.target.closest('[data-ei-time]'); if (!inp) return;
+    var i = +inp.getAttribute('data-i'), it = ed.items[i]; if (!it) return;
+    var mins = Math.max(0, Math.min(60, +$('#edItems [data-ei-time="min"][data-i="' + i + '"]').value || 0));
+    var secs = Math.max(0, Math.min(59, +$('#edItems [data-ei-time="sec"][data-i="' + i + '"]').value || 0));
+    it.durationSec = Math.max(5, Math.min(3600, mins * 60 + secs));
+    renderEditor();
+  });
   $('#edItems').addEventListener('click', function (e) {
     var b = e.target.closest('[data-ei]'); if (!b || b.disabled) return;
     var a = b.getAttribute('data-ei'), i = +b.getAttribute('data-i'), it = ed.items[i]; if (!it) return;

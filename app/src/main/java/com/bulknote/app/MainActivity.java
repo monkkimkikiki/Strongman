@@ -20,11 +20,31 @@ import android.webkit.WebViewClient;
 import java.io.File;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import android.content.SharedPreferences;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
+import android.util.Base64;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
+import java.security.KeyStore;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class MainActivity extends Activity {
     private static final int CREATE_EXPORT = 702;
     private String pendingExportContent = "";
     private WebView web;
+    private final ExecutorService aiExecutor = Executors.newSingleThreadExecutor();
+    private static final String AI_PREFS = "bulknote_ai_secure";
+    private static final String AI_KEY_ALIAS = "BulkNoteGroqApiKeyV1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +87,78 @@ public class MainActivity extends Activity {
 
     private class Bridge {
         @JavascriptInterface public String ping() { return "BulkNote AndroidBridge OK"; }
+
+        private SecretKey getOrCreateAiKey() throws Exception {
+            KeyStore ks=KeyStore.getInstance("AndroidKeyStore"); ks.load(null);
+            if(ks.containsAlias(AI_KEY_ALIAS)) return (SecretKey)ks.getKey(AI_KEY_ALIAS,null);
+            KeyGenerator kg=KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES,"AndroidKeyStore");
+            kg.init(new KeyGenParameterSpec.Builder(AI_KEY_ALIAS,KeyProperties.PURPOSE_ENCRYPT|KeyProperties.PURPOSE_DECRYPT)
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM).setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE).setRandomizedEncryptionRequired(true).build());
+            return kg.generateKey();
+        }
+        private String readAiKey() throws Exception {
+            SharedPreferences p=getSharedPreferences(AI_PREFS,MODE_PRIVATE);
+            String ivText=p.getString("iv",null), dataText=p.getString("data",null);
+            if(ivText==null||dataText==null)return "";
+            Cipher c=Cipher.getInstance("AES/GCM/NoPadding");
+            c.init(Cipher.DECRYPT_MODE,getOrCreateAiKey(),new GCMParameterSpec(128,Base64.decode(ivText,Base64.NO_WRAP)));
+            return new String(c.doFinal(Base64.decode(dataText,Base64.NO_WRAP)),StandardCharsets.UTF_8);
+        }
+        @JavascriptInterface public void saveGroqApiKey(String key) {
+            if(key==null||!key.trim().startsWith("gsk_")||key.trim().length()<20)throw new IllegalArgumentException("Groq API 키 형식을 확인해 주세요.");
+            try {
+                Cipher c=Cipher.getInstance("AES/GCM/NoPadding"); c.init(Cipher.ENCRYPT_MODE,getOrCreateAiKey());
+                byte[] encrypted=c.doFinal(key.trim().getBytes(StandardCharsets.UTF_8));
+                getSharedPreferences(AI_PREFS,MODE_PRIVATE).edit()
+                    .putString("iv",Base64.encodeToString(c.getIV(),Base64.NO_WRAP))
+                    .putString("data",Base64.encodeToString(encrypted,Base64.NO_WRAP)).apply();
+            } catch(Exception e){throw new RuntimeException("암호화 저장 실패: "+e.getMessage());}
+        }
+        @JavascriptInterface public boolean hasGroqApiKey() {
+            try{return !readAiKey().isEmpty();}catch(Exception e){return false;}
+        }
+        @JavascriptInterface public void deleteGroqApiKey() {
+            getSharedPreferences(AI_PREFS,MODE_PRIVATE).edit().clear().apply();
+            try{KeyStore ks=KeyStore.getInstance("AndroidKeyStore");ks.load(null);if(ks.containsAlias(AI_KEY_ALIAS))ks.deleteEntry(AI_KEY_ALIAS);}catch(Exception ignored){}
+        }
+        @JavascriptInterface public void askGroq(final String requestId,final String question,final String context) {
+            aiExecutor.execute(() -> {
+                HttpURLConnection conn=null;
+                try {
+                    String key=readAiKey(); if(key.isEmpty())throw new Exception("API 키가 설정되지 않았어요.");
+                    URL url=new URL("https://api.groq.com/openai/v1/chat/completions");
+                    conn=(HttpURLConnection)url.openConnection(); conn.setRequestMethod("POST");
+                    conn.setConnectTimeout(10000); conn.setReadTimeout(25000); conn.setDoOutput(true);
+                    conn.setRequestProperty("Authorization","Bearer "+key); conn.setRequestProperty("Content-Type","application/json; charset=utf-8");
+                    JSONObject body=new JSONObject(); body.put("model","openai/gpt-oss-20b"); body.put("temperature",0.25); body.put("max_tokens",260); body.put("stream",false);
+                    JSONArray msgs=new JSONArray();
+                    msgs.put(new JSONObject().put("role","system").put("content","너는 한국어 근력운동·벌크업 코치다. 제공된 기록에 근거해 짧고 구체적으로 답한다. 기록에 없는 수치나 자세를 추측하지 않는다. 답변은 핵심부터 말하고 3~6문장 또는 짧은 목록으로 작성한다. 통증·부상·질환은 진단하지 말고 중단 및 전문가 상담을 안내한다. 과도한 중량 증가나 위험한 운동을 권하지 않는다."));
+                    String userText="기록 요약(JSON):\n"+(context==null?"{}":context)+"\n\n질문: "+(question==null?"":question);
+                    msgs.put(new JSONObject().put("role","user").put("content",userText)); body.put("messages",msgs);
+                    byte[] payload=body.toString().getBytes(StandardCharsets.UTF_8);
+                    conn.getOutputStream().write(payload); conn.getOutputStream().flush();
+                    int code=conn.getResponseCode(); InputStream stream=(code>=200&&code<300)?conn.getInputStream():conn.getErrorStream();
+                    ByteArrayOutputStream out=new ByteArrayOutputStream(); byte[] buf=new byte[4096]; int n;
+                    while(stream!=null&&(n=stream.read(buf))!=-1)out.write(buf,0,n);
+                    String raw=new String(out.toByteArray(),StandardCharsets.UTF_8);
+                    if(code<200||code>=300){
+                        String detail="HTTP "+code;
+                        try{detail=new JSONObject(raw).optJSONObject("error").optString("message",detail);}catch(Exception ignored){}
+                        if(code==429)detail="무료 사용 한도에 도달했어요. 잠시 기다렸다 다시 시도해 주세요.";
+                        throw new Exception(detail);
+                    }
+                    JSONObject result=new JSONObject(raw); String answer=result.getJSONArray("choices").getJSONObject(0).getJSONObject("message").optString("content","").trim();
+                    if(answer.isEmpty())throw new Exception("AI 응답이 비어 있어요.");
+                    notifyAiResult(requestId,true,answer);
+                } catch(Exception e){notifyAiResult(requestId,false,e.getMessage()==null?"네트워크 요청 실패":e.getMessage());}
+                finally{if(conn!=null)conn.disconnect();}
+            });
+        }
+        private void notifyAiResult(String id,boolean ok,String message){
+            if(web==null)return;
+            final String safeId=JSONObject.quote(id==null?"":id), safeMsg=JSONObject.quote(message==null?"":message);
+            runOnUiThread(() -> {if(web!=null)web.evaluateJavascript("window.onNativeAiResult&&window.onNativeAiResult("+safeId+","+ok+","+safeMsg+")",null);});
+        }
 
         @JavascriptInterface public boolean hasExactAlarmAccess() {
             if (Build.VERSION.SDK_INT < 31) return true;

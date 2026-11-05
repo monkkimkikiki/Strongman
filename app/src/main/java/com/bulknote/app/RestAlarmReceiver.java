@@ -94,7 +94,7 @@ public class RestAlarmReceiver extends BroadcastReceiver {
         if (nm == null || endAtMillis <= System.currentTimeMillis()) return;
         ensureChannels(context);
         Notification.Builder b = (Build.VERSION.SDK_INT >= 26
-            ? new Notification.Builder(context, WORKOUT_CHANNEL_ID)
+            ? new Notification.Builder(context, STATUS_CHANNEL_ID)
             : builder(context, false))
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentTitle("세트 휴식 중")
@@ -126,8 +126,6 @@ public class RestAlarmReceiver extends BroadcastReceiver {
             .setAutoCancel(false)
             .setOnlyAlertOnce(true)
             .setShowWhen(false);
-        if (Build.VERSION.SDK_INT >= 26) b.setSilent(true);
-        else b.setPriority(Notification.PRIORITY_LOW);
         nm.notify(WORKOUT_NOTIFICATION_ID, b.build());
     }
 

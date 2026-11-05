@@ -1644,6 +1644,36 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     h += renderAiCoach();
     box.innerHTML = h;
   }
+  function keepAiQuestionVisible() {
+    var input = $('#aiQuestion');
+    if (!input || document.activeElement !== input) return;
+    // Android WebView may resize its visual viewport after the keyboard animation.
+    [80, 220, 420].forEach(function (delay) {
+      setTimeout(function () {
+        if (!input.isConnected || document.activeElement !== input) return;
+        var rect = input.getBoundingClientRect();
+        var viewportBottom = window.innerHeight;
+        if (window.visualViewport) viewportBottom = Math.min(viewportBottom, window.visualViewport.height + window.visualViewport.offsetTop);
+        var safeBottom = viewportBottom - 14;
+        if (rect.bottom > safeBottom) window.scrollBy({ top: rect.bottom - safeBottom + 22, behavior: 'smooth' });
+        else if (rect.top < 12) window.scrollBy({ top: rect.top - 12, behavior: 'smooth' });
+        var messages = $('#aiMessages');
+        if (messages) messages.scrollTop = messages.scrollHeight;
+      }, delay);
+    });
+  }
+  $('#coachCard').addEventListener('focusin', function(e) {
+    if (e.target && e.target.id === 'aiQuestion') keepAiQuestionVisible();
+  });
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', function() {
+      if (document.activeElement && document.activeElement.id === 'aiQuestion') keepAiQuestionVisible();
+    });
+  }
+  window.addEventListener('resize', function() {
+    if (document.activeElement && document.activeElement.id === 'aiQuestion') keepAiQuestionVisible();
+  });
+
   $('#coachCard').addEventListener('submit', function(e){
     if(e.target.id!=='aiChatForm')return; e.preventDefault();
     var input=$('#aiQuestion'); if(input){var q=input.value; input.value=''; aiSend(q);}

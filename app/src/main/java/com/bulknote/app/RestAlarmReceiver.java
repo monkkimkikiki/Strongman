@@ -18,7 +18,9 @@ import android.os.VibratorManager;
 
 public class RestAlarmReceiver extends BroadcastReceiver {
     public static final String STATUS_CHANNEL_ID = "rest_timer_status_v4";
-    public static final String ALARM_CHANNEL_ID = "rest_timer_alarm_v4";
+    public static final String WORKOUT_CHANNEL_ID = "workout_session_status_v1";
+    public static final String ALARM_CHANNEL_ID = "rest_timer_alarm_v5";
+    public static final int WORKOUT_NOTIFICATION_ID = 4100;
     public static final int NOTIFICATION_ID = 4101;
 
     private static void ensureChannels(Context context) {
@@ -34,9 +36,16 @@ public class RestAlarmReceiver extends BroadcastReceiver {
         status.enableVibration(false);
         nm.createNotificationChannel(status);
 
+        NotificationChannel workout = new NotificationChannel(
+            WORKOUT_CHANNEL_ID, "운동 진행 상태", NotificationManager.IMPORTANCE_LOW);
+        workout.setDescription("운동 세트를 시작하면 운동을 종료할 때까지 상태를 표시합니다.");
+        workout.setSound(null, null);
+        workout.enableVibration(false);
+        nm.createNotificationChannel(workout);
+
         // Rest end: alarm sound. Vibration is triggered manually for a stronger pattern.
         NotificationChannel alarm = new NotificationChannel(
-            ALARM_CHANNEL_ID, "휴식 종료 알람", NotificationManager.IMPORTANCE_HIGH);
+            ALARM_CHANNEL_ID, "운동 및 휴식 종료 알람", NotificationManager.IMPORTANCE_HIGH);
         alarm.setDescription("휴식 시간이 끝나면 알람음과 강한 진동으로 알려줍니다.");
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         AudioAttributes attrs = new AudioAttributes.Builder()
@@ -97,6 +106,29 @@ public class RestAlarmReceiver extends BroadcastReceiver {
         nm.notify(NOTIFICATION_ID, b.build());
     }
 
+    /** Persistent, silent workout status. It is removed only when the workout is explicitly ended. */
+    public static void showWorkoutStatus(Context context, String title, String detail) {
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm == null) return;
+        Notification.Builder b = builder(context, false)
+            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setContentTitle(title == null || title.trim().isEmpty() ? "운동 진행 중" : title)
+            .setContentText(detail == null || detail.trim().isEmpty() ? "운동을 종료하면 사라집니다." : detail)
+            .setContentIntent(contentIntent(context))
+            .setCategory(Notification.CATEGORY_WORKOUT)
+            .setOngoing(true)
+            .setAutoCancel(false)
+            .setOnlyAlertOnce(true)
+            .setShowWhen(false);
+        if (Build.VERSION.SDK_INT >= 26) b.setSilent(true);
+        nm.notify(WORKOUT_NOTIFICATION_ID, b.build());
+    }
+
+    public static void stopWorkoutStatus(Context context) {
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm != null) nm.cancel(WORKOUT_NOTIFICATION_ID);
+    }
+
     @Override public void onReceive(Context context, Intent intent) {
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
@@ -111,7 +143,8 @@ public class RestAlarmReceiver extends BroadcastReceiver {
             .setOngoing(true)
             .setOnlyAlertOnce(false)
             .setCategory(Notification.CATEGORY_ALARM)
-            .setFullScreenIntent(alarmScreenIntent(context), true)
+            .setFullScreenIntent(alarmScreenIntent(context, exerciseTimer), true)
+            .setTicker(exerciseTimer ? "운동 시간 완료" : "휴식 종료")
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .setPriority(Notification.PRIORITY_MAX)
             .build();

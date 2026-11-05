@@ -18,8 +18,8 @@ import android.os.VibratorManager;
 
 public class RestAlarmReceiver extends BroadcastReceiver {
     public static final String STATUS_CHANNEL_ID = "rest_timer_status_v4";
-    public static final String WORKOUT_CHANNEL_ID = "workout_session_status_v1";
-    public static final String ALARM_CHANNEL_ID = "rest_timer_alarm_v5";
+    public static final String WORKOUT_CHANNEL_ID = "workout_session_status_v2";
+    public static final String ALARM_CHANNEL_ID = "rest_timer_alarm_v6";
     public static final int WORKOUT_NOTIFICATION_ID = 4100;
     public static final int NOTIFICATION_ID = 4101;
 
@@ -144,6 +144,9 @@ public class RestAlarmReceiver extends BroadcastReceiver {
             .setAutoCancel(false)
             .setOngoing(true)
             .setOnlyAlertOnce(false)
+            .setStyle(new Notification.BigTextStyle().bigText(exerciseTimer
+                ? "설정한 운동 시간이 끝났습니다. 알람을 확인하고 운동으로 돌아가세요."
+                : "휴식 시간이 끝났습니다. 다음 세트를 시작할 시간입니다."))
             .setCategory(Notification.CATEGORY_ALARM)
             .setFullScreenIntent(alarmScreenIntent(context, exerciseTimer), true)
             .setTicker(exerciseTimer ? "운동 시간 완료" : "휴식 종료")
@@ -199,12 +202,17 @@ public class RestAlarmReceiver extends BroadcastReceiver {
         }
     }
 
-    public static void cancel(Context context) {
+    /** Cancels only the scheduled alarm, preserving an alert that may already have fired. */
+    public static void cancelScheduled(Context context) {
         Intent intent = new Intent(context, RestAlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(context, NOTIFICATION_ID, intent,
             PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0));
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (am != null) am.cancel(pi);
+    }
+
+    public static void cancel(Context context) {
+        cancelScheduled(context);
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm != null) nm.cancel(NOTIFICATION_ID);
     }

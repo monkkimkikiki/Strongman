@@ -49,8 +49,9 @@ public class RestAlarmActivity extends Activity {
         icon.setGravity(Gravity.CENTER);
         root.addView(icon, new LinearLayout.LayoutParams(-1, -2));
 
+        boolean exerciseTimer = getIntent() != null && getIntent().getBooleanExtra("exercise_timer", false);
         TextView title = new TextView(this);
-        title.setText("휴식 종료");
+        title.setText(exerciseTimer ? "운동 시간 완료" : "휴식 종료");
         title.setTextColor(Color.WHITE);
         title.setTextSize(34);
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
@@ -60,7 +61,7 @@ public class RestAlarmActivity extends Activity {
         root.addView(title, titleLp);
 
         TextView desc = new TextView(this);
-        desc.setText("다음 세트를 시작할 시간입니다.");
+        desc.setText(exerciseTimer ? "설정한 운동 시간이 끝났습니다." : "다음 세트를 시작할 시간입니다.");
         desc.setTextColor(Color.LTGRAY);
         desc.setTextSize(17);
         desc.setGravity(Gravity.CENTER);

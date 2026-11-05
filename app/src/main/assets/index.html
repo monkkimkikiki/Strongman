@@ -297,6 +297,8 @@ svg.chart{display:block;max-width:100%}
 .mdel{height:36px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink2);font-size:13px;font-weight:500}
 .mdel:active{background:var(--surface2)}
 #toast button{white-space:nowrap;flex:none}
+.alarm-flash{position:fixed;z-index:120;top:calc(env(safe-area-inset-top,0px) + 18px);left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 32px);padding:12px 20px;border-radius:14px;background:#202733;color:#fff;font-size:15px;font-weight:700;text-align:center;box-shadow:0 8px 28px rgba(0,0,0,.25);pointer-events:none}
+.alarm-flash[hidden]{display:none}
 .meals b{font-family:var(--font-num);font-size:21px;font-weight:700;margin-right:1px}
 #qtyRow[hidden],.sug[hidden]{display:none}
 .sugwrap{position:relative}
@@ -575,6 +577,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
 </div>
 
 <div class="toast" id="toast" role="status" hidden></div>
+<div class="alarm-flash" id="alarmFlash" role="alert" hidden></div>
 <div class="tip" id="tip" hidden></div>
 
 <script>
@@ -735,6 +738,13 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     }
     el.hidden = false; clearTimeout(toastT); toastT = setTimeout(hideToast, undo ? 5000 : 2600);
   }
+  var alarmFlashTimer;
+  function alarmFlash(message) {
+    var el = $('#alarmFlash'); if (!el) return;
+    el.textContent = message; el.hidden = false;
+    clearTimeout(alarmFlashTimer);
+    alarmFlashTimer = setTimeout(function () { el.hidden = true; }, 1500);
+  }
   var tip = $('#tip');
   function hideTip() { tip.hidden = true; }
   function showTip(el) {
@@ -762,9 +772,14 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   function saveT() { try { localStorage.setItem(TK, JSON.stringify(T)); } catch (e) {} }
   function scheduleRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.scheduleRestNotification && T.phase === 'rest') AndroidBridge.scheduleRestNotification(T.restEnd); } catch (e) {} }
   function scheduleExerciseAlarm() { try { if (window.AndroidBridge && AndroidBridge.scheduleExerciseNotification && T.phase === 'set' && T.targetSec) AndroidBridge.scheduleExerciseNotification(T.start + T.targetSec * 1000); } catch (e) {} }
+  function updateWorkoutStatus(title, detail) { try { if (window.AndroidBridge && AndroidBridge.showWorkoutStatus) AndroidBridge.showWorkoutStatus(title || '운동 진행 중', detail || '운동을 종료하면 사라집니다.'); } catch (e) {} }
+  function stopWorkoutStatus() { try { if (window.AndroidBridge && AndroidBridge.stopWorkoutStatus) AndroidBridge.stopWorkoutStatus(); } catch (e) {} }
   window.rearmRestAlarmAfterResume = function () {
     if (T.phase === 'rest' && T.restEnd > Date.now()) scheduleRestAlarm();
     if (T.phase === 'set' && T.targetSec && T.start + T.targetSec * 1000 > Date.now()) scheduleExerciseAlarm();
+    if (T.phase === 'set') updateWorkoutStatus(T.label || '운동 진행 중', T.targetSec ? '시간 운동 진행 중' : '세트 진행 중');
+    else if (T.phase === 'rest') updateWorkoutStatus('휴식 중', '다음 세트를 준비하세요');
+    else if (T.phase === 'done') updateWorkoutStatus('운동 진행 중', '다음 세트를 시작하세요');
   };
   function cancelRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.cancelRestNotification) AndroidBridge.cancelRestNotification(); } catch (e) {} }
   var wl = null;
@@ -777,8 +792,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     try { if (window.AndroidBridge && window.AndroidBridge.vibrateShort) window.AndroidBridge.vibrateShort(); else if (navigator.vibrate) navigator.vibrate(110); } catch (e) {}
   }
   var mmss = function (sec) { sec = Math.max(0, sec); return pad(Math.floor(sec / 60)) + ':' + pad(Math.floor(sec % 60)); };
-  function startRest(sec, tip) { T = { phase: 'rest', restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '' }; saveT(); scheduleRestAlarm(); lockOn(); tick(); }
-  function finishRest() { T = { phase: 'done', tip: T.tip || '' }; saveT(); cancelRestAlarm(); lockOff(); beep(); toast('휴식이 끝났어요. 위젯의 닫기를 누르면 사라져요'); tick(); }
+  function startRest(sec, tip) { T = { phase: 'rest', restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '' }; saveT(); scheduleRestAlarm(); updateWorkoutStatus('휴식 중', '다음 세트를 준비하세요'); lockOn(); tick(); }
+  function finishRest() { T = { phase: 'done', tip: T.tip || '' }; saveT(); cancelRestAlarm(); updateWorkoutStatus('운동 진행 중', '다음 세트를 시작하세요'); lockOff(); beep(); alarmFlash('휴식 종료'); toast('휴식이 끝났어요. 위젯의 닫기를 누르면 사라져요'); tick(); }
   function showTip(txt) { var el = $('#rbTip'), v = txt || ''; if (el.textContent !== v) el.textContent = v; el.hidden = !v; }
   function tick() {
     var now = Date.now(), bar = $('#restbar'), vis = T.phase !== 'idle';
@@ -789,6 +804,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       dg.textContent = mmss(T.targetSec ? remaining : sec); dg.className = 'rb-digits run' + (T.targetSec && remaining <= 10 ? ' low' : '');
       if (T.targetSec && remaining <= 0 && !T.alerted) {
         T.alerted = true; saveT();
+        alarmFlash('운동 시간 완료');
+        updateWorkoutStatus(T.label || '운동 진행 중', '목표 시간 완료 · 세트 완료를 체크하세요');
         if (!(window.AndroidBridge && AndroidBridge.scheduleExerciseNotification)) beep();
       }
       $('#rbMinus').hidden = true; $('#rbPlus').hidden = true; $('#rbSkip').textContent = '취소';
@@ -869,6 +886,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     if (!window.confirm(msg)) return;
     if (T.phase !== 'idle') { T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); tick(); }
     if (mutate(dt, function (dd) { dd.workoutEndedAt = Date.now(); })) {
+      stopWorkoutStatus();
       coachUI.dayKey = dt; coachUI.day = true; renderCoach();
       toast('오늘 운동을 종료했어요. 운동 평가를 확인해 보세요');
       var box = $('#coachCard'); if (box) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -985,7 +1003,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     prepAudio();
     var g = groupsOf(getDay(selDate)).filter(function (x) { return x.key === normEx(st.ex); })[0], idx = g ? g.sets.indexOf(st) + 1 : 1;
     var cue = cueFor(st.ex, st.m);
-    T = { phase: 'set', setId: id, start: Date.now(), targetSec: st.mode === 'time' ? (st.targetSec || 60) : null, alerted: false, label: st.ex + ' ' + idx + '세트', tip: '지금 · ' + (idx === 1 ? cue.k : cue.t[(idx - 1) % cue.t.length]) }; saveT(); if (T.targetSec) scheduleExerciseAlarm(); lockOn(); renderLog(); tick();
+    T = { phase: 'set', setId: id, start: Date.now(), targetSec: st.mode === 'time' ? (st.targetSec || 60) : null, alerted: false, label: st.ex + ' ' + idx + '세트', tip: '지금 · ' + (idx === 1 ? cue.k : cue.t[(idx - 1) % cue.t.length]) }; saveT(); updateWorkoutStatus(T.label, T.targetSec ? '시간 운동 진행 중' : '세트 진행 중'); if (T.targetSec) scheduleExerciseAlarm(); lockOn(); renderLog(); tick();
   }
   function setField(id, f, raw) {
     var s = findSet(id); if (!s) return;

@@ -6,7 +6,7 @@
 :root{
   --bg:#F1F4F6; --surface:#FFFFFF; --surface2:#E7ECEF; --line:#D6DDE1;
   --ink:#10171C; --ink2:#44535C; --ink3:#5B6A73;
-  --accent:#1D4FD7; --accent-ink:#FFFFFF; --accent-wash:#DCE5FB; --star:#B7791F;
+  --accent:#707985; --accent-ink:#FFFFFF; --accent-wash:#E5E7EB; --star:#B7791F;
   --warn:#A8520A; --warn-wash:#FBE9D6; --good:#13763F; --good-wash:#D7F0E1; --danger:#B3261E;
   --font-body:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',system-ui,sans-serif;
   --font-num:'Barlow Condensed','Arial Narrow','Apple SD Gothic Neo',sans-serif;
@@ -15,7 +15,7 @@
   :root:not([data-theme="light"]){
     --bg:#0D1215; --surface:#151C20; --surface2:#1E282D; --line:#2A353B;
     --ink:#E9EEF0; --ink2:#B2BEC4; --ink3:#8E9EA6;
-    --accent:#6F95FF; --accent-ink:#0A1226; --accent-wash:#1B2A4F; --star:#F0B429;
+    --accent:#AEB7C2; --accent-ink:#111827; --accent-wash:#303944; --star:#F0B429;
     --warn:#F2A65A; --warn-wash:#3A2814; --good:#55C48B; --good-wash:#12301F; --danger:#F2837D;
     color-scheme:dark;
   }
@@ -151,6 +151,27 @@ textarea{width:100%;min-height:92px;border-radius:10px;border:1px solid var(--li
 .coach-btns{display:flex;gap:8px;margin:10px 0 2px;flex-wrap:wrap}
 .coach-btns .mini[aria-expanded="true"]{background:var(--accent-wash);border-color:var(--accent);color:var(--accent)}
 .rb-tip{flex:1 0 100%;font-size:12px;line-height:1.4;color:var(--ink2);border-top:1px solid var(--line);padding-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+
+/* AI coach · restrained silver/charcoal */
+.ai-coach{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.ai-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.ai-title{font-weight:600;font-size:14px}
+.ai-status{font-size:11px;color:var(--ink3);background:var(--surface2);border-radius:999px;padding:3px 8px}
+.ai-actions{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px}
+.ai-actions .mini{background:var(--surface2);border-color:var(--line)}
+.ai-messages{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;margin:8px 0}
+.ai-msg{max-width:94%;padding:9px 11px;border-radius:12px;font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.ai-msg.user{align-self:flex-end;background:var(--accent-wash);color:var(--ink)}
+.ai-msg.assistant{align-self:flex-start;background:var(--surface2);color:var(--ink)}
+.ai-chat-form{display:flex;gap:7px;align-items:center}
+.ai-chat-form input{flex:1;min-width:0;height:42px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:0 11px;font-size:14px}
+.ai-chat-form button{height:42px;min-width:64px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--accent);color:var(--accent-ink);font-weight:600}
+.ai-chat-form button:disabled{opacity:.5}
+.ai-settings-key{font-family:monospace;letter-spacing:.03em}
+.ai-settings-row{display:flex;gap:8px}
+.ai-settings-row input{flex:1;min-width:0}
+.ai-settings-row .btn{width:auto;flex:none}
 
 /* floating timer */
 .restbar{position:fixed;z-index:25;left:0;right:0;bottom:calc(66px + env(safe-area-inset-bottom, 0px));padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));display:flex;justify-content:center;pointer-events:none}
@@ -394,6 +415,15 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     </section>
 
     <section id="tab-set" class="tab" aria-label="설정" hidden>
+      <div class="card form" id="aiSettingsCard">
+        <h2>AI 코치 연결</h2>
+        <p class="note">Groq 무료 API를 연결하면 운동 기록을 바탕으로 질문 답변과 운동 총평을 받을 수 있어요. 운동 기록은 평소처럼 기기에 저장되고, AI 요청을 보낼 때 요약된 기록만 Groq로 전송됩니다.</p>
+        <div class="field"><label class="lbl" for="groqKey">Groq API 키</label><input type="password" id="groqKey" class="ai-settings-key" placeholder="gsk_..." autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+        <div class="ai-settings-row"><button type="button" class="btn primary" id="groqSave">키 저장</button><button type="button" class="btn" id="groqDelete">삭제</button></div>
+        <div class="row"><button type="button" class="btn" id="groqTest">연결 테스트</button><button type="button" class="btn" id="groqGetKey">무료 API 키 발급</button></div>
+        <p class="note" id="groqStatus" aria-live="polite">API 키를 저장하면 AI 코치를 사용할 수 있어요.</p>
+        <p class="note">키는 앱 내부의 Android Keystore로 암호화해 이 기기에만 저장합니다. 무료 이용량과 모델 제한은 Groq 계정별로 달라질 수 있어요.</p>
+      </div>
       <form class="card form" id="goalForm" novalidate>
         <h2>목표</h2>
         <div class="grid2">
@@ -1502,6 +1532,42 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   }
 
   var coachUI = { dayKey: '', day: null, weekKey: '', week: null };
+  var aiState = { busy: false, messages: [] }, aiPending = {};
+  function aiContext() {
+    var dates = Object.keys(S.days).filter(function(d){ return !S.days[d].sample && d <= selDate; }).sort().slice(-7);
+    var rows = dates.map(function(ds) {
+      var d = S.days[ds], done = (d.sets || []).filter(isDone);
+      var by = {};
+      done.forEach(function(s){ var k=s.ex||'기타'; if(!by[k]) by[k]={sets:0,volume:0,details:[]}; by[k].sets++; by[k].volume+=(Number(s.w)||0)*(Number(s.r)||0); if(by[k].details.length<4) by[k].details.push((s.w||0)+'kg×'+(s.r||0)); });
+      return {date:ds, workout:(d.sets||[]).length?{completedSets:done.length, exercises:Object.keys(by).map(function(k){return {name:k,sets:by[k].sets,volume:Math.round(by[k].volume),examples:by[k].details};})}:null, weight:d.weight, meals:(d.meals||[]).map(function(m){return {name:m.name,kcal:m.kcal,protein:m.protein};})};
+    });
+    return JSON.stringify({selectedDate:selDate, recentDays:rows});
+  }
+  function renderAiCoach() {
+    var messages=aiState.messages.slice(-8).map(function(m){return '<div class="ai-msg '+m.role+'">'+esc(m.text)+'</div>';}).join('');
+    return '<div class="ai-coach"><div class="ai-head"><span class="ai-title">AI 트레이닝 코치</span><span class="ai-status">'+(aiState.busy?'답변 생성 중…':(window.AndroidBridge&&window.AndroidBridge.hasGroqApiKey&&window.AndroidBridge.hasGroqApiKey()?'Groq 연결됨':'키 설정 필요'))+'</span></div>'+
+      '<div class="ai-actions"><button type="button" class="mini" data-ai-action="summary">오늘 운동 AI 총평</button><button type="button" class="mini" data-ai-action="set">방금 한 세트 분석</button></div>'+
+      '<div class="ai-messages" id="aiMessages">'+messages+'</div>'+
+      '<form class="ai-chat-form" id="aiChatForm"><input id="aiQuestion" type="text" maxlength="500" placeholder="운동이나 식단에 대해 질문하기" autocomplete="off"><button type="submit" '+(aiState.busy?'disabled':'')+'>보내기</button></form>'+
+      '<p class="note" style="margin-top:7px">AI 응답에는 인터넷 연결이 필요해요. 기록 입력과 기존 자동 피드백은 오프라인에서도 계속 작동합니다.</p></div>';
+  }
+  function aiSend(question) {
+    question=String(question||'').trim(); if(!question||aiState.busy)return;
+    if(!window.AndroidBridge||!window.AndroidBridge.askGroq){aiState.messages.push({role:'assistant',text:'설치된 앱에서만 AI 연결을 사용할 수 있어요.'});renderCoach();return;}
+    if(!window.AndroidBridge.hasGroqApiKey()){aiState.messages.push({role:'assistant',text:'먼저 설정 탭에서 Groq API 키를 저장해 주세요.'});renderCoach();return;}
+    aiState.messages.push({role:'user',text:question}); aiState.busy=true; renderCoach();
+    var id='ai_'+Date.now()+'_'+Math.floor(Math.random()*100000);
+    var history=aiState.messages.slice(-7).map(function(m){return (m.role==='user'?'사용자: ':'코치: ')+m.text;}).join('\n');
+    aiPending[id]=true;
+    try { window.AndroidBridge.askGroq(id,question,aiContext()+'\n\n최근 대화:\n'+history); }
+    catch(e){ delete aiPending[id]; aiState.busy=false; aiState.messages.push({role:'assistant',text:'AI 요청을 시작하지 못했어요. 앱을 다시 실행해 주세요.'}); renderCoach(); }
+  }
+  window.onNativeAiResult=function(id,ok,message){
+    if(!aiPending[id])return; delete aiPending[id]; aiState.busy=false;
+    aiState.messages.push({role:'assistant',text:String(message|| (ok?'답변이 비어 있어요.':'요청에 실패했어요.'))});
+    renderCoach();
+    var box=$('#aiMessages'); if(box)box.scrollTop=box.scrollHeight;
+  };
   function fbHtml(items) {
     return '<ul class="fb">' + items.map(function (i) { return '<li class="' + i.tone + '"><span class="ic" aria-hidden="true">' + (i.tone === 'good' ? '✓' : i.tone === 'warn' ? '!' : '·') + '</span><span>' + esc(i.text) + '</span></li>'; }).join('') + '</ul>';
   }
@@ -1534,9 +1600,25 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       h += '<div class="cb"><div class="cbh">' + fmtShort(ws) + ' – ' + fmtShort(addDays(ws, 6)) + ' 주간 총평' + (ws <= t0 && t0 <= addDays(ws, 6) && !sunday ? ' (진행 중)' : '') + '</div>' + fbHtml(wr.items) +
         (wr.next.length ? '<div class="cbh" style="margin-top:10px">다음 주 제안</div>' + fbHtml(wr.next.map(function (x) { return fb('info', x); })) : '') + '</div>';
     }
+    h += renderAiCoach();
     box.innerHTML = h;
   }
-  $('#coachCard').addEventListener('click', function (e) {
+  $('#coachCard').addEventListener('submit', function(e){
+    if(e.target.id!=='aiChatForm')return; e.preventDefault();
+    var input=$('#aiQuestion'); if(input){var q=input.value; input.value=''; aiSend(q);}
+  });
+  $('#coachCard').addEventListener('click', function(e){
+    var ai=e.target.closest('[data-ai-action]');
+    if(ai){
+      var kind=ai.getAttribute('data-ai-action'), d=getDay(selDate);
+      if(kind==='summary') aiSend('선택한 날짜의 운동 기록을 분석해 총평해줘. 잘한 점 2개, 개선점 2개, 다음 운동에서 실행할 구체적인 목표를 알려줘.');
+      else {
+        var last=null; (d.sets||[]).forEach(function(s){if(isDone(s)&&(!last||s.t>last.t))last=s;});
+        aiSend(last?'방금 완료한 '+last.ex+' 세트('+last.w+'kg × '+last.r+'회)를 분석하고 다음 세트에서 조정할 점을 알려줘.':'아직 완료한 세트가 없어요. 현재 운동 계획을 보고 시작할 때 주의할 점을 알려줘.');
+      }
+      return;
+    }
+    var b = e.target.closest('[data-coach]'); if (!b) return;
     var b = e.target.closest('[data-coach]'); if (!b) return;
     var ws = weekStart(selDate);
     if (b.getAttribute('data-coach') === 'day') { coachUI.dayKey = selDate; coachUI.day = b.getAttribute('aria-expanded') !== 'true'; }
@@ -1843,6 +1925,9 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   }
   function renderSettings() {
     fillSettings(); renderStoreNote();
+    var keyStatus=$('#groqStatus');
+    if(keyStatus) keyStatus.textContent=(window.AndroidBridge&&window.AndroidBridge.hasGroqApiKey&&window.AndroidBridge.hasGroqApiKey())?'API 키가 이 기기에 안전하게 저장되어 있어요.':'API 키를 저장하면 AI 코치를 사용할 수 있어요.';
+    $('#groqKey').value='';
     $('#bkShare').hidden = !(window.AndroidBridge && window.AndroidBridge.share);
     $('#appCard').hidden = !IS_APP;
     if (IS_APP) $('#appNote').textContent = '설치된 버전: 빌드 #' + BUILD + '. 새 버전이 나오면 아래 버튼으로 받아 설치하세요. 같은 앱 위에 덮어 설치되고 기록과 설정은 그대로 유지돼요. (GitHub 로그인이 필요할 수 있어요)';
@@ -1859,6 +1944,28 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     });
   });
   $('#goalForm').addEventListener('submit', function (e) { e.preventDefault(); });
+  $('#groqSave').addEventListener('click',function(){
+    var key=$('#groqKey').value.trim();
+    if(!key){$('#groqStatus').textContent='API 키를 입력해 주세요.';return;}
+    if(!window.AndroidBridge||!window.AndroidBridge.saveGroqApiKey){$('#groqStatus').textContent='설치된 앱에서만 키를 저장할 수 있어요.';return;}
+    try{window.AndroidBridge.saveGroqApiKey(key);$('#groqKey').value='';$('#groqStatus').textContent='API 키를 암호화해 이 기기에 저장했어요.';toast('Groq API 키 저장 완료');}catch(e){$('#groqStatus').textContent='저장 실패: '+e.message;}
+  });
+  $('#groqDelete').addEventListener('click',function(){
+    if(window.AndroidBridge&&window.AndroidBridge.deleteGroqApiKey)window.AndroidBridge.deleteGroqApiKey();
+    $('#groqKey').value='';$('#groqStatus').textContent='저장된 API 키를 삭제했어요.';toast('API 키 삭제 완료');
+  });
+  $('#groqGetKey').addEventListener('click',function(){openExternal('https://console.groq.com/keys');});
+  $('#groqTest').addEventListener('click',function(){
+    if(!window.AndroidBridge||!window.AndroidBridge.hasGroqApiKey||!window.AndroidBridge.hasGroqApiKey()){ $('#groqStatus').textContent='먼저 API 키를 저장해 주세요.';return;}
+    $('#groqStatus').textContent='연결 확인 중…';
+    var id='test_'+Date.now(); aiPending[id]='test';
+    window.AndroidBridge.askGroq(id,'한 문장으로 한국어 인사와 연결 상태만 알려줘.','테스트 요청입니다.');
+  });
+  var priorAiResult=window.onNativeAiResult;
+  window.onNativeAiResult=function(id,ok,message){
+    if(aiPending[id]==='test'){delete aiPending[id];$('#groqStatus').textContent=ok?'연결 성공! Groq AI 코치를 사용할 수 있어요.':'연결 실패: '+message;return;}
+    if(priorAiResult)priorAiResult(id,ok,message);
+  };
   $('#calcProt').addEventListener('click', function () {
     var w = latestWeight(); if (w == null) return;
     S.settings.protein = Math.round(w * 1.8); persistSettings(); fillSettings(); toast('단백질 목표를 ' + S.settings.protein + 'g으로 정했어요');

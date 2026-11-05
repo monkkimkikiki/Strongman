@@ -796,9 +796,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   function startRest(sec, tip) { T = { phase: 'rest', restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '' }; saveT(); scheduleRestAlarm(); updateWorkoutStatus('휴식 중', '다음 세트를 준비하세요'); lockOn(); tick(); }
   function finishRest() {
     T = { phase: 'done', tip: T.tip || '' }; saveT();
-    // Do not cancel the alarm notification here: the native receiver may be posting it
-    // at this exact moment. Cancel only a still-pending alarm to avoid a delayed duplicate.
-    cancelScheduledRestAlarm();
+    // Keep the native alarm notification: cancelling here can race the receiver
+    // and remove the alert immediately after it is posted.
     updateWorkoutStatus('운동 진행 중', '다음 세트를 시작하세요');
     lockOff(); beep(); alarmFlash('휴식 종료'); toast('휴식이 끝났어요. 위젯의 닫기를 누르면 사라져요'); tick();
   }
@@ -1008,6 +1007,9 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   }
   function startSetTimer(id) {
     var st = findSet(id); if (!st) return;
+    // Clear a delayed, no-longer-relevant countdown when the next set begins,
+    // without dismissing an alarm notification that has already fired.
+    cancelScheduledRestAlarm();
     prepAudio();
     var g = groupsOf(getDay(selDate)).filter(function (x) { return x.key === normEx(st.ex); })[0], idx = g ? g.sets.indexOf(st) + 1 : 1;
     var cue = cueFor(st.ex, st.m);

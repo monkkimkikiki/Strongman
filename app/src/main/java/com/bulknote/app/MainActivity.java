@@ -180,8 +180,16 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface public void scheduleRestNotification(final long endAtMillis) {
+            scheduleWorkoutNotification(endAtMillis, false);
+        }
+
+        @JavascriptInterface public void scheduleExerciseNotification(final long endAtMillis) {
+            scheduleWorkoutNotification(endAtMillis, true);
+        }
+
+        private void scheduleWorkoutNotification(final long endAtMillis, final boolean exerciseTimer) {
             if (endAtMillis > System.currentTimeMillis()) {
-                RestAlarmReceiver.schedule(MainActivity.this, endAtMillis);
+                RestAlarmReceiver.schedule(MainActivity.this, endAtMillis, exerciseTimer);
                 if (Build.VERSION.SDK_INT >= 31) {
                     AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
                     // Never silently rely on an inexact Doze-delayed alarm. Ask again on

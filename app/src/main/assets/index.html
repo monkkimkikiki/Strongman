@@ -1176,7 +1176,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     else if (t.hasAttribute('data-play')) startSetTimer(t.getAttribute('data-play'));
     else if (t.hasAttribute('data-sadd')) addSetTo(t.getAttribute('data-sadd'));
     else if (t.hasAttribute('data-sdel')) delLastSet(t.getAttribute('data-sdel'));
-    else if (t.hasAttribute('data-exdel')) delExercise(t.getAttribute('data-exdel'));\n    else if (t.hasAttribute('data-exmode')) toggleWorkoutExerciseMode(t.getAttribute('data-exmode'));
+    else if (t.hasAttribute('data-exdel')) delExercise(t.getAttribute('data-exdel'));
+    else if (t.hasAttribute('data-exmode')) toggleWorkoutExerciseMode(t.getAttribute('data-exmode'));
     else if (t.hasAttribute('data-exswap')) openPicker('swap-workout', t.getAttribute('data-exswap'));
     else if (t.hasAttribute('data-rst')) changeRest(t.getAttribute('data-key'), t.getAttribute('data-rst'));
   });
@@ -2394,7 +2395,8 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     else if (act === 'rt-dup') dupRoutine(id);
     else if (act === 'rt-del') deleteRoutine(id);
     else if (act === 'lib-open') openPicker('browse');
-    else if (act === 'wo-add') openPicker('workout');\n    else if (act === 'wo-time-open') { $('#wtName').value = '러닝'; $('#wtSets').value = '1'; $('#wtMinutes').value = '10'; $('#wtSeconds').value = '0'; sheetOpen($('#workoutTimeAdd')); $('#wtName').focus(); }
+    else if (act === 'wo-add') openPicker('workout');
+    else if (act === 'wo-time-open') { $('#wtName').value = '러닝'; $('#wtSets').value = '1'; $('#wtMinutes').value = '10'; $('#wtSeconds').value = '0'; sheetOpen($('#workoutTimeAdd')); $('#wtName').focus(); }
     else if (act === 'wo-time-cancel') sheetClose($('#workoutTimeAdd'));
     else if (act === 'wo-time-add') { var nm = $('#wtName').value.trim(), sn = Math.max(1, Math.min(10, +$('#wtSets').value || 1)), mins = Math.max(0, Math.min(60, +$('#wtMinutes').value || 0)), secs = Math.max(0, Math.min(59, +$('#wtSeconds').value || 0)), duration = Math.max(5, Math.min(3600, mins * 60 + secs)); if (!nm) { toast('운동 이름을 입력해 주세요'); $('#wtName').focus(); return; } if (getDay(selDate).sets.some(function(x){ return normEx(x.ex) === normEx(nm); })) { toast('오늘 운동에 이미 있는 운동이에요'); return; } var libItem = libFind(nm), muscle = libItem ? libItem.m : '하체'; if (mutate(selDate, function(dd){ makeSetsFor({ex:nm,m:muscle,n:sn,mode:'time',durationSec:duration},selDate).forEach(function(x){dd.sets.push(x);}); })) { sheetClose($('#workoutTimeAdd')); renderLog(); toast(nm + ' 시간 운동을 추가했어요'); } }
     else if (act === 'wo-finish') finishWorkout();

@@ -782,6 +782,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     else if (T.phase === 'done') updateWorkoutStatus('운동 진행 중', '다음 세트를 시작하세요');
   };
   function cancelRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.cancelRestNotification) AndroidBridge.cancelRestNotification(); } catch (e) {} }
+  function cancelScheduledRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.cancelScheduledRestAlarm) AndroidBridge.cancelScheduledRestAlarm(); } catch (e) {} }
   var wl = null;
   function lockOn() { try { if (navigator.wakeLock && !wl) { navigator.wakeLock.request('screen').then(function (l) { wl = l; l.addEventListener('release', function () { wl = null; }); }).catch(function () {}); } } catch (e) {} }
   function lockOff() { try { if (wl) wl.release(); } catch (e) {} wl = null; }
@@ -793,7 +794,14 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   }
   var mmss = function (sec) { sec = Math.max(0, sec); return pad(Math.floor(sec / 60)) + ':' + pad(Math.floor(sec % 60)); };
   function startRest(sec, tip) { T = { phase: 'rest', restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '' }; saveT(); scheduleRestAlarm(); updateWorkoutStatus('휴식 중', '다음 세트를 준비하세요'); lockOn(); tick(); }
-  function finishRest() { T = { phase: 'done', tip: T.tip || '' }; saveT(); cancelRestAlarm(); updateWorkoutStatus('운동 진행 중', '다음 세트를 시작하세요'); lockOff(); beep(); alarmFlash('휴식 종료'); toast('휴식이 끝났어요. 위젯의 닫기를 누르면 사라져요'); tick(); }
+  function finishRest() {
+    T = { phase: 'done', tip: T.tip || '' }; saveT();
+    // Do not cancel the alarm notification here: the native receiver may be posting it
+    // at this exact moment. Cancel only a still-pending alarm to avoid a delayed duplicate.
+    cancelScheduledRestAlarm();
+    updateWorkoutStatus('운동 진행 중', '다음 세트를 시작하세요');
+    lockOff(); beep(); alarmFlash('휴식 종료'); toast('휴식이 끝났어요. 위젯의 닫기를 누르면 사라져요'); tick();
+  }
   function showTip(txt) { var el = $('#rbTip'), v = txt || ''; if (el.textContent !== v) el.textContent = v; el.hidden = !v; }
   function tick() {
     var now = Date.now(), bar = $('#restbar'), vis = T.phase !== 'idle';

@@ -507,7 +507,17 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     <p class="note">종목 왼쪽 손잡이를 끌어서 순서를 바꿀 수 있어요.</p>
     <div class="tab" id="edItems"></div>
     <div class="msg" id="edMsg" role="alert"></div>
-    <button type="button" class="btn" data-act="ed-add">종목 추가</button>
+    <div class="row"><button type="button" class="btn" data-act="ed-add">종목 추가</button><button type="button" class="btn" data-act="ed-time-open">시간 운동 추가</button></div>
+    <div class="card" id="edTimeQuick" hidden style="margin-top:10px">
+      <h3 style="margin-bottom:10px">시간 운동 직접 추가</h3>
+      <div class="field"><label class="lbl" for="tqName">운동 이름</label><input type="text" id="tqName" maxlength="30" value="러닝" placeholder="예: 러닝, 플랭크"></div>
+      <div class="grid2" style="margin-top:10px">
+        <div class="field"><label class="lbl" for="tqSets">세트 수</label><input type="number" id="tqSets" min="1" max="10" value="1"></div>
+        <div class="field"><label class="lbl" for="tqMinutes">1세트 시간(분)</label><input type="number" id="tqMinutes" min="1" max="60" value="10"></div>
+      </div>
+      <p class="note" style="margin:8px 0">추가 후 운동 카드에서 초 단위로도 조절할 수 있어요.</p>
+      <div class="row"><button type="button" class="btn" data-act="ed-time-cancel">취소</button><button type="button" class="btn primary" data-act="ed-time-add">시간 운동 추가하기</button></div>
+    </div>
   </div>
 </div>
 
@@ -2339,6 +2349,16 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     else if (act === 'ed-close') sheetClose($('#editor'));
     else if (act === 'ed-save') saveEditor();
     else if (act === 'ed-add') openPicker('routine');
+    else if (act === 'ed-time-open') { $('#edTimeQuick').hidden = false; $('#tqName').focus(); }
+    else if (act === 'ed-time-cancel') $('#edTimeQuick').hidden = true;
+    else if (act === 'ed-time-add') {
+      var nm = $('#tqName').value.trim(), sn = Math.max(1, Math.min(10, +$('#tqSets').value || 1)), mins = Math.max(1, Math.min(60, +$('#tqMinutes').value || 10));
+      if (!nm) { toast('운동 이름을 입력해 주세요'); $('#tqName').focus(); return; }
+      if (ed.items.some(function(x){ return normEx(x.ex) === normEx(nm); })) { toast('이미 루틴에 있는 운동이에요'); return; }
+      ed.items.push({ ex: nm, m: '복근', n: sn, r: 0, mode: 'time', durationSec: mins * 60 });
+      $('#edTimeQuick').hidden = true; renderEditor();
+      toast(nm + ' 시간 운동을 추가했어요');
+    }
     else if (act === 'pk-close') sheetClose($('#picker'));
     else if (act === 'pk-done') pkDone();
     else if (act === 'pk-custom') pkCustom();

@@ -113,6 +113,7 @@ public class RestAlarmReceiver extends BroadcastReceiver {
     public static void showWorkoutStatus(Context context, String title, String detail) {
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
+        ensureChannels(context);
         Notification.Builder b = Build.VERSION.SDK_INT >= 26
             ? new Notification.Builder(context, WORKOUT_CHANNEL_ID)
             : builder(context, false);

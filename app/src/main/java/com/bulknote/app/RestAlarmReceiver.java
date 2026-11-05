@@ -92,7 +92,10 @@ public class RestAlarmReceiver extends BroadcastReceiver {
     public static void showCountdown(Context context, long endAtMillis) {
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null || endAtMillis <= System.currentTimeMillis()) return;
-        Notification.Builder b = builder(context, false)
+        ensureChannels(context);
+        Notification.Builder b = (Build.VERSION.SDK_INT >= 26
+            ? new Notification.Builder(context, WORKOUT_CHANNEL_ID)
+            : builder(context, false))
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentTitle("세트 휴식 중")
             .setContentText("다음 세트까지 남은 시간")

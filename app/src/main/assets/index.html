@@ -779,6 +779,23 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     } catch (e) {}
     return { phase: 'idle' };
   })();
+  // Migrate an in-progress session from versions that predate the floating return button.
+  if (T.phase !== 'idle' && !workoutNav.active) {
+    workoutNav.active = true;
+    var migrationDay = S.days[today()], migrationSet = null;
+    if (migrationDay && migrationDay.sets) {
+      if (T.exerciseKey) workoutNav.exercise = T.exerciseKey;
+      else if (T.setId) { migrationSet = migrationDay.sets.filter(function (x) { return x.id === T.setId; })[0]; }
+      if (!workoutNav.exercise && migrationSet) workoutNav.exercise = normEx(migrationSet.ex);
+      if (!workoutNav.exercise && (T.phase === 'rest' || T.phase === 'done')) {
+        migrationDay.sets.filter(function (x) { return x.done; }).sort(function (a, b) { return (b.t || 0) - (a.t || 0); });
+        var completedForMigration = migrationDay.sets.filter(function (x) { return x.done; }).sort(function (a, b) { return (b.t || 0) - (a.t || 0); });
+        if (completedForMigration.length) workoutNav.exercise = normEx(completedForMigration[0].ex);
+      }
+      if (!workoutNav.exercise) { var nextForMigration = migrationDay.sets.filter(function (x) { return !x.done; })[0]; if (nextForMigration) workoutNav.exercise = normEx(nextForMigration.ex); }
+    }
+    saveWorkoutNav();
+  }
   function saveT() { try { localStorage.setItem(TK, JSON.stringify(T)); } catch (e) {} }
   function scheduleRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.scheduleRestNotification && T.phase === 'rest') AndroidBridge.scheduleRestNotification(T.restEnd); } catch (e) {} }
   function scheduleExerciseAlarm() { try { if (window.AndroidBridge && AndroidBridge.scheduleExerciseNotification && T.phase === 'set' && T.targetSec) AndroidBridge.scheduleExerciseNotification(T.start + T.targetSec * 1000); } catch (e) {} }

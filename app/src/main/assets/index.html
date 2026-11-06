@@ -947,7 +947,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
           else if (timing) { var left = s.targetSec ? Math.max(0, s.targetSec - (Date.now() - T.start) / 1000) : (Date.now() - T.start) / 1000; cell = '<span class="live" data-live="' + esc(s.id) + '">' + mmss(left) + '</span>'; }
           else cell = '<button type="button" class="play" data-play="' + esc(s.id) + '">' + (timed ? mmss(s.targetSec || 60) : '▶') + '</button>';
           var target = Math.max(5, +s.targetSec || 60);
-          var fields = timed ? '<input type="number" inputmode="numeric" min="0" max="60" step="1" data-time-min="' + esc(s.id) + '" value="' + Math.floor(target / 60) + '" aria-label="목표 분"><input type="number" inputmode="numeric" min="0" max="59" step="1" data-time-sec="' + esc(s.id) + '" value="' + (target % 60) + '" aria-label="목표 초">' : '<input type="number" inputmode="decimal" step="0.5" min="0" data-f="w" value="' + fw(s.w) + '" aria-label="무게(kg)"><button type="button" class="set-weight-lock ' + (s.setWeightLocked ? 'is-locked' : 'is-unlocked') + '" data-set-weight-lock="' + esc(s.id) + '" aria-pressed="' + !!s.setWeightLocked + '"><span class="lock-glyph" aria-hidden="true"></span></button><input type="number" inputmode="numeric" step="1" min="0" data-f="r" value="' + (s.r || '') + '" placeholder="0" aria-label="횟수">';
+          var fields = timed ? '<input type="number" inputmode="numeric" min="0" max="60" step="1" data-time-min="' + esc(s.id) + '" value="' + Math.floor(target / 60) + '" aria-label="목표 분"><input type="number" inputmode="numeric" min="0" max="59" step="1" data-time-sec="' + esc(s.id) + '" value="' + (target % 60) + '" aria-label="목표 초">' : '<input type="number" inputmode="decimal" step="0.5" min="0" data-f="w" value="' + fw(s.w) + '" aria-label="무게(kg)"' + (dn ? ' disabled title="완료한 세트의 무게는 고정돼요"' : '') + '><button type="button" class="set-weight-lock ' + (s.setWeightLocked ? 'is-locked' : 'is-unlocked') + '" data-set-weight-lock="' + esc(s.id) + '" aria-pressed="' + !!s.setWeightLocked + '"' + (dn ? ' disabled title="완료한 세트는 잠금 설정을 변경할 수 없어요"' : '') + '><span class="lock-glyph" aria-hidden="true"></span></button><input type="number" inputmode="numeric" step="1" min="0" data-f="r" value="' + (s.r || '') + '" placeholder="0" aria-label="횟수">';
           return '<li class="srow' + (timed ? ' timed' : '') + (dn ? ' done' : '') + (s.id === nextId ? ' next' : '') + '" data-set="' + esc(s.id) + '"><span class="n">' + (i + 1) + '</span>' + fields + cell + '<button type="button" class="ck" data-chk="' + esc(s.id) + '" aria-pressed="' + dn + '">✓</button></li>';
         }).join('') + '</ul>' + restRowHtml(g, first) + '<div class="gfoot"><button type="button" class="mini" data-sadd="' + esc(g.key) + '">+ 세트 추가</button><button type="button" class="mini" data-sdel="' + esc(g.key) + '">− 마지막 세트 삭제</button></div></article>';
     }).join('');
@@ -1021,12 +1021,13 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     if (isNaN(v) || v < 0) v = 0;
     if (f === 'w') {
       var key = normEx(s.ex), d = getDay(selDate);
+      if (isDone(s)) return;
       var group = d.sets.filter(function (x) { return normEx(x.ex) === key; });
       var groupLocked = !!(group[0] && group[0].weightLocked);
-      // Manual input always updates this set. Other sets follow unless individually or globally locked.
+      // Completed sets are immutable; only unfinished, individually-unlocked sets follow.
       s.w = v;
       if (!groupLocked) {
-        group.forEach(function (x) { if (!x.setWeightLocked) x.w = v; });
+        group.forEach(function (x) { if (!isDone(x) && !x.setWeightLocked) x.w = v; });
         if (group[0]) group[0].groupWeight = v;
         var rows = $('#todayList [data-set]');
         rows.forEach(function (row) {
@@ -1048,7 +1049,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     mutate(dt, function (dd) {
       var items = dd.sets.filter(function (x) { return normEx(x.ex) === key; });
       items[0].groupWeight = value;
-      if (!items[0].weightLocked) items.forEach(function (x) { if (!x.setWeightLocked) x.w = value; });
+      if (!items[0].weightLocked) items.forEach(function (x) { if (!isDone(x) && !x.setWeightLocked) x.w = value; });
     });
     renderLog();
   }
@@ -1057,7 +1058,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     if (!st) return;
     mutate(dt, function (dd) {
       var item = dd.sets.filter(function (x) { return x.id === id; })[0];
-      if (item) item.setWeightLocked = !item.setWeightLocked;
+      if (item && !isDone(item)) item.setWeightLocked = !item.setWeightLocked;
     });
     var updated = findSet(id);
     renderLog();
@@ -1073,7 +1074,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       first.weightLocked = !first.weightLocked;
       if (!first.weightLocked) {
         var value = first.groupWeight == null ? first.w : first.groupWeight;
-        items.forEach(function (x) { if (!x.setWeightLocked) x.w = value; });
+        items.forEach(function (x) { if (!isDone(x) && !x.setWeightLocked) x.w = value; });
       }
     });
     renderLog();

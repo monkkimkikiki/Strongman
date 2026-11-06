@@ -788,7 +788,6 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       else if (T.setId) { migrationSet = migrationDay.sets.filter(function (x) { return x.id === T.setId; })[0]; }
       if (!workoutNav.exercise && migrationSet) workoutNav.exercise = normEx(migrationSet.ex);
       if (!workoutNav.exercise && (T.phase === 'rest' || T.phase === 'done')) {
-        migrationDay.sets.filter(function (x) { return x.done; }).sort(function (a, b) { return (b.t || 0) - (a.t || 0); });
         var completedForMigration = migrationDay.sets.filter(function (x) { return x.done; }).sort(function (a, b) { return (b.t || 0) - (a.t || 0); });
         if (completedForMigration.length) workoutNav.exercise = normEx(completedForMigration[0].ex);
       }

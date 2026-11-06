@@ -2502,6 +2502,25 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   window.restoreWorkoutPosition = function () {
     if (tab === 'log' && selDate === today()) setTimeout(function () { scrollToActiveExercise('smooth'); }, 80);
   };
+  window.openWorkoutFromWidget = function () {
+    selDate = today();
+    if (tab !== 'log') setTab('log'); else renderAll();
+    setTimeout(function () {
+      window.scrollTo(0, 0);
+      setTimeout(function () { scrollToActiveExercise('smooth'); }, 120);
+    }, 80);
+  };
+  var rbMain = document.querySelector('#restbar .rb-main');
+  if (rbMain) {
+    rbMain.style.cursor = 'pointer';
+    rbMain.setAttribute('role', 'button');
+    rbMain.setAttribute('tabindex', '0');
+    rbMain.setAttribute('aria-label', '운동 화면에서 다음 세트 위치 보기');
+    rbMain.addEventListener('click', function () { window.openWorkoutFromWidget(); });
+    rbMain.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.openWorkoutFromWidget(); }
+    });
+  }
 
   /* ---------- init ---------- */
   fillSettings(); renderAll(); tick();

@@ -936,7 +936,9 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     $('#todayList').innerHTML = gs.map(function (g) {
       var first = g.sets[0], timed = first.mode === 'time', ls = lastSession(first.ex, selDate);
       var lastInfo = !ls ? '이전 완료 기록이 없어요.' : '지난 운동 · ' + fmtShort(ls.date) + ' · ' + ls.sets.slice(0, 5).map(function (s) { return s.mode === 'time' ? mmss(s.s || s.targetSec || 0) : fw(s.w) + 'kg × ' + s.r + '회'; }).join(' / ') + (ls.sets.length > 5 ? ' 외 ' + (ls.sets.length - 5) + '세트' : '');
-      var lk = libFind(first.ex), groupWeight = first.groupWeight == null ? first.w : first.groupWeight, weightLocked = !!first.weightLocked;
+      // The group-level weight control follows the first unfinished set, never a completed set.
+      var editableWeightSet = g.sets.filter(function (x) { return !isDone(x); })[0] || first;
+      var lk = libFind(first.ex), groupWeight = first.groupWeight == null ? editableWeightSet.w : first.groupWeight, weightLocked = !!first.weightLocked;
       var weightHtml = timed ? '' : '<div class="group-weight-line"><label>전체 무게</label><input type="number" inputmode="decimal" step="0.5" min="0" data-group-weight="' + esc(g.key) + '" value="' + fw(groupWeight) + '" aria-label="' + esc(first.ex) + ' 전체 세트 무게(kg)"><button type="button" class="weight-lock-mini ' + (weightLocked ? 'is-locked' : 'is-unlocked') + '" data-weight-lock="' + esc(g.key) + '" aria-pressed="' + weightLocked + '"><svg class="lock-glyph" viewBox="0 0 20 20" aria-hidden="true"><path class="lock-shackle lock-shackle-open" d="M6 8V5.8a4 4 0 0 1 7.8-1.2"/><path class="lock-shackle lock-shackle-closed" d="M6 8V6a4 4 0 0 1 8 0v2"/><path class="lock-body" d="M4.5 8h11A1.5 1.5 0 0 1 17 9.5v7A1.5 1.5 0 0 1 15.5 18h-11A1.5 1.5 0 0 1 3 16.5v-7A1.5 1.5 0 0 1 4.5 8Z"/></svg></button></div>';
       var modeIcon = timed ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6h12M6 18h12M8 6v3m8-3v3M8 15v3m8-3v3M12 9v6"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9v6m-3-4v2m18-2v2m-3-4v6M6 12h12"/></svg>';
       return '<article class="card grp" data-exercise="' + esc(g.key) + '"><header><div class="tt"><div class="grp-title-line"><h3>' + esc(first.ex) + '</h3><button type="button" class="exinfo-btn" data-exinfo aria-expanded="false" aria-label="이전 운동 기록 보기">!</button></div><div class="meta"><span class="tag">' + esc(first.m) + '</span>' + (lk ? '<span class="tag">' + esc(lk.eq) + '</span>' : '') + (timed ? '<span class="tag">시간 운동 · 세트당 ' + mmss(first.targetSec || 60) + '</span>' : '') + '</div>' + weightHtml + '<div class="exercise-info" hidden>' + esc(lastInfo) + '</div></div>' +
@@ -1028,7 +1030,11 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
       // Completed sets are immutable; only unfinished, individually-unlocked sets follow.
       s.w = v;
       if (!groupLocked) {
+        // Snapshot completed weights and never write to completed rows during propagation.
+        var completedWeights = {};
+        group.forEach(function (x) { if (isDone(x)) completedWeights[x.id] = x.w; });
         group.forEach(function (x) { if (!isDone(x) && !x.setWeightLocked) x.w = v; });
+        group.forEach(function (x) { if (Object.prototype.hasOwnProperty.call(completedWeights, x.id)) x.w = completedWeights[x.id]; });
         if (group[0]) group[0].groupWeight = v;
         var rows = $('#todayList [data-set]');
         rows.forEach(function (row) {
@@ -1049,8 +1055,12 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     if (!group.length) return;
     mutate(dt, function (dd) {
       var items = dd.sets.filter(function (x) { return normEx(x.ex) === key; });
+      var completedWeights = {};
+      items.forEach(function (x) { if (isDone(x)) completedWeights[x.id] = x.w; });
       items[0].groupWeight = value;
       if (!items[0].weightLocked) items.forEach(function (x) { if (!isDone(x) && !x.setWeightLocked) x.w = value; });
+      // Hard guard: a group-weight edit can never rewrite a completed set's recorded load.
+      items.forEach(function (x) { if (Object.prototype.hasOwnProperty.call(completedWeights, x.id)) x.w = completedWeights[x.id]; });
     });
     renderLog();
   }

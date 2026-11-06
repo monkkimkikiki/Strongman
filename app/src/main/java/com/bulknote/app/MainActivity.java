@@ -42,6 +42,7 @@ public class MainActivity extends Activity {
     private static final int CREATE_EXPORT = 702;
     private String pendingExportContent = "";
     private WebView web;
+    private boolean pendingOpenWorkout;
     private final ExecutorService aiExecutor = Executors.newSingleThreadExecutor();
     private static final String AI_PREFS = "bulknote_ai_secure";
     private static final String AI_KEY_ALIAS = "BulkNoteGroqApiKeyV1";
@@ -57,6 +58,7 @@ public class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 703);
         }
+        pendingOpenWorkout = getIntent() != null && getIntent().getBooleanExtra("open_workout_next_set", false);
         web = new WebView(this);
         setContentView(web);
         WebSettings settings = web.getSettings();
@@ -304,13 +306,27 @@ public class MainActivity extends Activity {
     }
 
     @Override protected void onPause() { super.onPause(); if (web != null) web.onPause(); }
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (intent != null && intent.getBooleanExtra("open_workout_next_set", false)) {
+            pendingOpenWorkout = true;
+            if (web != null) web.postDelayed(this::openWorkoutFromNotification, 250);
+        }
+    }
+    private void openWorkoutFromNotification() {
+        if (!pendingOpenWorkout || web == null) return;
+        pendingOpenWorkout = false;
+        web.evaluateJavascript("if (window.openWorkoutFromWidget) window.openWorkoutFromWidget();", null);
+    }
     @Override protected void onResume() {
         super.onResume();
         if (web != null) {
             web.onResume();
-            // Re-register the active countdown after the user returns from exact-alarm settings.
-            web.postDelayed(() -> web.evaluateJavascript(
-                "if (window.rearmRestAlarmAfterResume) window.rearmRestAlarmAfterResume(); if (window.restoreWorkoutPosition) window.restoreWorkoutPosition();", null), 500);
+            web.postDelayed(() -> {
+                web.evaluateJavascript("if (window.rearmRestAlarmAfterResume) window.rearmRestAlarmAfterResume(); if (window.restoreWorkoutPosition) window.restoreWorkoutPosition();", null);
+                openWorkoutFromNotification();
+            }, 500);
         }
     }
     @Override protected void onDestroy() { if (web != null) web.destroy(); super.onDestroy(); }

@@ -940,6 +940,31 @@ input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb
 }
 .grp header .tt,.phead>div:first-child{min-width:0!important;max-width:100%!important}
 
+
+/* v1.39 — 제목은 작고 굵게, 헤더 조작 아이콘은 축소 */
+.ptitle,.grp h3,.grp-title-line h3{
+  font-family:'Gungsuh','궁서체','궁서','Batang','Noto Serif KR',serif!important;
+  font-size:15px!important;font-weight:800!important;
+  -webkit-text-stroke:.35px currentColor!important;
+  line-height:1.2!important;letter-spacing:0!important;
+  white-space:nowrap!important;overflow:hidden!important;
+  text-overflow:clip!important;overflow-wrap:normal!important;
+  min-width:0!important;max-width:100%!important;
+}
+.grp header{align-items:center!important;gap:3px!important;min-width:0!important}
+.grp header .tt{flex:1 1 0!important;min-width:0!important;overflow:hidden!important}
+.grp-title-line{gap:4px!important;min-width:0!important;overflow:hidden!important}
+.grp-title-line h3{flex:1 1 0!important}
+.grp .bookmark-toggle{flex:0 0 24px!important;min-width:24px!important;width:24px!important;
+  min-height:24px!important;height:24px!important;padding:2px!important;font-size:13px!important}
+.grp .mode-icon{flex:0 0 23px!important;width:23px!important;height:23px!important;
+  min-width:23px!important;font-size:12px!important}
+.grp .mode-icon svg{width:12px!important;height:12px!important}
+.grp header .x{flex:0 0 24px!important;width:24px!important;height:24px!important;
+  min-width:24px!important;font-size:17px!important}
+.grp .exinfo-btn{flex:0 0 16px!important;width:16px!important;height:16px!important;
+  min-width:16px!important;font-size:10px!important;line-height:14px!important}
+
 </style>
 
 <div class="app">
@@ -3307,7 +3332,7 @@ input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb
     function fitWorkoutTitles(){
       document.querySelectorAll('.ptitle,.grp h3').forEach(function(el){
         if(!el.clientWidth) return;
-        var base=20,min=12;
+        var base=15,min=9;
         el.style.fontSize=base+'px';
         while(el.scrollWidth>el.clientWidth && base>min){
           base-=0.5;el.style.fontSize=base+'px';

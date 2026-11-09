@@ -771,6 +771,61 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
   box-shadow:none!important;
   text-shadow:none!important;
 }
+
+
+/* v1.35 — 백색 한지와 먹붓, 읽히는 기록 숫자 */
+:root{
+ --bg:#f8f8f3!important;--surface:#fffefa!important;--surface2:#f1f1e9!important;--line:#77766e!important;
+ --ink:#24231f!important;--ink2:#55534c!important;--ink3:#77746c!important;
+ --accent:#282722!important;--accent-ink:#fffefa!important;--accent-wash:#e9e8df!important;
+ --ai-user:#eeeee7!important;--ai-assistant:#fffefa!important;--ai-border:#aaa99f!important;--highlight:#282722!important;
+ --warn:#875326!important;--warn-wash:#f3eee3!important;--good:#345b43!important;--good-wash:#e8eee7!important;--danger:#8b302b!important;
+ --font-body:'Nanum Myeongjo','Song Myung',serif!important;
+}
+html,body,.top,.sheet,.sheet-in,.sheet-top{background-color:#f8f8f3!important;color:#24231f!important}
+body{
+ background-image:radial-gradient(ellipse at 18% 12%,rgba(255,255,255,.92),transparent 52%),repeating-linear-gradient(2deg,rgba(65,62,52,.018) 0 1px,transparent 1px 4px),repeating-linear-gradient(91deg,rgba(65,62,52,.012) 0 1px,transparent 1px 6px)!important;
+}
+.brand{font-family:'Gugi','Song Myung',serif!important;color:#282722!important;text-shadow:none!important;font-size:23px!important;letter-spacing:.09em!important}
+h1,h2,h3,.ptitle,.grp h3,.calt,.weeknav .wl,.phead,.ai-title,.cbh,.bookmark-heading{font-family:'Gugi','Song Myung','Nanum Myeongjo',serif!important;color:#282722!important;text-shadow:none!important}
+body,button,input,textarea,select,.lbl,.note,.status,.tag,.ai-msg,.tabs button{font-family:'Nanum Myeongjo','Song Myung',serif!important}
+.card,.sheet,.sheet-in,.rb,.datepick,.ib,.chip,.btn,.mini,.qchip,.mchip,.play,.rbb,.bookmark-rail{
+ background-color:rgba(255,254,250,.94)!important;background-image:none!important;color:#292821!important;
+ border:1px dashed #77766e!important;border-radius:7px 5px 8px 6px!important;
+ box-shadow:1px 1px 0 rgba(40,39,34,.12),-1px 1px 0 rgba(255,255,255,.9)!important;
+}
+.card{background-image:repeating-linear-gradient(177deg,rgba(70,68,58,.018) 0 1px,transparent 1px 5px)!important}
+input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey,.group-weight-line input{
+ color:#24231f!important;-webkit-text-fill-color:#24231f!important;caret-color:#24231f!important;
+ background:#fffefa!important;border:1.5px dashed #65645d!important;border-radius:5px 7px 4px 6px!important;
+ box-shadow:inset 1px 1px 2px rgba(40,39,34,.08)!important;text-shadow:none!important;opacity:1!important;
+}
+input[type=number],.sets input,.group-weight-line input{font-family:'Oswald','Arial Narrow',sans-serif!important;font-weight:700!important;font-size:21px!important;letter-spacing:.02em!important}
+.group-weight-line input{width:84px!important;min-width:84px!important;height:38px!important;font-size:22px!important;padding:0 5px!important}
+.group-weight-line label{color:#34332d!important;font-family:'Gugi','Nanum Myeongjo',serif!important}
+input::placeholder,textarea::placeholder{color:#8a887f!important;-webkit-text-fill-color:#8a887f!important;opacity:1!important}
+.btn.primary,.mchip[aria-checked=true],.srow.done .ck{background:#292821!important;color:#fffefa!important;border-color:#292821!important}
+.srow.done input{color:#3f3e37!important;-webkit-text-fill-color:#3f3e37!important}
+.tabs{background:#f8f8f3!important;border-top:2px dashed #66655e!important}
+.tabs button{color:#65645d!important;background:transparent!important}
+.tabs button[aria-selected=true]{background:#e7e6dd!important;color:#24231f!important;box-shadow:inset 0 -2px #292821!important}
+.nav-glyph,.tabs button svg,.ib svg,.chip svg,.mini svg,.btn svg,.rbb svg{color:#292821!important;stroke:#292821!important;filter:none!important}
+.mode-icon,.mode-icon[aria-label^="시간"]{background:#f7f6ef!important;border:1px dashed #77766e!important;color:#292821!important}
+.mode-icon svg{stroke:#292821!important;fill:none!important}
+.exinfo-btn,.exinfo-btn[aria-expanded=true]{background:#292821!important;border:1px dashed #292821!important;color:#fffefa!important}
+.bookmark-rail{background:#f1f0e8!important;border-color:#77766e!important}
+.bookmark-heading,.bookmark-empty{color:#35342e!important}
+.bookmark-jump,.bookmark-toggle{background:#fffefa!important;color:#292821!important;border:1px dashed #77766e!important}
+.bookmark-toggle.is-marked{background:#292821!important;color:#fffefa!important;border-color:#292821!important}
+.rb,.rb-main,.sheet,.sheet-in,.sheet-top{background-color:#fffefa!important;color:#24231f!important;border-color:#77766e!important}
+.rb-digits,.rb-digits.run,.rb-digits.low{color:#292821!important}
+.restrow,.ai-coach,.cb,.startrow{border-top:1px dashed #aaa99f!important}
+.toast,.tip{background:#fffefa!important;color:#24231f!important;border:1px dashed #55544d!important}
+.card,.grp,.bookmark-rail,.sets li,.btn,.mini,.play,.rbb,.chip,.datepick{border-radius:7px 5px 8px 6px!important}
+.workout-return{background:#fffefa!important;border:1.5px dashed #292821!important;border-radius:50%!important;box-shadow:1px 2px 5px rgba(0,0,0,.16)!important}
+.stone-dumbbell{width:36px!important;height:27px!important;filter:none!important}
+#coachCard .cue,.fb li,.ai-msg{color:#292821!important}
+:focus-visible{outline:2px dashed #292821!important;outline-offset:2px!important}
 </style>
 
 <div class="app">
@@ -932,7 +987,7 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
     <div class="rb-tip" id="rbTip" hidden></div>
   </div>
 </div>
-<button type="button" class="workout-return" id="workoutReturn" aria-label="현재 운동 위치로 이동" title="현재 운동으로 이동" hidden><svg class="stone-dumbbell" viewBox="0 0 48 32" aria-hidden="true"><path d="M7 8 13 5l5 4v14l-5 4-6-3zM30 9l5-4 6 3v18l-6 3-5-4z" fill="#8f8069" stroke="#d0b995" stroke-width="2"/><path d="M16 14h16v4H16z" fill="#b9a27c" stroke="#e1cda6" stroke-width="1.5"/><path d="m9 10 5-2m18 2 5-2M9 21l5 2m18-2 5 2" stroke="#514536" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+<button type="button" class="workout-return" id="workoutReturn" aria-label="현재 운동 위치로 이동" title="현재 운동으로 이동" hidden><svg class="stone-dumbbell" viewBox="0 0 48 32" aria-hidden="true"><path d="M5 8 Q7 4 12 5 L17 8 Q19 10 18 14 L18 22 Q17 27 12 28 L6 25 Q3 22 4 17Z M30 8 Q32 5 37 4 L43 8 Q45 11 44 16 L44 22 Q42 27 37 28 L31 25 Q28 22 29 17Z" fill="none" stroke="#292821" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 14 Q22 12 33 14 L33 19 Q23 17 15 20Z" fill="none" stroke="#292821" stroke-width="2.8" stroke-linecap="round"/><path d="M7 10 L10 8 M7 22 L11 24 M36 8 L40 10 M37 24 L41 22 M18 13 L20 12 M29 20 L32 21" fill="none" stroke="#77766e" stroke-width="1.2" stroke-linecap="round"/></svg></button>
 
 <nav class="tabs" aria-label="화면 전환">
   <div class="tabs-in" role="tablist">
@@ -2325,21 +2380,22 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
   }
   window.onNativeAiResult=function(id,ok,message){
     if(!aiPending[id])return; delete aiPending[id]; aiState.busy=false;
-    aiState.messages.push({role:'assistant',text:String(message|| (ok?'답변이 비어 있어요.':'요청에 실패했어요.'))});
+    aiState.messages.push({role:'assistant',text:dolsoeFeedbackText(String(message|| (ok?'답변이 비어 있어요.':'요청에 실패했어요.')))});
     renderCoach();
     var box=$('#aiMessages'); if(box){box.scrollTop=box.scrollHeight; var last=box.lastElementChild; if(last)last.scrollIntoView({block:'nearest',behavior:'smooth'});}
   };
   function dolsoeFeedbackText(value) {
     var msg = String(value == null ? '' : value);
     var rules = [
-      [/할 수 있어요/g, '할 수 있소'], [/해보세요/g, '해보시오'], [/추천해요/g, '권하오'],
-      [/좋아요/g, '좋소'], [/필요해요/g, '필요하오'], [/하세요/g, '하시오'],
-      [/보세요/g, '보시오'], [/해주세요/g, '해주시오'], [/입니다/g, '이오'],
-      [/됩니다/g, '되오'], [/했어요/g, '했소'], [/있어요/g, '있소'], [/없어요/g, '없소'],
-      [/괜찮아요/g, '괜찮소'], [/높아요/g, '높소'], [/낮아요/g, '낮소'],
-      [/많아요/g, '많소'], [/적어요/g, '적소'], [/같아요/g, '같소'],
-      [/나와요/g, '나오'], [/돼요/g, '되오'], [/해요/g, '하오'],
-      [/아요(?=[.!?]|$)/g, '소'], [/어요(?=[.!?]|$)/g, '소']
+      [/할 수 있어요/g, '할 수 있소'], [/해보세요/g, '해보시오'], [/해 보세요/g, '해 보시오'],
+      [/추천해요/g, '권하오'], [/좋아요/g, '좋소'], [/필요해요/g, '필요하오'],
+      [/하세요/g, '하시오'], [/보세요/g, '보시오'], [/해주세요/g, '해주시오'],
+      [/입니다/g, '이오'], [/합니다/g, '하오'], [/됩니다/g, '되오'],
+      [/했습니다/g, '했소'], [/했어요/g, '했소'], [/있습니다/g, '있소'], [/있어요/g, '있소'],
+      [/없습니다/g, '없소'], [/없어요/g, '없소'], [/괜찮아요/g, '괜찮소'],
+      [/높아요/g, '높소'], [/낮아요/g, '낮소'], [/많아요/g, '많소'], [/적어요/g, '적소'],
+      [/같아요/g, '같소'], [/나와요/g, '나오'], [/돼요/g, '되오'], [/해요/g, '하오'],
+      [/어요(?=[.!?]|$)/g, '소'], [/아요(?=[.!?]|$)/g, '소']
     ];
     rules.forEach(function (rule) { msg = msg.replace(rule[0], rule[1]); });
     return msg;

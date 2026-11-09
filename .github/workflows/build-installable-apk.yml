@@ -1,4 +1,4 @@
-name: Build installable BulkNote APK
+name: Build installable DolsoeRox APK
 
 on:
   workflow_dispatch:

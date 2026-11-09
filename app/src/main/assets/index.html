@@ -1,7 +1,7 @@
 <!-- BulkNote 1.24: completed set weights are fixed -->
 <title>벌크업 노트</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nanum+Myeongjo:wght@400;700;800&family=Oswald:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gugi&family=Nanum+Myeongjo:wght@400;700;800&family=Song+Myung&family=Oswald:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <style>
 /* Layout concept: 한 손으로 쓰는 헬스장 기록장. 위에 날짜, 가운데 한 칸 콘텐츠, 아래 탭 5개. 타이머는 화면 아래에 떠서 어느 탭에서나 보인다. 숫자는 좁은 고딕으로 크게. */
 :root{
@@ -558,6 +558,62 @@ button:active,.btn:active,.ib:active,.chip:active{transform:translateY(1px);filt
  .tabs button{font-size:12px}
 }
 
+
+/* DOLSOE FORGE v3 — brush-calligraphy, stone tools, aged paper */
+:root{
+ --bg:#211b16;--surface:#342a21;--surface2:#43352a;--line:#70583f;
+ --ink:#ead9bb;--ink2:#c5ad88;--ink3:#9c8465;
+ --accent:#a93227;--accent-ink:#f0dfc0;--accent-wash:#503026;
+ --ai-user:#4a3027;--ai-assistant:#30271f;--ai-border:#7c5c3f;--highlight:#c04b35;
+ --warn:#d5a15c;--warn-wash:#49341f;--good:#9baf80;--good-wash:#35402c;--danger:#d87961;
+ --font-body:'Song Myung','Nanum Myeongjo','Gugi',serif;
+ --font-num:'Song Myung','Nanum Myeongjo',serif;
+ color-scheme:dark;
+}
+html,body{background:#211b16;color:#ead9bb}
+body,button,input,textarea,select,.lbl,.note,.status,.tag,.ai-msg,.tabs button,.rb-label{
+ font-family:'Song Myung','Nanum Myeongjo','Gugi',serif!important;
+ letter-spacing:.005em;
+}
+h1,h2,h3,.brand,.ptitle,.grp h3,.calt,.weeknav .wl,.phead,.ai-title{
+ font-family:'Gugi','Song Myung','Nanum Myeongjo',serif!important;
+ letter-spacing:.015em;
+}
+.brand{font-size:24px;color:#e7cda0;text-shadow:2px 2px #160f0b,0 0 10px #7e3827}
+.brand::after{font-family:'Song Myung',serif;color:#b8976c}
+input[type=number],.pnum,.sets .n,.sets input,.live,.sdone,.rb-digits,.mtop .n,.meals b,.bv,.stp b{
+ font-family:'Song Myung','Nanum Myeongjo',serif!important;font-variant-numeric:tabular-nums;
+}
+.card{background:linear-gradient(145deg,rgba(220,185,130,.055),transparent 48%),linear-gradient(180deg,#382d23,#2d241d);border-color:#786044}
+input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
+ background:#211a15!important;color:#f0dfc0!important;border-color:#806345!important;
+}
+input::placeholder,textarea::placeholder{color:#9e8768!important}
+button,.btn,.chip,.mini,.qchip,.mchip,.play,.rbb,.mode-toggle button{
+ color:#ead9bb;
+}
+.btn,.mini,.play,.mode-icon,.mode-toggle button,.mchip,.qchip,.chip,.ib,.datepick,.rbb{
+ background:linear-gradient(180deg,#51402f,#392c21)!important;border-color:#896b49!important;color:#ead9bb!important;
+}
+.btn.primary,.chip.primary,.mchip[aria-checked="true"],.srow.done .ck,.cd.sel,.ai-chat-form button{
+ background:linear-gradient(145deg,#bd4935,#84271f)!important;border-color:#d17b54!important;color:#f3dfbf!important;
+}
+.srow.next{background:#4b3427!important;box-shadow:inset 3px 0 #bd4935}
+.srow.nav-focus{outline:2px solid #c57a4b!important;background:#56382a!important}
+.srow.done .ck{background:linear-gradient(145deg,#a83c2b,#70231e)!important}
+.tabs{background:rgba(35,27,21,.98);border-top:2px solid #8b6845}
+.tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;height:56px;color:#ad9674!important;font-size:12px!important}
+.tabs button[aria-selected="true"]{background:linear-gradient(180deg,#57382a,#39271f)!important;color:#f0d4a8!important;box-shadow:inset 0 -3px #bc5136}
+.nav-glyph{display:block;width:27px;height:22px;color:currentColor;filter:drop-shadow(0 1px 1px #120d09)}
+.workout-return{display:grid;place-items:center;background:linear-gradient(145deg,#bd4935,#76231d)!important;border:2px solid #d5a879!important}
+.stone-dumbbell{width:34px;height:25px;filter:drop-shadow(0 2px 1px #160e09)}
+.mode-icon svg{width:20px;height:20px}
+.mode-icon[aria-label^="시간"]{background:#51352a!important;border-color:#aa6545!important;color:#e3b68b!important}
+.rb,.sheet,.sheet-in,.sheet-top{background:#30251d!important;border-color:#806044!important;color:#ead9bb}
+.rb-digits{color:#f0d9b2}
+.toast,.tip{background:#e8d6b6!important;color:#38271b!important;border-color:#9d7950!important}
+:focus-visible{outline-color:#d28b56!important}
+
 </style>
 
 <div class="app">
@@ -719,15 +775,15 @@ button:active,.btn:active,.ib:active,.chip:active{transform:translateY(1px);filt
     <div class="rb-tip" id="rbTip" hidden></div>
   </div>
 </div>
-<button type="button" class="workout-return" id="workoutReturn" aria-label="현재 운동 위치로 이동" title="현재 운동으로 이동" hidden>🏋️</button>
+<button type="button" class="workout-return" id="workoutReturn" aria-label="현재 운동 위치로 이동" title="현재 운동으로 이동" hidden><svg class="stone-dumbbell" viewBox="0 0 48 32" aria-hidden="true"><path d="M7 8 13 5l5 4v14l-5 4-6-3zM30 9l5-4 6 3v18l-6 3-5-4z" fill="#8f8069" stroke="#d0b995" stroke-width="2"/><path d="M16 14h16v4H16z" fill="#b9a27c" stroke="#e1cda6" stroke-width="1.5"/><path d="m9 10 5-2m18 2 5-2M9 21l5 2m18-2 5 2" stroke="#514536" stroke-width="1.5" stroke-linecap="round"/></svg></button>
 
 <nav class="tabs" aria-label="화면 전환">
   <div class="tabs-in" role="tablist">
-    <button type="button" role="tab" data-tab="log" aria-selected="true">운동</button>
-    <button type="button" role="tab" data-tab="routine" aria-selected="false">루틴</button>
-    <button type="button" role="tab" data-tab="stats" aria-selected="false">분석</button>
-    <button type="button" role="tab" data-tab="diet" aria-selected="false">식단</button>
-    <button type="button" role="tab" data-tab="set" aria-selected="false">설정</button>
+    <button type="button" role="tab" data-tab="log" aria-selected="true"><svg class="nav-glyph" viewBox="0 0 32 24" aria-hidden="true"><path d="M3 5 8 2l5 3v14l-5 3-5-3zM19 5l5-3 5 3v14l-5 3-5-3z" fill="currentColor"/><path d="M11 10h10v4H11z" fill="#b99b70" stroke="currentColor" stroke-width="1"/></svg>운동</button>
+    <button type="button" role="tab" data-tab="routine" aria-selected="false"><svg class="nav-glyph" viewBox="0 0 32 24" aria-hidden="true"><path d="M6 3h18v18H6z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 7h10M10 11h10M10 15h7" stroke="currentColor" stroke-width="1.5"/></svg>루틴</button>
+    <button type="button" role="tab" data-tab="stats" aria-selected="false"><svg class="nav-glyph" viewBox="0 0 32 24" aria-hidden="true"><path d="M5 3h22v18H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 16v-4m6 4V7m6 9v-6" stroke="currentColor" stroke-width="2"/></svg>분석</button>
+    <button type="button" role="tab" data-tab="diet" aria-selected="false"><svg class="nav-glyph" viewBox="0 0 32 24" aria-hidden="true"><path d="M4 9h24c-1 8-5 12-12 12S5 17 4 9Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 6c2-4 4-4 6 0m2 0c2-4 4-4 6 0" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>식단</button>
+    <button type="button" role="tab" data-tab="set" aria-selected="false"><svg class="nav-glyph" viewBox="0 0 32 24" aria-hidden="true"><path d="m16 2 12 6-3 13H7L4 8z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 9h10m-10 4h10m-10 4h6" stroke="currentColor" stroke-width="1.5"/></svg>설정</button>
   </div>
 </nav>
 

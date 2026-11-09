@@ -1642,7 +1642,7 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
         have[key] = true;
         added++;
       });
-      if (!d.routine) d.routine = r.name;
+      if (!d.routine) d.routine = r.name;\n      d.routineId = r.id;
     });
     if (ok) {
       if (tab !== 'log') setTab('log');

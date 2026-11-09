@@ -1056,11 +1056,123 @@ html body .sets .play{
   border:0!important;
   box-shadow:none!important;
 }
+
+/* v1.48 — 돌쇠록스 한지·수묵화 테마 */
+:root{
+  --bg:#F3EBDD; --surface:#FBF6ED; --surface2:#EDE1D0; --line:#D8C8B4;
+  --ink:#302116; --ink2:#67513E; --ink3:#927D68;
+  --accent:#604027; --accent-ink:#FFF9EF; --accent-wash:#E9D8C1; --star:#8B5E36;
+  --ai-user:#EFE1CE; --ai-assistant:#FBF6ED; --ai-border:#D8C8B4; --highlight:#795334;
+  --warn:#95501F; --warn-wash:#F2E1CD; --good:#49613F; --good-wash:#E3E8D9; --danger:#913D31;
+  --font-body:'Song Myung','Nanum Myeongjo','Apple SD Gothic Neo',serif;
+  --font-num:'Oswald','Arial Narrow',sans-serif;
+}
+html,body{background-color:var(--bg);color:var(--ink)}
+body{
+  background-image:radial-gradient(ellipse at 18% 12%,rgba(255,255,255,.42),transparent 42%),radial-gradient(ellipse at 85% 70%,rgba(176,145,108,.08),transparent 48%);
+  letter-spacing:-.025em;
+}
+body::before{background:var(--bg)}
+.top{background:rgba(243,235,221,.97);gap:10px;padding-top:12px;padding-bottom:10px;border-bottom:1px solid rgba(150,119,86,.18)}
+.brand{font-family:'Gugi',serif;color:var(--ink);font-size:16px;letter-spacing:.02em}
+.status{color:var(--ink3)}
+.status.ok::before{background:#65784B}
+.status.wait::before{background:#A46B35}
+.ink-hero{height:142px;position:relative;overflow:hidden;display:flex;align-items:center;padding:8px 10px 6px 12px;border-bottom:1px solid #BDA78D;background:linear-gradient(110deg,rgba(251,246,237,.96),rgba(239,226,207,.55))}
+.ink-copy{position:relative;z-index:2;align-self:center;min-width:0}
+.ink-kicker{display:block;font-size:11px;letter-spacing:.2em;color:#80674D;margin-bottom:3px}
+.ink-logo{font-family:'Gugi','Song Myung',serif;font-size:clamp(34px,9vw,48px);font-weight:400;line-height:1.12;letter-spacing:-.09em;white-space:nowrap;color:#2B1D14;text-shadow:0 1px rgba(255,255,255,.6)}
+.ink-seal{display:inline-grid;place-items:center;vertical-align:top;margin:3px 0 0 8px;width:22px;height:25px;border:1.5px solid #963F2E;border-radius:3px;color:#963F2E;font-family:'Song Myung',serif;font-size:15px;letter-spacing:0}
+.ink-motto{font-family:'Song Myung',serif;font-size:17px;font-weight:700;margin:5px 0 0 12px;color:#493321}
+.ink-figure{position:absolute;right:-3px;bottom:-5px;width:52%;height:145px;opacity:.9}
+.ink-mountain{fill:none;stroke:#8C806F;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;opacity:.7}
+.ink-land{fill:none;stroke:#9A8973;stroke-width:1.4;opacity:.65}
+.ink-man{fill:#9B7958;stroke:#302116;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ink-band{fill:#E9DCC9;stroke:#302116;stroke-width:1.8}
+.datebar{gap:7px}
+.ib{width:40px;height:42px;border-radius:7px;border:1px solid #D4C2AB;background:#F9F2E7;color:#4B3524;font-family:serif}
+.datepick{height:42px;border-radius:7px;border:1px solid #D4C2AB;background:#FBF6ED;color:#302116;font-family:'Song Myung',serif;font-size:16px}
+.chip{height:40px;border-radius:7px;border:1px solid #D4C2AB;background:#F8F0E4;color:#4B3524}
+main{gap:10px}
+.card{background:rgba(251,246,237,.76);border:1px solid #DDCEBC;border-radius:9px;box-shadow:0 1px 0 rgba(92,63,38,.04);padding:14px}
+#woHead .card{background:rgba(251,246,237,.85);border-color:#CDB99F}
+.ptitle{font-family:'Song Myung',serif;font-size:19px;font-weight:700;color:#2E2117}
+.psub{color:#806B55}
+.pnum{font-family:'Oswald',sans-serif;color:#302116}
+.pnum small{color:#806B55}
+.meter{height:5px;background:#E6D8C6;border-radius:0}
+.meter i{background:#765236;border-radius:0}
+.grp.card{background:transparent;border:0;border-bottom:1px solid #D8C8B4;border-radius:0;box-shadow:none;padding:13px 0 15px}
+.grp header{align-items:center;margin-bottom:5px}
+.grp h3{font-family:'Song Myung',serif;font-size:19px;font-weight:700;color:#302116;letter-spacing:-.04em}
+.grp .meta{gap:6px}
+.grp .tag{background:#E9DDCC;color:#70563D;border-radius:3px;font-family:'Song Myung',serif}
+.exinfo-btn{border-color:#9D876E;color:#745A41;background:transparent}
+.group-weight-line{margin-top:5px;gap:7px}
+.group-weight-line label{color:#241A13;font-family:'Song Myung',serif;font-weight:700;font-size:13px}
+.group-weight-line input{background:transparent;border:0;border-bottom:1px solid #BBA58C;border-radius:0;color:#241A13;font-family:'Oswald',sans-serif;font-size:19px;font-weight:600}
+.weight-lock-mini{background:transparent;border-color:#BBA58C;color:#6B5037}
+.sets{gap:3px;margin-top:9px}
+.sets li{padding:3px 2px;border-radius:4px;gap:4px}
+.sets li.shead{color:#806B55;font-family:'Song Myung',serif}
+.sets .n{color:#4A3828;font-family:'Oswald',sans-serif}
+.sets input{height:38px;background:rgba(251,246,237,.88);border:1px solid #D8C8B4;border-radius:6px;color:#302116;font-family:'Oswald',sans-serif;font-size:19px}
+.sets input:focus{outline:1px solid #92724F;outline-offset:0}
+.play{height:38px;background:#F8F0E4;border:1px solid #D8C8B4;border-radius:6px;color:#5B432E}
+.ck{height:38px;border:1px solid #A78E73;border-radius:6px;background:transparent;color:#927D68}
+.srow.done .ck{background:#604027;border-color:#604027;color:#FFF9EF}
+.srow.done input{background:rgba(233,221,204,.42);color:#57432F}
+.srow.next{background:rgba(221,202,177,.35)}
+.srow.nav-focus{outline:1px solid #8D6C48;outline-offset:1px;background:#EFE2D0}
+.restrow{border-top:1px solid #D8C8B4;padding-top:8px}
+.restrow .st{border:1px solid #CDB99F;border-radius:5px;background:#F8F0E4;color:#604027}
+.restrow b{color:#302116}
+.mini{border:1px solid #CDB99F;border-radius:5px;background:#F8F0E4;color:#604027}
+.btn{border:1px solid #CDB99F;border-radius:7px;background:#F1E6D7;color:#493321}
+.btn.primary{background:#604027;border-color:#604027;color:#FFF9EF}
+.bookmark-rail{background:rgba(233,221,204,.42);border-color:#D8C8B4}
+.tabs{background:rgba(248,241,230,.97);border-top:1px solid #CDB99F;box-shadow:0 -3px 12px rgba(68,45,25,.05)}
+.tabs .tabs-in{background:transparent}
+.tabs [role=tab]{color:#806B55}
+.tabs [role=tab][aria-selected=true]{color:#604027}
+.tabs [role=tab][aria-selected=true]::before{background:#E8D6BF}
+.restbar .rb{background:#FBF6ED;border:1px solid #CDB99F;box-shadow:0 4px 16px rgba(54,35,19,.16);border-radius:8px}
+.rb-digits.run{color:#604027}
+.workout-return{background:#604027;box-shadow:0 4px 14px rgba(54,35,19,.22)}
+.notice{background:#F0E0CC;color:#604027}
+#coachCard{background:rgba(251,246,237,.8);border-color:#D8C8B4}
+.ai-coach{border-top-color:#D8C8B4}
+.ai-msg.assistant{border-color:#D8C8B4;border-left-color:#765236}
+.ai-chat-form button{background:#604027;border-color:#604027;color:#FFF9EF}
+input[type=text],input[type=number],textarea{background:#FAF4EA;border-color:#D8C8B4;color:#302116}
+input::placeholder{color:#9A856E}
+@media(max-width:390px){
+ .ink-hero{height:126px}
+ .ink-figure{width:49%;height:130px;right:-7px}
+ .ink-logo{font-size:34px}
+ .ink-motto{font-size:15px}
+ .sets li{gap:3px;padding-inline:0}
+}
+
 </style>
 
 <div class="app">
   <header class="top">
     <div class="toprow"><span class="brand">돌쇠록스</span><span class="toprow-r"><span class="status" id="status"></span><button type="button" class="chip sm" id="calBtn" data-act="cal-open">달력</button></span></div>
+    <div class="ink-hero" aria-label="돌쇠록스">
+      <div class="ink-copy">
+        <span class="ink-kicker">오늘의 수련 기록</span>
+        <div class="ink-logo">돌쇠록스<span class="ink-seal">力</span></div>
+        <div class="ink-motto">오늘도, 한 번 더!</div>
+      </div>
+      <svg class="ink-figure" viewBox="0 0 190 150" role="img" aria-label="산과 돌쇠 삽화">
+        <path class="ink-mountain" d="M4 125 43 75l19 23 35-58 29 43 19-20 41 62M18 125l25-31 15 17 39-56 29 42 20-17 28 35"/>
+        <path class="ink-land" d="M0 132q35-14 65 0t62 0q31-13 63 0"/>
+        <path class="ink-man" d="M92 51q-3-23 17-31 21-9 34 8 8 10 4 25l-5 12 14 13 15 40-20 5-17-28-7 30-45 0 5-35-19 28-17-9 25-42 18-10z"/>
+        <path class="ink-man" d="M110 31q15-12 29 2m-25 7q8-5 17 0m-13 9q8 4 15-1m-16 12q8 6 17 1M96 79q18-12 37-2m-32 18q19 9 37 1" fill="none"/>
+        <path class="ink-band" d="M96 31q18-14 42-3l14 11-4 6q-22-15-49-5z"/>
+      </svg>
+    </div>
     <div class="datebar">
       <button type="button" class="ib" id="prevDay" aria-label="전날">‹</button>
       <label class="datepick"><span id="dateLabel"></span><input type="date" id="dateInput" aria-label="날짜 선택"></label>

@@ -858,6 +858,52 @@ input:focus,textarea:focus{outline:2px dashed #8f3028!important;outline-offset:2
 .tabs{background:rgba(250,250,247,.97)!important;border-top:1px dashed #77766e!important}.tabs button[aria-selected=true]{color:#8f3028!important}
 .workout-return{background:#8f3028!important;border:1px dashed #68231e!important;box-shadow:none!important}
 .toast,.alarm-flash,.tip{font-family:'Song Myung','Nanum Myeongjo',serif!important;background:#fffefa!important;color:#252521!important;border:1px dashed #77766e!important}
+
+/* v1.36 — 백설 한지, 먹붓 아령, 또렷한 무게칸 */
+:root{
+ --bg:#fbfbf8!important;--surface:#fffefa!important;--surface2:#f4f4ef!important;--line:#77766e!important;
+ --ink:#24231f!important;--ink2:#4e4d46!important;--ink3:#706f67!important;
+ --accent:#292821!important;--accent-ink:#fffefa!important;--accent-wash:#eeede6!important;
+ --ai-user:#f0efe9!important;--ai-assistant:#fffefa!important;--ai-border:#a5a49a!important;--highlight:#292821!important;
+ --font-body:'Song Myung','Nanum Myeongjo','Apple SD Gothic Neo',serif!important;
+ --font-num:'Barlow Condensed','Arial Narrow',sans-serif!important;
+}
+html,body,.top,.sheet,.sheet-in,.sheet-top{background-color:#fbfbf8!important;color:#24231f!important}
+body{background-image:radial-gradient(ellipse at 16% 22%,rgba(40,39,33,.025) 0 1px,transparent 1.8px),radial-gradient(ellipse at 82% 68%,rgba(40,39,33,.018) 0 1px,transparent 2px),repeating-linear-gradient(1deg,rgba(40,39,33,.014) 0 1px,transparent 1px 5px)!important;background-size:19px 21px,27px 29px,100% 7px!important}
+h1,h2,h3,.brand,.ptitle,.grp h3,.ai-title,.cbh,.cue,.bookmark-heading{font-family:'Gugi','Song Myung','Nanum Myeongjo',serif!important;font-weight:400!important;letter-spacing:.025em!important}
+body,button,input,textarea,select,.lbl,.note,.status,.tag,.ai-msg,.tabs button{font-family:'Song Myung','Nanum Myeongjo',serif!important}
+.brand{color:#24231f!important;text-shadow:1px 1px 0 rgba(40,39,33,.12)!important}
+.card,.rb,.sheet,.sheet-in,.sheet-foot,.datepick,.ib,.chip,.btn,.mini,.mchip,.qchip,.notice,.plist,.pitem,.ai-msg,.ai-chat-form input,.ai-chat-form button,.restrow .st,.play,.sets input,.ck,.weight-lock-mini,.mode-icon,.exinfo-btn,.bookmark-rail{
+ border:1.5px solid transparent!important;
+ border-image:repeating-linear-gradient(115deg,#77766e 0 5px,transparent 5px 7px,#77766e 7px 8px,transparent 8px 11px) 1!important;
+ border-radius:6px 4px 7px 5px!important;box-shadow:none!important;
+}
+.card,.rb,.sheet,.sheet-in,.sheet-foot,.datepick,.ib,.chip,.btn,.mini,.mchip,.qchip,.notice,.plist,.pitem,.ai-msg,.ai-chat-form input,.play,.sets input,.ck,.restrow .st,.rbb,.bookmark-rail{background-color:rgba(255,255,251,.97)!important;color:#24231f!important}
+input,textarea,select{color:#171713!important;-webkit-text-fill-color:#171713!important;caret-color:#8f3028!important;opacity:1!important;background:#fffefa!important;border:1.5px dashed #57564e!important}
+input::placeholder,textarea::placeholder{color:#77766e!important;-webkit-text-fill-color:#77766e!important;opacity:1!important}
+.group-weight-line{display:flex!important;align-items:center!important;gap:9px!important;flex-wrap:nowrap!important;width:100%!important;min-width:0!important;margin-top:10px!important;padding:7px 8px!important;background:#f0efe8!important;border:1.5px dashed #77766e!important;border-radius:5px 8px 4px 7px!important}
+.group-weight-line label{flex:0 0 auto!important;color:#292821!important;font-family:'Song Myung','Nanum Myeongjo',serif!important;font-size:14px!important;font-weight:700!important;white-space:nowrap!important}
+.group-weight-line input,[data-group-weight]{
+ display:block!important;flex:0 0 94px!important;width:94px!important;min-width:94px!important;max-width:94px!important;height:42px!important;min-height:42px!important;padding:0 7px!important;
+ color:#171713!important;-webkit-text-fill-color:#171713!important;caret-color:#8f3028!important;background:#fffefa!important;
+ border:2px solid #45443d!important;border-radius:4px!important;font-family:'Barlow Condensed','Arial Narrow',sans-serif!important;
+ font-size:25px!important;font-weight:800!important;line-height:1!important;text-align:center!important;letter-spacing:.02em!important;text-shadow:none!important;opacity:1!important;
+}
+.group-weight-line input:focus,[data-group-weight]:focus{outline:2px dashed #8f3028!important;outline-offset:2px!important;background:#fff!important}
+.weight-lock-mini{flex:0 0 36px!important;width:36px!important;height:36px!important;min-width:36px!important;border:1.5px dashed #77766e!important;background:#fffefa!important;color:#292821!important}
+.weight-lock-mini svg{width:19px!important;height:19px!important;stroke:currentColor!important}
+.weight-lock-mini.is-locked{background:#292821!important;color:#fffefa!important;border-color:#292821!important}
+.grp header{align-items:flex-start!important}
+.stone-dumbbell{width:38px!important;height:27px!important;filter:none!important}
+.workout-return{background:#fffefa!important;border:1.5px dashed #292821!important;border-radius:7px 5px 8px 6px!important;box-shadow:1px 2px 0 rgba(40,39,33,.12)!important}
+.nav-glyph,.tabs button svg,.ib svg,.chip svg,.mini svg,.btn svg,.rbb svg{filter:none!important}
+.tabs{background:rgba(251,251,248,.98)!important;border-top:1.5px dashed #77766e!important}
+.tabs button[aria-selected=true]{color:#8f3028!important;background:#f0efe8!important;box-shadow:inset 0 -2px #8f3028!important}
+.srow.next,.srow.nav-focus,.grp.nav-focus{outline:2px dashed #77766e!important;outline-offset:2px!important;background:#f3f1e9!important}
+.bookmark-rail{background:#fffefa!important;border:1.5px dashed #77766e!important}
+.bookmark-heading{color:#292821!important}
+.toast,.alarm-flash,.tip{background:#fffefa!important;color:#24231f!important;border:1.5px dashed #77766e!important}
+
 </style>
 
 <div class="app">
@@ -1019,7 +1065,7 @@ input:focus,textarea:focus{outline:2px dashed #8f3028!important;outline-offset:2
     <div class="rb-tip" id="rbTip" hidden></div>
   </div>
 </div>
-<button type="button" class="workout-return" id="workoutReturn" aria-label="현재 운동 위치로 이동" title="현재 운동으로 이동" hidden><svg class="stone-dumbbell" viewBox="0 0 48 32" aria-hidden="true"><path d="M5 8 Q7 4 12 5 L17 8 Q19 10 18 14 L18 22 Q17 27 12 28 L6 25 Q3 22 4 17Z M30 8 Q32 5 37 4 L43 8 Q45 11 44 16 L44 22 Q42 27 37 28 L31 25 Q28 22 29 17Z" fill="none" stroke="#292821" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 14 Q22 12 33 14 L33 19 Q23 17 15 20Z" fill="none" stroke="#292821" stroke-width="2.8" stroke-linecap="round"/><path d="M7 10 L10 8 M7 22 L11 24 M36 8 L40 10 M37 24 L41 22 M18 13 L20 12 M29 20 L32 21" fill="none" stroke="#77766e" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+<button type="button" class="workout-return" id="workoutReturn" aria-label="현재 운동 위치로 이동" title="현재 운동으로 이동" hidden><svg class="stone-dumbbell" viewBox="0 0 64 44" aria-hidden="true"><path d="M5 10 Q8 5 14 7 L19 11 Q22 14 21 20 L20 31 Q17 38 10 35 L5 31 Q2 27 3 20Z M43 11 Q46 6 53 7 L59 12 Q62 17 60 25 L57 33 Q52 39 46 35 L42 31 Q40 25 41 19Z" fill="#282720"/><path d="M17 19 Q28 15 47 19 L47 26 Q31 23 17 28Z" fill="#282720"/><path d="M7 13 Q10 10 15 12 M7 29 L12 32 M48 11 L55 13 M48 32 L54 30 M22 19 L28 18 M36 26 L43 25" fill="none" stroke="#fffefa" stroke-width="1.5" stroke-linecap="round"/><path d="M8 5l2-2m42 3 3-2M1 34l3 2m55-1 3-2" stroke="#282720" stroke-width="2" stroke-linecap="round"/><path d="M29 17l4-1m-7 12 5-1" stroke="#fffefa" stroke-width="1" stroke-linecap="round"/></svg></button>
 
 <nav class="tabs" aria-label="화면 전환">
   <div class="tabs-in" role="tablist">
@@ -2407,7 +2453,7 @@ input:focus,textarea:focus{outline:2px dashed #8f3028!important;outline-offset:2
     var id='ai_'+Date.now()+'_'+Math.floor(Math.random()*100000);
     var history=aiState.messages.slice(-7).map(function(m){return (m.role==='user'?'사용자: ':'코치: ')+m.text;}).join('\n');
     aiPending[id]=true;
-    try { window.AndroidBridge.askGroq(id,question,aiContext()+'\n\n응답 말투 지침: 돌쇠록스의 코치답게 조선 시대 머슴의 구수하고 담백한 말투를 쓰시오. 문장 끝은 하오체/하소서체(예: 좋소, 유지하시오, 해보시오)로 하되 과장된 사극 대사나 어려운 한자어는 피하시오. 운동 수치와 근거는 정확하고 현대적인 표현으로 유지하시오.\n\n최근 대화:\n'+history); }
+    try { window.AndroidBridge.askGroq(id,question,aiContext()+'\n\n응답 말투 지침: 돌쇠록스의 코치답게 조선 시대 머슴의 구수하고 담백한 말투를 쓰시오. 문장 끝은 하오체/하소서체(예: 좋소, 유지하시오, 해보시오)로 하되 돌쇠가 주인에게 아뢰는 듯한 자연스러운 조선식 말투(예: 하오, 하시오, 했소, 좋소, 알겠소)를 일관되게 쓰시오. 과장된 사극 대사나 어려운 한자어는 피하시오. 운동 수치와 근거는 정확하고 현대적인 표현으로 유지하시오.\n\n최근 대화:\n'+history); }
     catch(e){ delete aiPending[id]; aiState.busy=false; aiState.messages.push({role:'assistant',text:'AI 요청을 시작하지 못했어요. 앱을 다시 실행해 주세요.'}); renderCoach(); }
   }
   window.onNativeAiResult=function(id,ok,message){
@@ -2431,7 +2477,7 @@ input:focus,textarea:focus{outline:2px dashed #8f3028!important;outline-offset:2
       [/했습니다/g, '했소'], [/했어요/g, '했소'], [/있습니다/g, '있소'], [/있어요/g, '있소'],
       [/없습니다/g, '없소'], [/없어요/g, '없소'], [/괜찮아요/g, '괜찮소'],
       [/높아요/g, '높소'], [/낮아요/g, '낮소'], [/많아요/g, '많소'], [/적어요/g, '적소'],
-      [/같아요/g, '같소'], [/나와요/g, '나오오'], [/돼요/g, '되오'], [/해요/g, '하오'],
+      [/같아요/g, '같소'], [/나와요/g, '나오시오'], [/해 주세요/g, '해주시오'], [/해주세요/g, '해주시오'], [/돼요/g, '되오'], [/해요/g, '하오'],
       [/어요(?=[.!?]|$)/g, '소'], [/아요(?=[.!?]|$)/g, '소']
     ];
     rules.forEach(function (rule) { msg = msg.replace(rule[0], rule[1]); });

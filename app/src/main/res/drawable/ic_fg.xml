@@ -2,15 +2,6 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
-    <path android:fillColor="#FFFFFF" android:pathData="M0,0h108v108h-108z"/>
-    <group android:translateX="15" android:translateY="27" android:scaleX="1.2" android:scaleY="1.2">
-        <path android:fillColor="#282720" android:pathData="M5,10 Q8,5 14,7 L19,11 Q22,14 21,20 L20,31 Q17,38 10,35 L5,31 Q2,27 3,20 Z M43,11 Q46,6 53,7 L59,12 Q62,17 60,25 L57,33 Q52,39 46,35 L42,31 Q40,25 41,19 Z"/>
-        <path android:fillColor="#282720" android:pathData="M17,19 Q28,15 47,19 L47,26 Q31,23 17,28 Z"/>
-        <path android:fillColor="#00000000" android:strokeColor="#fffefa" android:strokeWidth="1.5" android:strokeLineCap="round"
-            android:pathData="M7,13 Q10,10 15,12 M7,29 L12,32 M48,11 L55,13 M48,32 L54,30 M22,19 L28,18 M36,26 L43,25"/>
-        <path android:fillColor="#00000000" android:strokeColor="#282720" android:strokeWidth="2" android:strokeLineCap="round"
-            android:pathData="M8,5 l2,-2 M50,6 l3,-2 M1,34 l3,2 M59,33 l3,-2"/>
-        <path android:fillColor="#00000000" android:strokeColor="#fffefa" android:strokeWidth="1" android:strokeLineCap="round"
-            android:pathData="M29,17 l4,-1 M26,29 l5,-1"/>
-    </group>
+    <path android:fillColor="#FFFFFF" android:pathData="M0,0h108v108h-108z" />
+    <path android:fillColor="#171713" android:pathData="M48.5,15.0 L47.5,16.0 L44.5,16.0 L41.5,18.0 L46.5,21.0 L48.5,24.0 L48.5,28.0 L46.5,32.0 L46.5,38.0 L42.5,41.0 L38.5,41.0 L26.5,45.0 L20.5,45.0 L21.5,50.0 L25.5,54.0 L29.5,54.0 L41.5,47.0 L43.5,48.0 L43.5,51.0 L41.5,54.0 L42.5,55.0 L40.5,56.0 L41.5,57.0 L39.5,59.0 L39.5,62.0 L33.5,70.0 L27.5,76.0 L18.5,82.0 L20.5,83.0 L26.5,81.0 L31.5,77.0 L33.5,78.0 L38.5,74.0 L47.5,64.0 L49.5,59.0 L52.5,55.0 L53.5,50.0 L57.5,44.0 L64.5,43.0 L65.5,42.0 L70.5,42.0 L72.5,44.0 L72.5,50.0 L68.5,62.0 L69.5,63.0 L66.5,67.0 L65.5,71.0 L61.5,75.0 L54.5,75.0 L50.5,73.0 L53.5,77.0 L53.5,80.0 L59.5,89.0 L58.5,90.0 L61.5,92.0 L67.5,89.0 L69.5,86.0 L72.5,85.0 L79.5,74.0 L83.5,63.0 L85.5,49.0 L89.5,46.0 L90.5,43.0 L84.5,36.0 L78.5,33.0 L75.5,33.0 L72.5,35.0 L65.5,35.0 L61.5,37.0 L58.5,37.0 L57.5,36.0 L57.5,33.0 L59.5,31.0 L59.5,29.0 L61.5,26.0 L61.5,23.0 L58.5,19.0 L50.5,15.0 Z" />
 </vector>

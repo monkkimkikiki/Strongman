@@ -904,6 +904,31 @@ input::placeholder,textarea::placeholder{color:#77766e!important;-webkit-text-fi
 .bookmark-heading{color:#292821!important}
 .toast,.alarm-flash,.tip{background:#fffefa!important;color:#24231f!important;border:1.5px dashed #77766e!important}
 
+
+
+/* v1.37 — 궁서체 통일, 작은 무게칸, 종료 시 휴식 위젯 완전 정리 */
+body,body *,button,input,textarea,select{
+ font-family:'Gungsuh','궁서체','궁서','Batang','Noto Serif KR',serif!important;
+}
+h1,h2,h3,.brand,.ptitle,.grp h3,.ai-title,.cbh,.cue,.bookmark-heading{
+ font-family:'Gungsuh','궁서체','궁서','Batang','Noto Serif KR',serif!important;
+ font-weight:400!important;letter-spacing:0!important;
+}
+input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb-digits,.sdone{
+ font-family:'Barlow Condensed','Arial Narrow',sans-serif!important;
+}
+.group-weight-line{
+ gap:5px!important;margin-top:7px!important;padding:4px 5px!important;
+ background:transparent!important;border:0!important;width:auto!important;
+}
+.group-weight-line label{font-size:13px!important;font-weight:400!important}
+.group-weight-line input,[data-group-weight]{
+ flex:0 0 52px!important;width:52px!important;min-width:52px!important;max-width:52px!important;
+ height:40px!important;min-height:40px!important;padding:0 3px!important;
+ font-size:20px!important;font-weight:700!important;border-width:1.5px!important;
+}
+.weight-lock-mini{flex:0 0 28px!important;width:28px!important;min-width:28px!important;height:28px!important}
+
 </style>
 
 <div class="app">
@@ -1512,8 +1537,13 @@ input::placeholder,textarea::placeholder{color:#77766e!important;-webkit-text-fi
       ? '아직 완료하지 않은 세트가 ' + left + '개 있어요.\n미완료 세트는 제외하고 운동을 종료할까요?'
       : '오늘 운동을 종료하고 운동 평가를 확인할까요?';
     if (!window.confirm(msg)) return;
-    if (T.phase !== 'idle') { T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); tick(); }
     if (mutate(dt, function (dd) { dd.workoutEndedAt = Date.now(); })) {
+      // 종료 버튼은 타이머 상태와 무관하게 화면 바·예약 알람·진행 알림을 모두 정리한다.
+      T = { phase: 'idle' }; saveT();
+      cancelRestAlarm(); cancelScheduledRestAlarm(); lockOff();
+      var restBar = $('#restbar');
+      if (restBar) restBar.hidden = true;
+      document.body.classList.remove('hasbar');
       workoutNav.active = false; workoutNav.exercise = null; saveWorkoutNav(); syncWorkoutReturn();
       stopWorkoutStatus();
       coachUI.dayKey = dt; coachUI.day = true; renderCoach();

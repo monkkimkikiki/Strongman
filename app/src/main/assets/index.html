@@ -479,6 +479,42 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
 .tabs button[aria-selected="true"] .nav-glyph{stroke-width:2.3}
 .nav-glyph{width:26px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 @media (max-width:360px){.sets li{grid-template-columns:18px minmax(0,1fr) 16px minmax(0,1fr) 44px 38px;gap:4px}.ptitle{font-size:19px}.pnum{padding:6px 11px;font-size:14px}}
+
+/* ===== v1.50 — 붓글씨체, 붓 선, 떠다니는 책갈피 ===== */
+@font-face{font-family:'Dolsoe Brush';src:url(fonts/EastSeaDokdo-sub.woff) format('woff');font-weight:400;font-style:normal;font-display:swap}
+:root{
+  --font-brush:'Dolsoe Brush','East Sea Dokdo','Nanum Myeongjo','Noto Serif KR','Noto Serif CJK KR',serif;
+  --brush-dark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 12' preserveAspectRatio='none'%3E%3Cpath d='M2 6.3C16 3.9 44 4.3 90 3.9S192 3.5 264 3.9 374 4.2 398 5.6C386 7.2 332 7.7 264 8.1S112 8.4 62 8.6 12 8.5 2 6.3Z' fill='%233A2A20' fill-opacity='0.92'/%3E%3Cpath d='M24 9.9C92 9.4 172 10.2 244 9.6S334 9.9 376 9.4' stroke='%233A2A20' stroke-width='.8' fill='none' stroke-opacity='0.51'/%3E%3Cpath d='M60 2.3C130 1.9 210 2.4 312 2.1' stroke='%233A2A20' stroke-width='.6' fill='none' stroke-opacity='0.37'/%3E%3C/svg%3E"); --brush-mid:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 12' preserveAspectRatio='none'%3E%3Cpath d='M2 6.3C16 3.9 44 4.3 90 3.9S192 3.5 264 3.9 374 4.2 398 5.6C386 7.2 332 7.7 264 8.1S112 8.4 62 8.6 12 8.5 2 6.3Z' fill='%236B5442' fill-opacity='0.62'/%3E%3Cpath d='M24 9.9C92 9.4 172 10.2 244 9.6S334 9.9 376 9.4' stroke='%236B5442' stroke-width='.8' fill='none' stroke-opacity='0.34'/%3E%3Cpath d='M60 2.3C130 1.9 210 2.4 312 2.1' stroke='%236B5442' stroke-width='.6' fill='none' stroke-opacity='0.25'/%3E%3C/svg%3E"); --brush-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 12' preserveAspectRatio='none'%3E%3Cpath d='M2 6.3C16 3.9 44 4.3 90 3.9S192 3.5 264 3.9 374 4.2 398 5.6C386 7.2 332 7.7 264 8.1S112 8.4 62 8.6 12 8.5 2 6.3Z' fill='%23CDBBA3' fill-opacity='0.75'/%3E%3Cpath d='M24 9.9C92 9.4 172 10.2 244 9.6S334 9.9 376 9.4' stroke='%23CDBBA3' stroke-width='.8' fill='none' stroke-opacity='0.41'/%3E%3Cpath d='M60 2.3C130 1.9 210 2.4 312 2.1' stroke='%23CDBBA3' stroke-width='.6' fill='none' stroke-opacity='0.30'/%3E%3C/svg%3E");
+}
+h2,.ptitle,.grp h3,.wk b,.fin-tx b,.startrow .tx b,.rt header h3,.ehead h3,.sheet-top h2{font-family:var(--font-brush);font-weight:400;letter-spacing:0;-webkit-text-stroke:.3px currentColor}
+h2{font-size:23px;line-height:1.2;margin-bottom:10px}
+.sheet-top h2{font-size:24px;margin:0}
+.ptitle{font-size:29px;line-height:1.1}
+.grp h3{font-size:25px;line-height:1.15}
+.wk b{font-size:21px;line-height:1.1}
+.fin-tx b{font-size:23px;line-height:1.15}
+.startrow .tx b{font-size:22px}
+.rt header h3,.ehead h3{font-size:23px}
+.grp{scroll-margin-top:76px}
+
+/* 붓으로 그은 선 */
+.grp.card{border-bottom:0;background:var(--brush-mid) center bottom/100% 10px no-repeat;padding-bottom:24px}
+.weekstrip{border-bottom:0;background:var(--brush-mid) center bottom/100% 10px no-repeat;padding-bottom:8px;margin-bottom:8px}
+.wk.on::after{left:-2px;right:-2px;bottom:-5px;height:12px;background:var(--brush-dark) center/100% 100% no-repeat}
+.meter{height:12px;background:var(--brush-light) center/100% 100% no-repeat;border-radius:0}
+.meter i{background:var(--brush-dark) left center/100% 100% no-repeat;border-radius:0}
+.finbar{border:0;background:var(--surface2)}
+
+/* 화면 오른쪽을 따라다니는 책갈피 */
+.bmfloat{position:fixed;right:0;top:calc(env(safe-area-inset-top,0px) + 236px);z-index:30;display:flex;flex-direction:column;align-items:flex-end;gap:10px;max-height:calc(100vh - 340px);overflow-y:auto;overflow-x:hidden;pointer-events:none;scrollbar-width:none}
+.bmfloat::-webkit-scrollbar{display:none}
+.bmfloat[hidden]{display:none}
+.bmfloat .bm{pointer-events:auto;position:relative;flex:none;writing-mode:vertical-rl;text-orientation:mixed;width:26px;padding:19px 3px 17px 3px;border:0;background:#3B2B20;color:#F6EBD8;font-family:var(--font-brush);font-size:19px;line-height:1;letter-spacing:.04em;white-space:nowrap;clip-path:polygon(0 0,100% 0,100% calc(100% - 1px),50% calc(100% - 9px),0 calc(100% - 1px));cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bmfloat .bm::before{content:"";position:absolute;top:5px;left:50%;width:8px;height:8px;margin-left:-4px;background:#A3402F;border-radius:1px}
+.bmfloat .bm:active{background:#5A4233}
+.bmfloat .bm span{display:block}
+body.hasbm main{padding-right:14px}
+@media (prefers-reduced-motion:no-preference){.bmfloat .bm{animation:bmin .25s ease-out}@keyframes bmin{from{transform:translateX(26px)}to{transform:none}}}
 </style>
 
 <div class="app">
@@ -647,6 +683,8 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
   </div>
 </div>
 <button type="button" class="workout-return" id="workoutReturn" aria-label="현재 운동 위치로 이동" title="현재 운동으로 이동" hidden><svg class="stone-dumbbell" viewBox="0 0 64 44" aria-hidden="true"><path d="M5 10 Q8 5 14 7 L19 11 Q22 14 21 20 L20 31 Q17 38 10 35 L5 31 Q2 27 3 20Z M43 11 Q46 6 53 7 L59 12 Q62 17 60 25 L57 33 Q52 39 46 35 L42 31 Q40 25 41 19Z" fill="#282720"/><path d="M17 19 Q28 15 47 19 L47 26 Q31 23 17 28Z" fill="#282720"/><path d="M7 13 Q10 10 15 12 M7 29 L12 32 M48 11 L55 13 M48 32 L54 30 M22 19 L28 18 M36 26 L43 25" fill="none" stroke="#fffefa" stroke-width="1.5" stroke-linecap="round"/><path d="M8 5l2-2m42 3 3-2M1 34l3 2m55-1 3-2" stroke="#282720" stroke-width="2" stroke-linecap="round"/><path d="M29 17l4-1m-7 12 5-1" stroke="#fffefa" stroke-width="1" stroke-linecap="round"/></svg></button>
+
+<div class="bmfloat" id="bmFloat" role="navigation" aria-label="책갈피" hidden></div>
 
 <nav class="tabs" aria-label="화면 전환">
   <div class="tabs-in" role="tablist">
@@ -1181,7 +1219,7 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
     saveBookmarks(list); renderWoList();
   }
   function jumpToBookmarkedExercise(key) {
-    var cards = $('#todayList [data-exercise]'), target = null;
+    var cards = $$('#todayList [data-exercise]'), target = null;
     for (var i = 0; i < cards.length; i++) {
       if (cards[i].getAttribute('data-exercise') === key) { target = cards[i]; break; }
     }
@@ -1191,12 +1229,26 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
     setTimeout(function () { target.classList.remove('nav-focus'); }, 1700);
   }
 
+  function renderBmFloat(gs, bookmarks) {
+    var box = $('#bmFloat'); if (!box) return;
+    var html = (bookmarks || []).map(function (key) {
+      var m = gs.filter(function (g) { return g.key === key; })[0]; if (!m) return '';
+      var full = m.sets[0].ex, short = full.replace(/\s+/g, ''); if (short.length > 6) short = short.slice(0, 6) + '…';
+      return '<button type="button" class="bm" data-bookmark-jump="' + esc(key) + '" title="' + esc(full) + '" aria-label="책갈피: ' + esc(full) + '(으)로 이동"><span>' + esc(short) + '</span></button>';
+    }).join('');
+    box.innerHTML = html; syncBmFloat();
+  }
+  function syncBmFloat() {
+    var box = $('#bmFloat'); if (!box) return;
+    var show = !!box.children.length && tab === 'log';
+    box.hidden = !show; document.body.classList.toggle('hasbm', show);
+  }
   function renderWoList() {
     var d = getDay(selDate), gs = groupsOf(d), nextId = null;
     for (var a = 0; a < gs.length && !nextId; a++) for (var b = 0; b < gs[a].sets.length; b++) if (!isDone(gs[a].sets[b])) { nextId = gs[a].sets[b].id; break; }
     var bookmarks = dayBookmarks();
-    if (!gs.length) { $('#todayList').innerHTML = ''; return; }
-    var bookmarkRail = '<div class="bookmark-rail"><div class="bookmark-heading">📌 장부 책갈피 <small>찍어둔 종목으로 훌쩍 이동</small></div>' + (bookmarks.length ? bookmarks.map(function (key) { var match = gs.filter(function (g) { return g.key === key; })[0]; return match ? '<button type="button" class="bookmark-jump" data-bookmark-jump="' + esc(key) + '">↘ ' + esc(match.sets[0].ex) + '</button>' : ''; }).join('') : '<span class="bookmark-empty">종목 옆 책갈피를 눌러 자리를 표시하시오</span>') + '</div>';
+    if (!gs.length) { $('#todayList').innerHTML = ''; renderBmFloat(gs, []); return; }
+    var bookmarkRail = ''; renderBmFloat(gs, bookmarks);
     $('#todayList').innerHTML = bookmarkRail + gs.map(function (g) {
       var first = g.sets[0], timed = first.mode === 'time', ls = lastSession(first.ex, selDate), bookmarked = bookmarks.indexOf(g.key) >= 0;
       var lastInfo = !ls ? '이전 완료 기록이 없어요.' : '지난 운동 · ' + fmtShort(ls.date) + ' · ' + ls.sets.slice(0, 5).map(function (s) { return s.mode === 'time' ? mmss(s.s || s.targetSec || 0) : fw(s.w) + 'kg × ' + s.r + '회'; }).join(' / ') + (ls.sets.length > 5 ? ' 외 ' + (ls.sets.length - 5) + '세트' : '');
@@ -1271,7 +1323,7 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
       setTimeout(function () { row.classList.remove('nav-focus'); }, 1400);
       return;
     }
-    var cards = $('#todayList [data-exercise]'), target = null;
+    var cards = $$('#todayList [data-exercise]'), target = null;
     for (var i = 0; i < cards.length; i++) {
       if (cards[i].getAttribute('data-exercise') === key) { target = cards[i]; break; }
     }
@@ -1325,7 +1377,7 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
         group.forEach(function (x) { if (!isDone(x) && !x.setWeightLocked) x.w = v; });
         group.forEach(function (x) { if (Object.prototype.hasOwnProperty.call(completedWeights, x.id)) x.w = completedWeights[x.id]; });
         if (group[0]) group[0].groupWeight = v;
-        var rows = $('#todayList [data-set]');
+        var rows = $$('#todayList [data-set]');
         rows.forEach(function (row) {
           var item = group.filter(function (x) { return x.id === row.getAttribute('data-set'); })[0];
           var field = row.querySelector('input[data-f="w"]');
@@ -2816,7 +2868,7 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
     st.textContent = txt; st.className = 'status ' + cls;
   }
   function renderAll() {
-    renderHeader();
+    renderHeader(); syncBmFloat();
     if (tab === 'log') renderLog(); else if (tab === 'routine') renderRoutines(); else if (tab === 'stats') renderStats(); else if (tab === 'diet') renderDiet(); else if (tab === 'ai') renderCoach(); else renderSettings();
     if (!$('#calSheet').hidden) renderCal($('#calBody'));
   }
@@ -2871,7 +2923,8 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
     function fitWorkoutTitles(){
       document.querySelectorAll('.ptitle,.grp h3').forEach(function(el){
         if(!el.clientWidth) return;
-        var base=15,min=7;
+        el.style.fontSize='';
+        var base=parseFloat(getComputedStyle(el).fontSize)||15,min=12;
         el.style.whiteSpace='nowrap';
         el.style.overflow='visible';
         el.style.textOverflow='clip';

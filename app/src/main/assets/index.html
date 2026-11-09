@@ -819,7 +819,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     try { if (window.AndroidBridge && window.AndroidBridge.vibrateShort) window.AndroidBridge.vibrateShort(); else if (navigator.vibrate) navigator.vibrate(110); } catch (e) {}
   }
   var mmss = function (sec) { sec = Math.max(0, sec); return pad(Math.floor(sec / 60)) + ':' + pad(Math.floor(sec % 60)); };
-  function startRest(sec, tip, exerciseKey) { T = { phase: 'rest', restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '', exerciseKey: exerciseKey || workoutNav.exercise || null }; saveT(); scheduleRestAlarm(); updateWorkoutStatus('휴식 중', '다음 세트를 준비하세요'); lockOn(); tick(); }
+  function startRest(sec, tip, exerciseKey, setId) { T = { phase: 'rest', setId: setId || null, restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '', exerciseKey: exerciseKey || workoutNav.exercise || null }; saveT(); scheduleRestAlarm(); updateWorkoutStatus('휴식 중', '다음 세트를 준비하세요'); lockOn(); tick(); }
   function finishRest() {
     T = { phase: 'done', tip: T.tip || '', exerciseKey: T.exerciseKey || workoutNav.exercise || null }; saveT();
     // Keep the native alarm notification: cancelling here can race the receiver
@@ -1000,6 +1000,11 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
   function findSet(id) { var d = S.days[selDate]; if (!d) return null; for (var i = 0; i < d.sets.length; i++) if (d.sets[i].id === id) return d.sets[i]; return null; }
 
   function activeExerciseKey() {
+    if (T && T.setId) {
+      var current = findSet(T.setId);
+      if (current) return normEx(current.ex);
+    }
+    if (T && T.exerciseKey) return T.exerciseKey;
     if (workoutNav.active && workoutNav.exercise) return workoutNav.exercise;
     var d = getDay(selDate), gs = groupsOf(d);
     for (var i = 0; i < gs.length; i++) {
@@ -1007,10 +1012,28 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     }
     return gs.length ? gs[gs.length - 1].key : null;
   }
+  function activeSetId(key) {
+    if (T && T.setId && findSet(T.setId)) return T.setId;
+    var d = getDay(selDate), gs = groupsOf(d);
+    for (var i = 0; i < gs.length; i++) {
+      if (gs[i].key !== key) continue;
+      var next = gs[i].sets.filter(function (x) { return !isDone(x); })[0];
+      if (next) return next.id;
+      return gs[i].sets.length ? gs[i].sets[gs[i].sets.length - 1].id : null;
+    }
+    return null;
+  }
   function scrollToActiveExercise(behavior) {
     if (tab !== 'log' || selDate !== today() || inRowFocus()) return;
     var key = activeExerciseKey();
     if (!key) return;
+    var setId = activeSetId(key), row = setId ? $('#todayList [data-set="' + setId + '"]') : null;
+    if (row) {
+      row.scrollIntoView({ behavior: behavior || 'smooth', block: 'center' });
+      row.classList.add('nav-focus');
+      setTimeout(function () { row.classList.remove('nav-focus'); }, 1400);
+      return;
+    }
     var cards = $('#todayList [data-exercise]'), target = null;
     for (var i = 0; i < cards.length; i++) {
       if (cards[i].getAttribute('data-exercise') === key) { target = cards[i]; break; }
@@ -1027,7 +1050,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
     if (T.phase === 'set' && T.setId === id) sec = Math.max(1, Math.round((Date.now() - T.start) / 1000));
     if (mutate(dt, function (dd) { dd.sets.forEach(function (x) { if (x.id === id) { x.done = true; x.s = sec || null; x.t = Date.now(); } }); })) {
       if (T.phase === 'set' && T.setId === id) cancelRestAlarm();
-      startRest(restFor(st.ex), tipLabel(nextTip(dt)), normEx(st.ex));
+      startRest(restFor(st.ex), tipLabel(nextTip(dt)), normEx(st.ex), id);
       var now = findSet(id), warn = now ? setFeedback(now, dt).filter(function (f) { return f.tone === 'warn'; })[0] : null;
       if (warn) toast(warn.text.length > 70 ? warn.text.slice(0, 68) + '…' : warn.text);
       var doneGroup = groupsOf(getDay(dt)).filter(function (g) { return g.key === normEx(st.ex); })[0];

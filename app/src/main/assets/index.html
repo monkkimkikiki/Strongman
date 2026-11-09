@@ -1035,6 +1035,27 @@ input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb
   color:#fffefa!important;
 }
 
+/* v1.47 — force every UI rule to a true hairline; previous 1px component rules were winning */
+html body *,
+html body *::before,
+html body *::after{
+  border-width:.35px!important;
+}
+html body .tabs{border-top-width:.35px!important}
+html body .card::before{height:.35px!important}
+html body .srow.next,
+html body .srow.nav-focus{outline-width:.35px!important;outline-offset:0!important}
+html body :focus-visible{outline-width:.5px!important;outline-offset:0!important}
+/* Preserve intentionally borderless exercise grouping and set cells. */
+html body .group-weight-line,
+html body .grp,
+html body .grp header,
+html body .sets input,
+html body .sets .ck,
+html body .sets .play{
+  border:0!important;
+  box-shadow:none!important;
+}
 </style>
 
 <div class="app">

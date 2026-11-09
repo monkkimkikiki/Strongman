@@ -714,6 +714,63 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
   color:#eee3cf!important;
   box-shadow:none!important;
 }
+
+/* v1.34 — legible hanji weight field, ivory icons, plain playback, Dolsoe feedback */
+.group-weight-line input{
+  color:#33271d!important;
+  -webkit-text-fill-color:#33271d!important;
+  caret-color:#6b4c30!important;
+  opacity:1!important;
+  background:#eee3cf!important;
+  border:1px dashed #ad9472!important;
+  font-size:20px!important;
+  font-weight:800!important;
+  text-shadow:none!important;
+  box-shadow:inset 1px 1px 2px rgba(65,45,25,.12)!important;
+}
+.group-weight-line input:focus{
+  outline:2px dashed #b69a72!important;
+  outline-offset:2px!important;
+  background:#f7efdf!important;
+}
+.nav-glyph,.mode-icon,.mode-icon svg,.exinfo-btn,.bookmark-toggle,
+.stone-dumbbell,.lock-glyph,.tabs button svg,.ib svg,.chip svg,
+.mini svg,.btn svg,.rbb svg{
+  color:#f1e8d8!important;
+}
+.nav-glyph,.tabs button svg,.ib svg,.chip svg,.mini svg,.btn svg,.rbb svg{
+  stroke:#f1e8d8!important;
+}
+.mode-icon,.mode-icon[aria-label^="시간"]{
+  background:#40352a!important;
+  background-image:none!important;
+  border-color:#b5a184!important;
+  color:#f1e8d8!important;
+}
+.mode-icon svg{stroke:#f1e8d8!important;fill:none!important}
+.exinfo-btn,.exinfo-btn[aria-expanded="true"]{
+  background:#eee3cf!important;
+  background-image:none!important;
+  border-color:#b9a486!important;
+  color:#443426!important;
+}
+.bookmark-toggle{color:#f1e8d8!important}
+.bookmark-toggle.is-marked{
+  color:#f5e8cf!important;
+  background:#5a4936!important;
+  border-color:#c9b18c!important;
+  text-shadow:none!important;
+}
+/* Playback is a single ink color, never a gradient. */
+.play,.sets .play,.sets li.timed .play{
+  background:#40352a!important;
+  background-color:#40352a!important;
+  background-image:none!important;
+  border:1px dashed #b29a78!important;
+  color:#f1e8d8!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+}
 </style>
 
 <div class="app">
@@ -2279,7 +2336,10 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
       [/좋아요/g, '좋소'], [/필요해요/g, '필요하오'], [/하세요/g, '하시오'],
       [/보세요/g, '보시오'], [/해주세요/g, '해주시오'], [/입니다/g, '이오'],
       [/됩니다/g, '되오'], [/했어요/g, '했소'], [/있어요/g, '있소'], [/없어요/g, '없소'],
-      [/해요/g, '하오'], [/돼요/g, '되오'], [/어요(?=[.!?]|$)/g, '소']
+      [/괜찮아요/g, '괜찮소'], [/높아요/g, '높소'], [/낮아요/g, '낮소'],
+      [/많아요/g, '많소'], [/적어요/g, '적소'], [/같아요/g, '같소'],
+      [/나와요/g, '나오'], [/돼요/g, '되오'], [/해요/g, '하오'],
+      [/아요(?=[.!?]|$)/g, '소'], [/어요(?=[.!?]|$)/g, '소']
     ];
     rules.forEach(function (rule) { msg = msg.replace(rule[0], rule[1]); });
     return msg;

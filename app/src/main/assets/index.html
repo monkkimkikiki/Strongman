@@ -107,7 +107,7 @@ input::placeholder{color:var(--ink3);opacity:.8}
 .sets li.shead{font-size:12px;color:var(--ink3);text-align:center;padding-block:0}.sets li.timed{grid-template-columns:20px minmax(0,1fr) minmax(0,1fr) 76px 40px}.sets li.timed .play{font-size:12px}.sets li.timed .live{font-size:17px}.sets li.timed .sdone{font-size:12px}.duration-editor{display:flex;align-items:center;justify-content:space-between;gap:8px}.duration-editor b{font-family:var(--font-num);font-size:22px}.mode-toggle{display:flex;gap:6px}.mode-toggle button{height:34px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-size:12px}.mode-toggle button[aria-pressed=true]{background:var(--accent-wash);border-color:var(--accent);color:var(--accent);font-weight:700}.mode-icon{flex:0 0 30px;width:30px;height:30px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--bg);color:var(--ink2);display:grid;place-items:center}.mode-icon svg{width:16px;height:16px;display:block}.mode-icon[aria-label^="시간"]{background:var(--accent-wash);border-color:#cbdaf7;color:var(--accent)}.grp-title-line{display:flex;align-items:center;gap:7px;min-width:0}.grp-title-line h3{min-width:0}.exinfo-btn{flex:0 0 19px;width:19px;height:19px;padding:0;border:1px solid #aab4c2;border-radius:50%;background:var(--surface);color:#7c8797;font-size:12px;font-weight:700;line-height:17px;text-align:center}.exinfo-btn[aria-expanded="true"]{background:var(--accent);border-color:var(--accent);color:#fff}.exercise-info{margin-top:7px;padding:8px 10px;border-radius:9px;background:var(--accent-wash);color:var(--ink2);font-size:12px;line-height:1.55}.exercise-info[hidden]{display:none}
 .sets .n{font-family:var(--font-num);font-weight:700;color:var(--ink3);font-size:18px;text-align:center}
 .sets input{height:40px;font-size:20px;text-align:center;padding-inline:4px}
-.set-weight-lock{box-sizing:border-box;width:18px;min-width:18px;height:24px;padding:0;justify-self:center;border:1px solid transparent;border-radius:5px;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--bg);transition:background .15s,border-color .15s,color .15s}.weight-lock-mini{flex:0 0 28px;width:28px;height:28px;padding:0;border:1px solid transparent;border-radius:7px;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--bg);transition:background .15s,border-color .15s,color .15s}.set-weight-lock.is-unlocked,.weight-lock-mini.is-unlocked{background:var(--bg);border-color:transparent;color:var(--bg)}.set-weight-lock.is-locked,.weight-lock-mini.is-locked{background:#667085;border-color:#667085;color:#fff}.lock-glyph{display:block;width:17px;height:17px;overflow:visible}.lock-glyph .lock-body{fill:currentColor;stroke:currentColor;stroke-width:1.2;stroke-linejoin:round}.lock-glyph .lock-shackle{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}.is-unlocked .lock-glyph .lock-body{fill:transparent;stroke:#c5cbd3;stroke-width:1.25}.is-unlocked .lock-glyph .lock-shackle{stroke:#c5cbd3;stroke-width:1.8}.is-locked .lock-glyph .lock-body{fill:#fff;stroke:#fff}.is-locked .lock-glyph .lock-shackle{stroke:#fff}.is-unlocked .lock-glyph .lock-shackle-closed{display:none}.is-locked .lock-glyph .lock-shackle-open{display:none}
+.set-weight-lock{box-sizing:border-box;width:20px;min-width:20px;height:26px;padding:0;justify-self:center;border:0;border-radius:6px;background:transparent;display:flex;align-items:center;justify-content:center;transition:transform .15s}.weight-lock-mini{flex:0 0 30px;width:30px;height:30px;padding:0;border:0;border-radius:8px;background:transparent;display:flex;align-items:center;justify-content:center;transition:transform .15s}.set-weight-lock:active,.weight-lock-mini:active{transform:scale(.88)}.lock-glyph{display:block;width:20px;height:20px;overflow:visible}.weight-lock-mini .lock-glyph{width:24px;height:24px}.lock-glyph .lock-body{stroke-linejoin:round;stroke-linecap:round}.lock-glyph .lock-shackle{fill:none;stroke-linecap:round;stroke-linejoin:round}.lock-glyph .lock-key{display:none}.is-locked .lock-glyph .lock-body{fill:#2b2118;stroke:#2b2118;stroke-width:1.2}.is-locked .lock-glyph .lock-shackle{stroke:#2b2118;stroke-width:2.6}.is-locked .lock-glyph .lock-key{display:inline;fill:#b8352a;stroke:#b8352a;stroke-width:.6}.is-unlocked .lock-glyph .lock-body{fill:rgba(160,138,112,.16);stroke:#a58f74;stroke-width:1.5}.is-unlocked .lock-glyph .lock-shackle{stroke:#a58f74;stroke-width:2.2}.is-unlocked .lock-glyph .lock-shackle-closed{display:none}.is-locked .lock-glyph .lock-shackle-open{display:none}.set-weight-lock[disabled]{opacity:.55}
 .srow.next{background:var(--accent-wash)}
 .srow.nav-focus{outline:2px solid var(--accent);outline-offset:1px;background:var(--accent-wash)}
 .srow.done input{background:transparent;color:var(--ink2)}
@@ -118,7 +118,7 @@ input::placeholder{color:var(--ink3);opacity:.8}
 .srow.done .ck{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .gfoot{display:flex;gap:8px;margin-top:10px}
 .mini{height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);padding-inline:12px;font-size:13px;font-weight:500}
-.group-weight-line{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;margin-top:8px;min-width:0}.group-weight-line label{white-space:nowrap;font-size:13px;color:var(--ink2);font-weight:500}.group-weight-line input{box-sizing:border-box;width:76px;min-width:0;height:32px;min-height:32px;padding:0 6px;font-size:18px;line-height:1;text-align:center;font-variant-numeric:tabular-nums}.weight-lock-mini{flex:0 0 28px;width:28px;height:28px;padding:0;border:1px solid #d7dce2;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;color:#667085}
+.group-weight-line{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;margin-top:8px;min-width:0}.group-weight-line label{white-space:nowrap;font-size:13px;color:var(--ink2);font-weight:500}.group-weight-line input{box-sizing:border-box;width:76px;min-width:0;height:32px;min-height:32px;padding:0 6px;font-size:18px;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
 .restrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 .restrow .lbl{margin-right:auto}
 .restrow .st{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);font-size:18px;line-height:1}
@@ -331,7 +331,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
 .toast button{border:0;background:transparent;color:inherit;font-weight:600;text-decoration:underline;padding:4px}
 .tip{position:fixed;left:0;top:0;z-index:90;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;line-height:1.4;padding:6px 9px;border-radius:7px;max-width:260px}
 @media (prefers-reduced-motion:reduce){.bf,.meter i{transition:none}}
-@media (max-width:360px){.rb-digits{font-size:34px}.sets li{grid-template-columns:18px minmax(0,1fr) 16px minmax(0,1fr) 46px 34px;gap:3px}.set-weight-lock{width:16px;min-width:16px;height:22px}}
+@media (max-width:360px){.rb-digits{font-size:34px}.sets li{grid-template-columns:18px minmax(0,1fr) 16px minmax(0,1fr) 46px 34px;gap:3px}.set-weight-lock{width:18px;min-width:18px;height:24px}}
 
 
 /* ===== v1.49 — 돌쇠록스 시안 UI (한지·수묵). 예전 덧칠 규칙을 모두 걷어내고 한 겹으로 정리 ===== */
@@ -515,9 +515,20 @@ h2{font-size:23px;line-height:1.2;margin-bottom:10px}
 .bmfloat .bm span{display:block}
 body.hasbm main{padding-right:14px}
 @media (prefers-reduced-motion:no-preference){.bmfloat .bm{animation:bmin .25s ease-out}@keyframes bmin{from{transform:translateX(26px)}to{transform:none}}}
+/* v1.51: 버튼·라벨 글자는 한 줄로 */
+.btn,.chip,.mini,.rbb,.mchip,.qchip,.ib,.tabs [role=tab],.wk,.pill,.star-btn,.lbl,label.lbl,.finbar button,.fin-tx b,.fin-tx span,.startrow .tx b,.startrow .tx span,.pitem .pn{white-space:nowrap}
+.btn,.chip,.mini{overflow:hidden;text-overflow:ellipsis}
+.row .btn{flex:1 0 auto;padding-inline:12px;min-width:0}
+.rtrow{flex-wrap:wrap}
+.startrow .tx b,.startrow .tx span{overflow:hidden;text-overflow:ellipsis}
+.empty .btn{max-width:100%}
+.fin-tx b,.fin-tx span{display:block;overflow:hidden;text-overflow:ellipsis}
+.toast span{word-break:keep-all;overflow-wrap:break-word}.toast button{white-space:nowrap}
+body{word-break:keep-all}
 </style>
 
 <div class="app">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="inkRough" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.6" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
   <header class="hero" role="img" aria-label="돌쇠록스 · 오늘도, 한 번 더!"><span class="status" id="status"></span></header>
   <div class="stick">
     <div class="datebar">
@@ -562,7 +573,7 @@ body.hasbm main{padding-right:14px}
       <div class="card">
         <h2>부위별 상세</h2>
         <div class="scroll" id="detail"></div>
-        <p class="note" style="margin-top:10px">완료 체크한 세트만 집계해요. 세트 시간이 30~60초 범위를 벗어나면 표시해요. 근비대에 흔히 쓰는 기준이라 참고용으로만 보세요.</p>
+        <p class="note" style="margin-top:10px">완료 체크한 세트만 집계하오. 세트 시간이 30~60초 범위를 벗어나면 표시하오. 근비대에 흔히 쓰는 기준이라 참고용으로만 보시오.</p>
       </div>
       <div class="card">
         <h2>체중</h2>
@@ -580,7 +591,7 @@ body.hasbm main{padding-right:14px}
       <div class="card" id="dietSummary"></div>
       <form class="card form" id="mealForm" novalidate>
         <h2>식사 추가</h2>
-        <div class="field" id="quickWrap"><span class="lbl">최근 먹은 음식 (누르면 오늘 식사에 바로 추가돼요)</span><div class="quick" id="quick"></div></div>
+        <div class="field" id="quickWrap"><span class="lbl">최근 먹은 음식 (누르면 오늘 식사에 바로 추가되오)</span><div class="quick" id="quick"></div></div>
         <div class="field sugwrap"><label class="lbl" for="mName">음식 이름</label><input type="text" id="mName" autocomplete="off" placeholder="예: 닭가슴살, 밥, 김치찌개" role="combobox" aria-expanded="false" aria-controls="mSug" aria-autocomplete="list">
           <ul class="sug" id="mSug" role="listbox" aria-label="음식 추천" hidden></ul></div>
         <div class="field" id="qtyRow" hidden>
@@ -591,7 +602,7 @@ body.hasbm main{padding-right:14px}
           <div class="field"><label class="lbl" for="mKcal">칼로리 (kcal)</label><input type="number" id="mKcal" inputmode="numeric" min="0" placeholder="0"></div>
           <div class="field"><label class="lbl" for="mProt">단백질 (g)</label><input type="number" id="mProt" inputmode="decimal" min="0" placeholder="0"></div>
         </div>
-        <p class="estnote">음식을 고르면 1인분 평균값으로 칼로리와 단백질이 자동 계산돼요. 브랜드나 조리법에 따라 달라서 대략치예요. 직접 고쳐도 돼요. 직접 입력한 음식은 ‘내 음식’으로 저장돼 다음부터 검색에 나와요. 별(☆)을 눌러 즐겨찾기에 넣으면 이름 칸을 누를 때 먼저 보여요.</p>
+        <p class="estnote">음식을 고르면 1인분 평균값으로 칼로리와 단백질이 자동 계산되오. 브랜드나 조리법에 따라 달라서 대략치이오. 직접 고쳐도 되오. 직접 입력한 음식은 ‘내 음식’으로 저장돼 다음부터 검색에 나오. 별(☆)을 눌러 즐겨찾기에 넣으면 이름 칸을 누를 때 먼저 보이오.</p>
         <div class="msg" id="mealMsg" role="alert"></div>
         <button type="submit" class="btn primary">추가</button>
       </form>
@@ -606,12 +617,12 @@ body.hasbm main{padding-right:14px}
     <section id="tab-set" class="tab" aria-label="설정" hidden>
       <div class="card form" id="aiSettingsCard">
         <h2>AI 코치 연결</h2>
-        <p class="note">Groq 무료 API를 연결하면 운동 기록을 바탕으로 질문 답변과 운동 총평을 받을 수 있어요. 운동 기록은 평소처럼 기기에 저장되고, AI 요청을 보낼 때 요약된 기록만 Groq로 전송됩니다.</p>
+        <p class="note">Groq 무료 API를 연결하면 운동 기록을 바탕으로 질문 답변과 운동 총평을 받을 수 있소. 운동 기록은 평소처럼 기기에 저장되고, AI 요청을 보낼 때 요약된 기록만 Groq로 전송되오.</p>
         <div class="field"><label class="lbl" for="groqKey">Groq API 키</label><input type="password" id="groqKey" class="ai-settings-key" placeholder="gsk_..." autocomplete="off" autocapitalize="off" spellcheck="false"></div>
         <div class="ai-settings-row"><button type="button" class="btn primary" id="groqSave">키 저장</button><button type="button" class="btn" id="groqDelete">삭제</button></div>
         <div class="row"><button type="button" class="btn" id="groqTest">연결 테스트</button><button type="button" class="btn" id="groqGetKey">무료 API 키 발급</button></div>
-        <p class="note" id="groqStatus" aria-live="polite">API 키를 저장하면 AI 코치를 사용할 수 있어요.</p>
-        <p class="note">키는 앱 내부의 Android Keystore로 암호화해 이 기기에만 저장합니다. 무료 이용량과 모델 제한은 Groq 계정별로 달라질 수 있어요.</p>
+        <p class="note" id="groqStatus" aria-live="polite">API 키를 저장하면 AI 코치를 사용할 수 있소.</p>
+        <p class="note">키는 앱 내부의 Android Keystore로 암호화해 이 기기에만 저장하오. 무료 이용량과 모델 제한은 Groq 계정별로 달라질 수 있소.</p>
       </div>
       <form class="card form" id="goalForm" novalidate>
         <h2>목표</h2>
@@ -619,7 +630,7 @@ body.hasbm main{padding-right:14px}
           <div class="field"><label class="lbl" for="gKcal">하루 칼로리 (kcal)</label><input type="number" id="gKcal" inputmode="numeric" min="1000" max="8000" step="50"></div>
           <div class="field"><label class="lbl" for="gProt">하루 단백질 (g)</label><input type="number" id="gProt" inputmode="numeric" min="20" max="400" step="5"></div>
           <div class="field"><label class="lbl" for="gSets">부위별 주간 세트</label><input type="number" id="gSets" inputmode="numeric" min="1" max="40"></div>
-          <div class="field"><label class="lbl" for="gRest">기본 휴식 (초) · 운동별 설정이 없을 때</label><input type="number" id="gRest" inputmode="numeric" min="10" max="600" step="5"></div>
+          <div class="field"><label class="lbl" for="gRest">기본 휴식 (초)</label><input type="number" id="gRest" inputmode="numeric" min="10" max="600" step="5"></div>
         </div>
         <div class="msg" id="goalMsg" role="alert"></div>
         <button type="button" class="btn" id="calcProt">최근 체중으로 단백질 목표 계산</button>
@@ -631,25 +642,25 @@ body.hasbm main{padding-right:14px}
       </div>
       <div class="card form" id="analysisExportCard">
         <h2>운동·식단 분석 파일 내보내기</h2>
-        <p class="note">주간·월간·전체 기록을 JSON 파일로 저장해 ChatGPT에 첨부하면 운동 진행, 부위별 운동량, 식단, 체중 변화를 종합 분석할 수 있어요.</p>
+        <p class="note">주간·월간·전체 기록을 JSON 파일로 저장해 ChatGPT에 첨부하면 운동 진행, 부위별 운동량, 식단, 체중 변화를 종합 분석할 수 있소.</p>
         <div class="row">
           <button type="button" class="btn" id="exportWeek">주간 분석</button>
           <button type="button" class="btn" id="exportMonth">월간 분석</button>
         </div>
         <button type="button" class="btn primary" id="exportAll">전체 기록 분석 파일</button>
-        <p class="note" id="exportMsg" aria-live="polite">주간·월간은 현재 선택된 날짜가 포함된 기간을 기준으로 내보냅니다.</p>
+        <p class="note" id="exportMsg" aria-live="polite">주간·월간은 현재 선택된 날짜가 포함된 기간을 기준으로 내보내오.</p>
       </div>
       <div class="card form" id="backupCard">
         <h2>설정 백업 · 불러오기</h2>
-        <p class="note">루틴, 즐겨찾기, 내 음식·내 운동, 운동별 휴식, 목표 설정을 글자로 복사해 두었다가 새로 설치한 앱이나 다른 기기에 붙여넣어 불러올 수 있어요. 메모 앱이나 카카오톡 ‘나와의 채팅’에 붙여 두면 편해요.</p>
+        <p class="note">루틴, 즐겨찾기, 내 음식·내 운동, 운동별 휴식, 목표 설정을 글자로 복사해 두었다가 새로 설치한 앱이나 다른 기기에 붙여넣어 불러올 수 있소. 메모 앱이나 카카오톡 ‘나와의 채팅’에 붙여 두면 편하오.</p>
         <label class="chk"><input type="checkbox" id="bkDays"><span>운동·식단·체중 기록도 포함</span></label>
         <div class="row">
           <button type="button" class="btn" id="bkCopy">백업 복사</button>
           <button type="button" class="btn" id="bkShare" hidden>공유하기</button>
         </div>
-        <div class="field"><label class="lbl" for="bkText">불러올 백업 붙여넣기</label><textarea id="bkText" placeholder="복사해 둔 백업 글자를 여기에 붙여넣어 주세요" autocomplete="off" spellcheck="false"></textarea></div>
+        <div class="field"><label class="lbl" for="bkText">불러올 백업 붙여넣기</label><textarea id="bkText" placeholder="복사해 둔 백업 글자를 여기에 붙여넣어 주시오" autocomplete="off" spellcheck="false"></textarea></div>
         <div class="msg" id="bkMsg" role="alert"></div>
-        <button type="button" class="btn primary" id="bkImport">불러오기 (현재 설정을 덮어써요)</button>
+        <button type="button" class="btn primary" id="bkImport">불러오기 (현재 설정을 덮어쓰오)</button>
       </div>
       <div class="card" id="appCard" hidden>
         <h2>앱 업데이트</h2>
@@ -658,7 +669,7 @@ body.hasbm main{padding-right:14px}
       </div>
       <div class="card">
         <h2>예시 기록</h2>
-        <p class="note" style="margin-bottom:12px">최근 2주치 예시 운동, 식단, 체중을 넣어 분석 화면을 미리 볼 수 있어요. 예시 기록은 따로 표시되고 한 번에 지울 수 있어요.</p>
+        <p class="note" style="margin-bottom:12px">최근 2주치 예시 운동, 식단, 체중을 넣어 분석 화면을 미리 볼 수 있소. 예시 기록은 따로 표시되고 한 번에 지울 수 있소.</p>
         <div class="row">
           <button type="button" class="btn" data-act="sample-add">예시 기록 불러오기</button>
           <button type="button" class="btn" data-act="sample-clear" id="sampleClear">예시 지우기</button>
@@ -705,7 +716,7 @@ body.hasbm main{padding-right:14px}
       <button type="button" class="chip primary" data-act="ed-save">저장</button>
     </div>
     <div class="field"><label class="lbl" for="edName">루틴 이름</label><input type="text" id="edName" maxlength="30" autocomplete="off" placeholder="예: 상체 A, 하체 B"></div>
-    <p class="note">종목 왼쪽 손잡이를 끌어서 순서를 바꿀 수 있어요.</p>
+    <p class="note">종목 왼쪽 손잡이를 끌어서 순서를 바꿀 수 있소.</p>
     <div class="tab" id="edItems"></div>
     <div class="msg" id="edMsg" role="alert"></div>
     <div class="row"><button type="button" class="btn" data-act="ed-add">종목 추가</button><button type="button" class="btn" data-act="ed-time-open">시간 운동 추가</button></div>
@@ -716,13 +727,13 @@ body.hasbm main{padding-right:14px}
         <div class="field"><label class="lbl" for="tqSets">세트 수</label><input type="number" id="tqSets" min="1" max="10" value="1"></div>
         <div class="field"><label class="lbl" for="tqMinutes">1세트 시간(분)</label><input type="number" id="tqMinutes" min="1" max="60" value="10"></div>
       </div>
-      <p class="note" style="margin:8px 0">추가 후 운동 카드에서 초 단위로도 조절할 수 있어요.</p>
+      <p class="note" style="margin:8px 0">추가 후 운동 카드에서 초 단위로도 조절할 수 있소.</p>
       <div class="row"><button type="button" class="btn" data-act="ed-time-cancel">취소</button><button type="button" class="btn primary" data-act="ed-time-add">시간 운동 추가하기</button></div>
     </div>
   </div>
 </div>
 
-<div class="sheet" id="workoutTimeAdd" role="dialog" aria-modal="true" aria-labelledby="workoutTimeTitle" hidden><div class="sheet-in"><div class="sheet-top"><button type="button" class="chip" data-act="wo-time-cancel">취소</button><h2 id="workoutTimeTitle">시간 운동 추가</h2><span class="spacer"></span></div><div class="field"><label class="lbl" for="wtName">운동 이름</label><input type="text" id="wtName" maxlength="30" value="러닝" placeholder="예: 러닝, 플랭크"></div><div class="grid2" style="margin-top:10px"><div class="field"><label class="lbl" for="wtSets">세트 수</label><input type="number" id="wtSets" min="1" max="10" value="1"></div><div class="field"><label class="lbl" for="wtMinutes">목표 분</label><input type="number" id="wtMinutes" min="0" max="60" value="10"></div><div class="field"><label class="lbl" for="wtSeconds">목표 초</label><input type="number" id="wtSeconds" min="0" max="59" value="0"></div></div><p class="note">시간은 세트마다 적용돼요. 예: 러닝 1세트 10분, 플랭크 3세트 각 1분</p></div><div class="sheet-foot"><button type="button" class="btn primary" data-act="wo-time-add">시간 운동 추가하기</button></div></div>
+<div class="sheet" id="workoutTimeAdd" role="dialog" aria-modal="true" aria-labelledby="workoutTimeTitle" hidden><div class="sheet-in"><div class="sheet-top"><button type="button" class="chip" data-act="wo-time-cancel">취소</button><h2 id="workoutTimeTitle">시간 운동 추가</h2><span class="spacer"></span></div><div class="field"><label class="lbl" for="wtName">운동 이름</label><input type="text" id="wtName" maxlength="30" value="러닝" placeholder="예: 러닝, 플랭크"></div><div class="grid2" style="margin-top:10px"><div class="field"><label class="lbl" for="wtSets">세트 수</label><input type="number" id="wtSets" min="1" max="10" value="1"></div><div class="field"><label class="lbl" for="wtMinutes">목표 분</label><input type="number" id="wtMinutes" min="0" max="60" value="10"></div><div class="field"><label class="lbl" for="wtSeconds">목표 초</label><input type="number" id="wtSeconds" min="0" max="59" value="0"></div></div><p class="note">시간은 세트마다 적용되오. 예: 러닝 1세트 10분, 플랭크 3세트 각 1분</p></div><div class="sheet-foot"><button type="button" class="btn primary" data-act="wo-time-add">시간 운동 추가하기</button></div></div>
 
 <div class="sheet" id="routinePreview" role="dialog" aria-modal="true" aria-labelledby="routinePreviewTitle" hidden>
   <div class="sheet-in">
@@ -743,7 +754,7 @@ body.hasbm main{padding-right:14px}
       <h2 id="routineSwapTitle">오늘 루틴 변경</h2>
       <span class="spacer"></span>
     </div>
-    <p class="note">새 루틴을 선택하면 오늘 운동 종목과 세트 구성이 교체돼요. 이미 입력한 세트 기록은 변경되지만, 바로 실행취소할 수 있어요.</p>
+    <p class="note">새 루틴을 선택하면 오늘 운동 종목과 세트 구성이 교체되오. 이미 입력한 세트 기록은 변경되지만, 바로 실행취소할 수 있소.</p>
     <div id="routineSwapList" class="tab"></div>
   </div>
 </div>
@@ -842,12 +853,12 @@ body.hasbm main{padding-right:14px}
   function lsRead() { try { var j = JSON.parse(localStorage.getItem(LS)); if (j) return j; } catch (e) {} return null; }
   function lsWrite() {
     try { localStorage.setItem(LS, JSON.stringify({ days: S.days, settings: S.settings })); }
-    catch (e) { if (!lsWarned) { lsWarned = true; toast('이 브라우저에는 기록을 저장할 수 없어요'); } }
+    catch (e) { if (!lsWarned) { lsWarned = true; toast('이 브라우저에는 기록을 저장할 수 없소'); } }
   }
   function enqueue(key, op) {
     pending++; renderHeader();
     var prev = chain[key] || Promise.resolve();
-    var p = prev.then(op).catch(function (e) { console.error(e); toast('저장하지 못했어요. 연결을 확인해 주세요'); });
+    var p = prev.then(op).catch(function (e) { console.error(e); toast('저장하지 못했소. 연결을 확인해 주시오'); });
     chain[key] = p;
     p.then(function () {
       pending--;
@@ -867,7 +878,7 @@ body.hasbm main{padding-right:14px}
     } else lsWrite();
   }
   function mutate(date, fn) {
-    if (!S.loaded) { toast('기록을 불러오는 중이에요. 잠시 후 다시 눌러 주세요'); return false; }
+    if (!S.loaded) { toast('기록을 불러오는 중이오. 잠시 후 다시 눌러 주시오'); return false; }
     var d = S.days[date] ? S.days[date] : { sets: [], meals: [], weight: null, sample: false, routine: '', workoutEndedAt: null };
     var wasEnded = d.workoutEndedAt || null;
     fn(d);
@@ -904,7 +915,7 @@ body.hasbm main{padding-right:14px}
       if (pending === 0) S.days = clone(days);
       if (!S.loaded) { S.loaded = true; clearTimeout(slowTimer); }
       renderAll();
-    }, function () { S.slow = true; renderHeader(); toast('서버에서 기록을 읽지 못했어요'); });
+    }, function () { S.slow = true; renderHeader(); toast('서버에서 기록을 읽지 못했소'); });
     cloud.settings.onSnapshot(function (snap) {
       if (snap.exists) {
         S.settings = Object.assign(clone(DEF), clone(snap.data()));
@@ -926,6 +937,7 @@ body.hasbm main{padding-right:14px}
       .catch(function () { startLocal(); });
   }
 
+  var LOCK_GLYPH = '<svg class="lock-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g filter="url(#inkRough)"><path class="lock-shackle lock-shackle-open" d="M7.2 11V7.6C7.1 4.9 9.1 3.1 11.6 3.2C13.6 3.3 15.1 4.4 15.5 6"/><path class="lock-shackle lock-shackle-closed" d="M7.2 11V8C7.2 5.2 9.2 3.3 12 3.3C14.8 3.3 16.8 5.2 16.8 8V11"/><path class="lock-body" d="M5.2 11.2C8.6 10.6 15.4 10.7 18.8 11.3C19.3 14.2 19.2 17.6 18.6 20.4C14.8 21 9.2 20.9 5.4 20.5C4.8 17.5 4.8 14 5.2 11.2Z"/><path class="lock-key" d="M12 14.1C13 14.1 13.7 14.8 13.7 15.7C13.7 16.3 13.4 16.7 13 17L13.4 18.9L10.7 18.9L11 17C10.6 16.7 10.3 16.3 10.3 15.7C10.3 14.8 11 14.1 12 14.1Z"/></g></svg>';
   /* ---------- toast & tooltip ---------- */
   var toastT;
   function hideToast() { $('#toast').hidden = true; }
@@ -1013,14 +1025,14 @@ body.hasbm main{padding-right:14px}
   function saveT() { try { localStorage.setItem(TK, JSON.stringify(T)); } catch (e) {} }
   function scheduleRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.scheduleRestNotification && T.phase === 'rest') AndroidBridge.scheduleRestNotification(T.restEnd); } catch (e) {} }
   function scheduleExerciseAlarm() { try { if (window.AndroidBridge && AndroidBridge.scheduleExerciseNotification && T.phase === 'set' && T.targetSec) AndroidBridge.scheduleExerciseNotification(T.start + T.targetSec * 1000); } catch (e) {} }
-  function updateWorkoutStatus(title, detail) { try { if (window.AndroidBridge && AndroidBridge.showWorkoutStatus) AndroidBridge.showWorkoutStatus(title || '운동 진행 중', detail || '운동을 종료하면 사라집니다.'); } catch (e) {} }
+  function updateWorkoutStatus(title, detail) { try { if (window.AndroidBridge && AndroidBridge.showWorkoutStatus) AndroidBridge.showWorkoutStatus(title || '운동 진행 중', detail || '운동을 종료하면 사라지오.'); } catch (e) {} }
   function stopWorkoutStatus() { try { if (window.AndroidBridge && AndroidBridge.stopWorkoutStatus) AndroidBridge.stopWorkoutStatus(); } catch (e) {} }
   window.rearmRestAlarmAfterResume = function () {
     if (T.phase === 'rest' && T.restEnd > Date.now()) scheduleRestAlarm();
     if (T.phase === 'set' && T.targetSec && T.start + T.targetSec * 1000 > Date.now()) scheduleExerciseAlarm();
     if (T.phase === 'set') updateWorkoutStatus(T.label || '운동 진행 중', T.targetSec ? '시간 운동 진행 중' : '세트 진행 중');
-    else if (T.phase === 'rest') updateWorkoutStatus('휴식 중', '다음 세트를 준비하세요');
-    else if (T.phase === 'done') updateWorkoutStatus('운동 진행 중', '다음 세트를 시작하세요');
+    else if (T.phase === 'rest') updateWorkoutStatus('휴식 중', '다음 세트를 준비하시오');
+    else if (T.phase === 'done') updateWorkoutStatus('운동 진행 중', '다음 세트를 시작하시오');
   };
   function cancelRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.cancelRestNotification) AndroidBridge.cancelRestNotification(); } catch (e) {} }
   function cancelScheduledRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.cancelScheduledRestAlarm) AndroidBridge.cancelScheduledRestAlarm(); } catch (e) {} }
@@ -1034,13 +1046,13 @@ body.hasbm main{padding-right:14px}
     try { if (window.AndroidBridge && window.AndroidBridge.vibrateShort) window.AndroidBridge.vibrateShort(); else if (navigator.vibrate) navigator.vibrate(110); } catch (e) {}
   }
   var mmss = function (sec) { sec = Math.max(0, sec); return pad(Math.floor(sec / 60)) + ':' + pad(Math.floor(sec % 60)); };
-  function startRest(sec, tip, exerciseKey, setId) { T = { phase: 'rest', setId: setId || null, restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '', exerciseKey: exerciseKey || workoutNav.exercise || null }; saveT(); scheduleRestAlarm(); updateWorkoutStatus('휴식 중', '다음 세트를 준비하세요'); lockOn(); tick(); }
+  function startRest(sec, tip, exerciseKey, setId) { T = { phase: 'rest', setId: setId || null, restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '', exerciseKey: exerciseKey || workoutNav.exercise || null }; saveT(); scheduleRestAlarm(); updateWorkoutStatus('휴식 중', '다음 세트를 준비하시오'); lockOn(); tick(); }
   function finishRest() {
     T = { phase: 'done', tip: T.tip || '', exerciseKey: T.exerciseKey || workoutNav.exercise || null }; saveT();
     // Keep the native alarm notification: cancelling here can race the receiver
     // and remove the alert immediately after it is posted.
-    updateWorkoutStatus('운동 진행 중', '다음 세트를 시작하세요');
-    lockOff(); beep(); alarmFlash('휴식 종료'); toast('휴식이 끝났어요. 위젯의 닫기를 누르면 사라져요'); tick();
+    updateWorkoutStatus('운동 진행 중', '다음 세트를 시작하시오');
+    lockOff(); beep(); alarmFlash('휴식 종료'); toast('휴식이 끝났소. 위젯의 닫기를 누르면 사라지오'); tick();
   }
   function showTip(txt) { var el = $('#rbTip'), v = txt || ''; if (el.textContent !== v) el.textContent = v; el.hidden = !v; }
   function tick() {
@@ -1049,12 +1061,12 @@ body.hasbm main{padding-right:14px}
     if (bar.hidden === vis) { bar.hidden = !vis; document.body.classList.toggle('hasbar', vis); }
     if (T.phase === 'set') {
       var sec = (now - T.start) / 1000, dg = $('#rbDigits'), remaining = T.targetSec ? Math.max(0, T.targetSec - sec) : null;
-      $('#rbLabel').textContent = T.targetSec ? (remaining <= 0 ? '목표 시간 완료 · 운동 완료를 체크하세요' : (T.label || '시간 운동 진행 중')) : (T.label || '세트 진행 중');
+      $('#rbLabel').textContent = T.targetSec ? (remaining <= 0 ? '목표 시간 완료 · 운동 완료를 체크하시오' : (T.label || '시간 운동 진행 중')) : (T.label || '세트 진행 중');
       dg.textContent = mmss(T.targetSec ? remaining : sec); dg.className = 'rb-digits run' + (T.targetSec && remaining <= 10 ? ' low' : '');
       if (T.targetSec && remaining <= 0 && !T.alerted) {
         T.alerted = true; saveT();
         alarmFlash('운동 시간 완료');
-        updateWorkoutStatus(T.label || '운동 진행 중', '목표 시간 완료 · 세트 완료를 체크하세요');
+        updateWorkoutStatus(T.label || '운동 진행 중', '목표 시간 완료 · 세트 완료를 체크하시오');
         if (!(window.AndroidBridge && AndroidBridge.scheduleExerciseNotification)) beep();
       }
       $('#rbMinus').hidden = true; $('#rbPlus').hidden = true; $('#rbSkip').textContent = '취소';
@@ -1117,7 +1129,7 @@ body.hasbm main{padding-right:14px}
   function inRowFocus() { var a = document.activeElement; return !!(a && a.tagName === 'INPUT' && $('#todayList').contains(a)); }
   function renderLog() {
     var d = getDay(selDate);
-    $('#logNotice').innerHTML = d.sample ? '<div class="notice">이 날짜는 예시 기록이에요. 설정에서 예시를 지우면 이 날짜의 기록도 함께 지워져요.</div>' : '';
+    $('#logNotice').innerHTML = d.sample ? '<div class="notice">이 날짜는 예시 기록이오. 설정에서 예시를 지우면 이 날짜의 기록도 함께 지워지오.</div>' : '';
     renderWoTop(); renderCoach();
     if (inRowFocus()) { listDirty = true; return; }
     listDirty = false; renderWoList();
@@ -1126,12 +1138,12 @@ body.hasbm main{padding-right:14px}
 
   function finishWorkout() {
     var dt = selDate, d = getDay(dt);
-    if (!d.sets.length) { toast('먼저 운동 종목을 추가해 주세요'); return; }
-    if (d.workoutEndedAt) { coachUI.dayKey = dt; coachUI.day = true; renderCoach(); toast('이미 종료한 운동이에요'); return; }
+    if (!d.sets.length) { toast('먼저 운동 종목을 추가해 주시오'); return; }
+    if (d.workoutEndedAt) { coachUI.dayKey = dt; coachUI.day = true; renderCoach(); toast('이미 종료한 운동이오'); return; }
     var done = d.sets.filter(isDone).length, left = d.sets.length - done;
     var msg = left > 0
-      ? '아직 완료하지 않은 세트가 ' + left + '개 있어요.\n미완료 세트는 제외하고 운동을 종료할까요?'
-      : '오늘 운동을 종료하고 운동 평가를 확인할까요?';
+      ? '아직 완료하지 않은 세트가 ' + left + '개 있소.\n미완료 세트는 제외하고 운동을 종료하겠소?'
+      : '오늘 운동을 종료하고 운동 평가를 확인하겠소?';
     if (!window.confirm(msg)) return;
     if (mutate(dt, function (dd) { dd.workoutEndedAt = Date.now(); })) {
       // 종료 버튼은 타이머 상태와 무관하게 화면 바·예약 알람·진행 알림을 모두 정리한다.
@@ -1143,7 +1155,7 @@ body.hasbm main{padding-right:14px}
       workoutNav.active = false; workoutNav.exercise = null; saveWorkoutNav(); syncWorkoutReturn();
       stopWorkoutStatus();
       coachUI.dayKey = dt; coachUI.day = true; renderCoach();
-      toast('오늘 운동을 종료했어요. 운동 평가를 확인해 보세요');
+      toast('오늘 운동을 종료했소. 운동 평가를 확인해 보시오');
       var box = $('#coachCard'); if (box) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
@@ -1153,11 +1165,11 @@ body.hasbm main{padding-right:14px}
       var R = S.settings.routines || [], all = Object.keys(S.days).length === 0, label = selDate === today() ? '오늘' : fmtShort(selDate);
       var body;
       if (R.length) {
-        body = '<h2>' + label + ' 어떤 운동을 할까요?</h2><div class="startlist">' + R.map(function (r) {
+        body = '<h2>' + label + ' 어떤 운동을 하겠소?</h2><div class="startlist">' + R.map(function (r) {
           return '<div class="startrow"><div class="tx"><b>' + esc(r.name) + '</b><span>' + r.items.length + '종목 · ' + r.items.reduce(function (a, i) { return a + (i.n || 0); }, 0) + '세트</span></div><button type="button" class="btn primary" data-act="rt-start" data-id="' + esc(r.id) + '">시작</button></div>';
         }).join('') + '</div>';
       } else {
-        body = '<div class="empty"><h2 style="margin:0">' + label + ' 운동을 시작해 보세요</h2><p>루틴이 아직 없어요. 상체, 하체처럼 날을 나눠 루틴을 만들어 두면 한 번에 불러올 수 있어요.</p><div class="row" style="width:100%"><button type="button" class="btn primary" data-act="routine-new">루틴 만들기</button><button type="button" class="btn" data-act="tpl-add">상체/하체 예시 루틴 넣기</button></div></div>';
+        body = '<div class="empty"><h2 style="margin:0">' + label + ' 운동을 시작해 보시오</h2><p>루틴이 아직 없소. 상체, 하체처럼 날을 나눠 루틴을 만들어 두면 한 번에 불러올 수 있소.</p><div class="row" style="width:100%"><button type="button" class="btn primary" data-act="routine-new">루틴 만들기</button><button type="button" class="btn" data-act="tpl-add">상체/하체 예시 루틴 넣기</button></div></div>';
       }
       head.innerHTML = '<div class="card">' + body + '</div>';
       foot.innerHTML = '<div class="row"><button type="button" class="btn" data-act="wo-add">루틴 없이 종목 직접 고르기</button><button type="button" class="btn" data-act="wo-time-open">시간 운동 추가</button></div>' + (all ? '<button type="button" class="btn" style="margin-top:10px" data-act="sample-add">예시 기록으로 둘러보기</button>' : '');
@@ -1166,7 +1178,7 @@ body.hasbm main{padding-right:14px}
     var done = d.sets.filter(isDone), vol = done.reduce(function (a, s) { return a + s.w * s.r; }, 0), pct = done.length / d.sets.length * 100;
     head.innerHTML = '<div class="card"><div class="phead"><div class="ptitle-wrap"><svg class="wo-ico" viewBox="0 0 38 26" aria-hidden="true" stroke-width="2.6" stroke-linecap="round"><path d="M4 8v10M9 5v16M34 8v10M29 5v16M9 13h20"/></svg><div style="min-width:0"><div class="ptitle">' + esc(d.routine || (selDate === today() ? '오늘 운동' : fmtShort(selDate) + ' 운동')) + '</div><div class="psub">볼륨 ' + nf(vol) + 'kg 완료</div></div></div><div class="pnum">' + done.length + '<small> / ' + d.sets.length + '세트</small></div></div>' +
       '<div class="meter" role="meter" aria-label="완료한 세트" aria-valuemin="0" aria-valuemax="' + d.sets.length + '" aria-valuenow="' + done.length + '"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
-    foot.innerHTML = '<div class="row wo-actions"><button type="button" class="btn" data-act="wo-add">종목 추가</button><button type="button" class="btn" data-act="wo-time-open">시간 운동 추가</button><button type="button" class="btn" data-act="wo-change">루틴 변경</button></div>' + (d.workoutEndedAt ? '<div class="notice" style="margin-top:10px">' + esc(fmtShort(selDate)) + ' 운동 종료 · 평가가 저장됐어요</div><button type="button" class="btn" style="margin-top:8px" data-act="wo-review">운동 평가 다시 보기</button>' : '<div class="finbar"><div class="fin-tx"><b>오늘도 수고했어요!</b><span>꾸준함이 진짜 근육을 만듭니다.</span></div><button type="button" class="btn primary" data-act="wo-finish">✓ 운동 완료</button></div>');
+    foot.innerHTML = '<div class="row wo-actions"><button type="button" class="btn" data-act="wo-add">종목 추가</button><button type="button" class="btn" data-act="wo-time-open">시간 운동 추가</button><button type="button" class="btn" data-act="wo-change">루틴 변경</button></div>' + (d.workoutEndedAt ? '<div class="notice" style="margin-top:10px">' + esc(fmtShort(selDate)) + ' 운동 종료 · 평가가 저장됐소</div><button type="button" class="btn" style="margin-top:8px" data-act="wo-review">운동 평가 다시 보기</button>' : '<div class="finbar"><div class="fin-tx"><b>오늘도 수고했소!</b><span>꾸준함이 진짜 근육을 만드오.</span></div><button type="button" class="btn primary" data-act="wo-finish">✓ 운동 완료</button></div>');
   }
 
   function restRowHtml(g, first) {
@@ -1251,11 +1263,11 @@ body.hasbm main{padding-right:14px}
     var bookmarkRail = ''; renderBmFloat(gs, bookmarks);
     $('#todayList').innerHTML = bookmarkRail + gs.map(function (g) {
       var first = g.sets[0], timed = first.mode === 'time', ls = lastSession(first.ex, selDate), bookmarked = bookmarks.indexOf(g.key) >= 0;
-      var lastInfo = !ls ? '이전 완료 기록이 없어요.' : '지난 운동 · ' + fmtShort(ls.date) + ' · ' + ls.sets.slice(0, 5).map(function (s) { return s.mode === 'time' ? mmss(s.s || s.targetSec || 0) : fw(s.w) + 'kg × ' + s.r + '회'; }).join(' / ') + (ls.sets.length > 5 ? ' 외 ' + (ls.sets.length - 5) + '세트' : '');
+      var lastInfo = !ls ? '이전 완료 기록이 없소.' : '지난 운동 · ' + fmtShort(ls.date) + ' · ' + ls.sets.slice(0, 5).map(function (s) { return s.mode === 'time' ? mmss(s.s || s.targetSec || 0) : fw(s.w) + 'kg × ' + s.r + '회'; }).join(' / ') + (ls.sets.length > 5 ? ' 외 ' + (ls.sets.length - 5) + '세트' : '');
       // The group-level weight control follows the first unfinished set, never a completed set.
       var editableWeightSet = g.sets.filter(function (x) { return !isDone(x); })[0] || first;
       var lk = libFind(first.ex), groupWeight = first.groupWeight == null ? editableWeightSet.w : first.groupWeight, weightLocked = !!first.weightLocked;
-      var weightHtml = timed ? '' : '<div class="group-weight-line"><label>전체 무게</label><input type="number" inputmode="decimal" step="0.5" min="0" data-group-weight="' + esc(g.key) + '" value="' + fw(groupWeight) + '" aria-label="' + esc(first.ex) + ' 전체 세트 무게(kg)"><button type="button" class="weight-lock-mini ' + (weightLocked ? 'is-locked' : 'is-unlocked') + '" data-weight-lock="' + esc(g.key) + '" aria-pressed="' + weightLocked + '"><svg class="lock-glyph" viewBox="0 0 20 20" aria-hidden="true"><path class="lock-shackle lock-shackle-open" d="M6 8V5.8a4 4 0 0 1 7.8-1.2"/><path class="lock-shackle lock-shackle-closed" d="M6 8V6a4 4 0 0 1 8 0v2"/><path class="lock-body" d="M4.5 8h11A1.5 1.5 0 0 1 17 9.5v7A1.5 1.5 0 0 1 15.5 18h-11A1.5 1.5 0 0 1 3 16.5v-7A1.5 1.5 0 0 1 4.5 8Z"/></svg></button></div>';
+      var weightHtml = timed ? '' : '<div class="group-weight-line"><label>전체 무게</label><input type="number" inputmode="decimal" step="0.5" min="0" data-group-weight="' + esc(g.key) + '" value="' + fw(groupWeight) + '" aria-label="' + esc(first.ex) + ' 전체 세트 무게(kg)"><button type="button" class="weight-lock-mini ' + (weightLocked ? 'is-locked' : 'is-unlocked') + '" data-weight-lock="' + esc(g.key) + '" aria-pressed="' + weightLocked + '">' + LOCK_GLYPH + '</button></div>';
       var modeIcon = timed ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6h12M6 18h12M8 6v3m8-3v3M8 15v3m8-3v3M12 9v6"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9v6m-3-4v2m18-2v2m-3-4v6M6 12h12"/></svg>';
       return '<article class="card grp" data-exercise="' + esc(g.key) + '"><header><div class="tt"><div class="grp-title-line"><h3>' + esc(first.ex) + '</h3><button type="button" class="exinfo-btn" data-exinfo aria-expanded="false" aria-label="이전 운동 기록 보기">!</button></div><div class="meta"><span class="tag">' + esc(first.m) + '</span>' + (lk ? '<span class="tag">' + esc(lk.eq) + '</span>' : '') + (timed ? '<span class="tag">시간 운동 · 세트당 ' + mmss(first.targetSec || 60) + '</span>' : '') + '</div>' + weightHtml + '<div class="exercise-info" hidden>' + esc(lastInfo) + '</div></div>' +
         '<button type="button" class="bookmark-toggle ' + (bookmarked ? 'is-marked' : '') + '" data-bookmark-toggle="' + esc(g.key) + '" aria-pressed="' + bookmarked + '" aria-label="' + (bookmarked ? '책갈피 해제' : '이 종목 책갈피') + '" title="' + (bookmarked ? '책갈피 해제' : '책갈피에 표시') + '">' + (bookmarked ? '◆' : '◇') + '</button><button type="button" class="mode-icon" data-exmode="' + esc(g.key) + '" aria-label="' + (timed ? '횟수 운동으로 전환' : '시간 운동으로 전환') + '" title="' + (timed ? '횟수 운동으로 전환' : '시간 운동으로 전환') + '">' + modeIcon + '</button><button type="button" class="x" data-exswap="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 다른 운동으로 바꾸기">⇄</button><button type="button" class="x" data-exdel="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 종목 삭제">×</button></header>' +
@@ -1266,7 +1278,7 @@ body.hasbm main{padding-right:14px}
           else if (timing) { var left = s.targetSec ? Math.max(0, s.targetSec - (Date.now() - T.start) / 1000) : (Date.now() - T.start) / 1000; cell = '<span class="live" data-live="' + esc(s.id) + '">' + mmss(left) + '</span>'; }
           else cell = '<button type="button" class="play" data-play="' + esc(s.id) + '">' + (timed ? mmss(s.targetSec || 60) : '▶') + '</button>';
           var target = Math.max(5, +s.targetSec || 60);
-          var fields = timed ? '<input type="number" inputmode="numeric" min="0" max="60" step="1" data-time-min="' + esc(s.id) + '" value="' + Math.floor(target / 60) + '" aria-label="목표 분"><input type="number" inputmode="numeric" min="0" max="59" step="1" data-time-sec="' + esc(s.id) + '" value="' + (target % 60) + '" aria-label="목표 초">' : '<input type="number" inputmode="decimal" step="0.5" min="0" data-f="w" value="' + fw(s.w) + '" aria-label="무게(kg)"' + (dn ? ' disabled title="완료한 세트의 무게는 고정돼요"' : '') + '><button type="button" class="set-weight-lock ' + (s.setWeightLocked ? 'is-locked' : 'is-unlocked') + '" data-set-weight-lock="' + esc(s.id) + '" aria-pressed="' + !!s.setWeightLocked + '"' + (dn ? ' disabled title="완료한 세트는 잠금 설정을 변경할 수 없어요"' : '') + '><span class="lock-glyph" aria-hidden="true"></span></button><input type="number" inputmode="numeric" step="1" min="0" data-f="r" value="' + (s.r || '') + '" placeholder="0" aria-label="횟수">';
+          var fields = timed ? '<input type="number" inputmode="numeric" min="0" max="60" step="1" data-time-min="' + esc(s.id) + '" value="' + Math.floor(target / 60) + '" aria-label="목표 분"><input type="number" inputmode="numeric" min="0" max="59" step="1" data-time-sec="' + esc(s.id) + '" value="' + (target % 60) + '" aria-label="목표 초">' : '<input type="number" inputmode="decimal" step="0.5" min="0" data-f="w" value="' + fw(s.w) + '" aria-label="무게(kg)"' + (dn ? ' disabled title="완료한 세트의 무게는 고정되오"' : '') + '><button type="button" class="set-weight-lock ' + (s.setWeightLocked ? 'is-locked' : 'is-unlocked') + '" data-set-weight-lock="' + esc(s.id) + '" aria-pressed="' + !!s.setWeightLocked + '"' + (dn ? ' disabled title="완료한 세트는 잠금 설정을 변경할 수 없소"' : '') + '>' + LOCK_GLYPH + '</button><input type="number" inputmode="numeric" step="1" min="0" data-f="r" value="' + (s.r || '') + '" placeholder="0" aria-label="횟수">';
           return '<li class="srow' + (timed ? ' timed' : '') + (dn ? ' done' : '') + (s.id === nextId ? ' next' : '') + '" data-set="' + esc(s.id) + '"><span class="n">' + (i + 1) + '</span>' + fields + cell + '<button type="button" class="ck" data-chk="' + esc(s.id) + '" aria-pressed="' + dn + '">✓</button></li>';
         }).join('') + '</ul>' + restRowHtml(g, first) + '<div class="gfoot"><button type="button" class="mini" data-sadd="' + esc(g.key) + '">+ 세트 추가</button><button type="button" class="mini" data-sdel="' + esc(g.key) + '">− 마지막 세트 삭제</button></div></article>';
     }).join('');
@@ -1276,7 +1288,7 @@ body.hasbm main{padding-right:14px}
     var toTime = group[0].mode !== 'time';
     if (T.phase === 'set' && group.some(function (x) { return x.id === T.setId; })) { T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); tick(); }
     mutate(selDate, function (dd) { dd.sets.forEach(function (x) { if (normEx(x.ex) !== key) return; x.mode = toTime ? 'time' : 'reps'; if (toTime) { x.targetSec = Math.max(5, +x.targetSec || 60); x.r = null; x.w = 0; } else { x.targetSec = null; x.r = Math.max(1, +x.r || 10); } x.done = false; x.s = null; }); });
-    renderLog(); toast(toTime ? '시간 운동으로 전환했어요' : '횟수 운동으로 전환했어요');
+    renderLog(); toast(toTime ? '시간 운동으로 전환했소' : '횟수 운동으로 전환했소');
   }
   function setWorkoutTargetTime(id) {
     var st = findSet(id); if (!st || st.mode !== 'time') return; var row = $('[data-set="' + id + '"]');
@@ -1333,8 +1345,8 @@ body.hasbm main{padding-right:14px}
     var st = findSet(id), dt = selDate; if (!st) return;
     prepAudio();
     if (isDone(st)) { mutate(dt, function (dd) { dd.sets.forEach(function (x) { if (x.id === id) { x.done = false; if (x.mode === 'time') x.s = null; } }); }); return; }
-    if (st.mode === 'time' && !(T.phase === 'set' && T.setId === id) && !st.s) { toast('먼저 타이머를 시작해 주세요'); var play = $('[data-play="' + id + '"]'); if (play) play.focus(); return; }
-    if (st.mode !== 'time' && (!st.r || st.r < 1)) { toast('횟수를 먼저 입력해 주세요'); var inp = $('[data-set="' + id + '"] [data-f="r"]'); if (inp) inp.focus(); return; }
+    if (st.mode === 'time' && !(T.phase === 'set' && T.setId === id) && !st.s) { toast('먼저 타이머를 시작해 주시오'); var play = $('[data-play="' + id + '"]'); if (play) play.focus(); return; }
+    if (st.mode !== 'time' && (!st.r || st.r < 1)) { toast('횟수를 먼저 입력해 주시오'); var inp = $('[data-set="' + id + '"] [data-f="r"]'); if (inp) inp.focus(); return; }
     var sec = st.s;
     if (T.phase === 'set' && T.setId === id) sec = Math.max(1, Math.round((Date.now() - T.start) / 1000));
     if (mutate(dt, function (dd) { dd.sets.forEach(function (x) { if (x.id === id) { x.done = true; x.s = sec || null; x.t = Date.now(); } }); })) {
@@ -1414,7 +1426,7 @@ body.hasbm main{padding-right:14px}
     });
     var updated = findSet(id);
     renderLog();
-    toast(updated && updated.setWeightLocked ? '이 세트는 전체 무게 변경에서 제외돼요' : '이 세트도 전체 무게 변경을 따라가요');
+    toast(updated && updated.setWeightLocked ? '이 세트는 전체 무게 변경에서 제외되오' : '이 세트도 전체 무게 변경을 따라가오');
   }
 
   function toggleExerciseWeightLock(key) {
@@ -1430,7 +1442,7 @@ body.hasbm main{padding-right:14px}
       }
     });
     renderLog();
-    toast(group[0].weightLocked ? '세트별 무게를 유지해요' : '전체 세트에 같은 무게를 적용했어요');
+    toast(group[0].weightLocked ? '세트별 무게를 유지하오' : '전체 세트에 같은 무게를 적용했소');
   }
   function addSetTo(key) {
     var dt = selDate, d = getDay(dt), idx = -1, last = null;
@@ -1443,10 +1455,10 @@ body.hasbm main{padding-right:14px}
     d.sets.forEach(function (s, i) { if (normEx(s.ex) === key && !isDone(s)) idx = i; });
     if (idx < 0) d.sets.forEach(function (s, i) { if (normEx(s.ex) === key) idx = i; });
     if (idx < 0) return;
-    withUndo('세트를 삭제했어요', dt, function (dd) { dd.sets.splice(idx, 1); });
+    withUndo('세트를 삭제했소', dt, function (dd) { dd.sets.splice(idx, 1); });
   }
   function delExercise(key) {
-    withUndo('종목을 삭제했어요', selDate, function (dd) { dd.sets = dd.sets.filter(function (s) { return normEx(s.ex) !== key; }); });
+    withUndo('종목을 삭제했소', selDate, function (dd) { dd.sets = dd.sets.filter(function (s) { return normEx(s.ex) !== key; }); });
   }
   function addExercises(list) {
     var dt = selDate, added = 0, skipped = 0;
@@ -1458,7 +1470,7 @@ body.hasbm main{padding-right:14px}
         have[normEx(it.ex)] = 1; added++;
       });
     });
-    if (ok) toast(added ? added + '종목을 추가했어요' + (skipped ? ' (이미 있는 ' + skipped + '종목은 건너뜀)' : '') : '이미 있는 종목이에요');
+    if (ok) toast(added ? added + '종목을 추가했소' + (skipped ? ' (이미 있는 ' + skipped + '종목은 건너뜀)' : '') : '이미 있는 종목이오');
   }
   var previewRoutineId = null;
   function startRoutine(rid) {
@@ -1471,7 +1483,7 @@ body.hasbm main{padding-right:14px}
     if (!r) { sheetClose($('#routinePreview')); return; }
     $('#routinePreviewTitle').textContent = showChooser ? '다른 루틴 선택' : '시작 전 루틴 확인';
     if (showChooser) {
-      $('#routinePreviewContent').innerHTML = '<p class="note">원하는 루틴을 선택하면 종목 구성을 다시 확인할 수 있어요.</p>' + R.map(function (x) {
+      $('#routinePreviewContent').innerHTML = '<p class="note">원하는 루틴을 선택하면 종목 구성을 다시 확인할 수 있소.</p>' + R.map(function (x) {
         var n = x.items.reduce(function (a, it) { return a + (it.n || 0); }, 0);
         return '<button type="button" class="card rt" style="width:100%;text-align:left" data-act="rt-preview-pick" data-id="' + esc(x.id) + '"><header><h3>' + esc(x.name) + '</h3><span class="cnt">' + x.items.length + '종목 · ' + n + '세트</span></header><p class="rtx">' + esc(x.items.map(function (it) { return it.ex + (it.mode === 'time' ? ' ' + (it.n || 3) + '×' + mmss(it.durationSec || 60) : ''); }).join(', ')) + '</p></button>';
       }).join('');
@@ -1481,7 +1493,7 @@ body.hasbm main{padding-right:14px}
     var sets = r.items.reduce(function (a, it) { return a + (it.n || 0); }, 0);
     $('#routinePreviewContent').innerHTML = '<div class="card"><header class="phead"><div><h3>' + esc(r.name) + '</h3><p class="note" style="margin-top:4px">' + r.items.length + '종목 · ' + sets + '세트</p></div></header><div class="startlist">' + r.items.map(function (it, i) {
       return '<div class="startrow"><div class="tx"><b>' + (i + 1) + '. ' + esc(it.ex) + '</b><span>' + (it.n || 3) + '세트 · ' + (it.mode === 'time' ? '세트당 ' + mmss(it.durationSec || 60) : (it.r || 10) + '회') + (it.m ? ' · ' + esc(it.m) : '') + '</span></div></div>';
-    }).join('') + '</div></div><p class="note">시작을 누르면 위 구성으로 오늘 운동이 만들어져요. 아직 운동 기록은 변경되지 않았어요.</p>';
+    }).join('') + '</div></div><p class="note">시작을 누르면 위 구성으로 오늘 운동이 만들어지오. 아직 운동 기록은 변경되지 않았소.</p>';
     $('#routinePreviewActions').innerHTML = '<div class="row"><button type="button" class="btn" data-act="rt-preview-choose">다른 루틴 선택</button><button type="button" class="btn" data-act="rt-preview-cancel">취소</button></div><button type="button" class="btn primary" data-act="rt-preview-start">이 루틴으로 시작</button>';
   }
   function applyRoutineStart() {
@@ -1497,7 +1509,7 @@ body.hasbm main{padding-right:14px}
       if (!d.routine) d.routine = r.name;
       d.routineId = r.id;
     });
-    if (ok) { if (tab !== 'log') setTab('log'); toast(made ? r.name + ' 루틴을 불러왔어요' : '이미 모두 들어 있는 루틴이에요'); }
+    if (ok) { if (tab !== 'log') setTab('log'); toast(made ? r.name + ' 루틴을 불러왔소' : '이미 모두 들어 있는 루틴이오'); }
   }
 
   function applyRoutineToToday(rid) {
@@ -1519,14 +1531,14 @@ body.hasbm main{padding-right:14px}
     });
     if (ok) {
       if (tab !== 'log') setTab('log');
-      toast(added ? r.name + '에서 ' + added + '종목을 오늘 운동에 반영했어요' + (skipped ? ' · 이미 있는 ' + skipped + '종목은 유지했어요' : '') : '이 루틴의 종목은 이미 오늘 운동에 있어요');
+      toast(added ? r.name + '에서 ' + added + '종목을 오늘 운동에 반영했소' + (skipped ? ' · 이미 있는 ' + skipped + '종목은 유지했소' : '') : '이 루틴의 종목은 이미 오늘 운동에 있소');
     }
   }
 
   function openRoutineSwap() {
     var R = S.settings.routines || [];
     if (!R.length) {
-      toast('먼저 루틴 탭에서 루틴을 만들어 주세요');
+      toast('먼저 루틴 탭에서 루틴을 만들어 주시오');
       setTab('routine');
       return;
     }
@@ -1549,7 +1561,7 @@ body.hasbm main{padding-right:14px}
     // which may be suppressed by some Android WebView configurations. Undo remains available.
     if (T.phase !== 'idle') { T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); tick(); }
     sheetClose($('#routineSwap'));
-    withUndo(r.name + ' 루틴으로 변경했어요', dt, function (dd) {
+    withUndo(r.name + ' 루틴으로 변경했소', dt, function (dd) {
       dd.sets = [];
       r.items.forEach(function (it) {
         makeSetsFor(it, dt).forEach(function (set) { dd.sets.push(set); });
@@ -1618,7 +1630,7 @@ body.hasbm main{padding-right:14px}
     var R = S.settings.routines || [], n = lib().length;
     $('#libBtn').textContent = '운동 라이브러리 (' + n + ')';
     if (!R.length) {
-      $('#routineList').innerHTML = '<div class="card empty"><p>아직 만든 루틴이 없어요. 상체, 하체처럼 날을 나눠 만들고 운동 탭에서 한 번에 불러올 수 있어요.</p><button type="button" class="btn" data-act="tpl-add">상체/하체 예시 루틴 넣기</button></div>';
+      $('#routineList').innerHTML = '<div class="card empty"><p>아직 만든 루틴이 없소. 상체, 하체처럼 날을 나눠 만들고 운동 탭에서 한 번에 불러올 수 있소.</p><button type="button" class="btn" data-act="tpl-add">상체/하체 예시 루틴 넣기</button></div>';
       return;
     }
     var label = selDate === today() ? '오늘' : fmtShort(selDate);
@@ -1627,8 +1639,8 @@ body.hasbm main{padding-right:14px}
       return '<article class="card rt"><header><h3>' + esc(r.name) + '</h3><span class="cnt">' + r.items.length + '종목 · ' + sets + '세트</span></header>' +
         '<p class="rtx">' + esc(r.items.map(function (i) { return i.ex + (i.mode === 'time' ? ' ' + (i.n || 3) + '×' + mmss(i.durationSec || 60) : ''); }).join(', ')) + '</p>' +
         '<div class="row"><button type="button" class="btn primary" data-act="rt-start" data-id="' + esc(r.id) + '">' + label + ' 시작</button>' +
-        '<button type="button" class="btn" data-act="rt-apply-today" data-id="' + esc(r.id) + '">오늘 운동에 반영</button>' +
-        '<button type="button" class="btn" data-act="rt-edit" data-id="' + esc(r.id) + '">편집</button>' +
+        '<button type="button" class="btn" data-act="rt-apply-today" data-id="' + esc(r.id) + '">오늘에 반영</button></div>' +
+        '<div class="row" style="margin-top:8px"><button type="button" class="btn" data-act="rt-edit" data-id="' + esc(r.id) + '">편집</button>' +
         '<button type="button" class="btn" data-act="rt-dup" data-id="' + esc(r.id) + '">복사</button>' +
         '<button type="button" class="btn" data-act="rt-del" data-id="' + esc(r.id) + '">삭제</button></div></article>';
     }).join('');
@@ -1640,7 +1652,7 @@ body.hasbm main{padding-right:14px}
       var items = t.items.map(function (x) { var l = libFind(x[0]); return { ex: x[0], m: l ? l.m : '가슴', n: x[1], r: x[2] }; });
       S.settings.routines.push({ id: uid(), name: t.name, items: items }); made++;
     });
-    persistSettings(); renderAll(); toast(made ? '예시 루틴 ' + made + '개를 넣었어요. 편집해서 내 루틴으로 바꿔 보세요' : '예시 루틴이 이미 있어요');
+    persistSettings(); renderAll(); toast(made ? '예시 루틴 ' + made + '개를 넣었소. 편집해서 내 루틴으로 바꿔 보시오' : '예시 루틴이 이미 있소');
   }
   function dupRoutine(id) {
     var r = (S.settings.routines || []).filter(function (x) { return x.id === id; })[0]; if (!r) return;
@@ -1651,7 +1663,7 @@ body.hasbm main{padding-right:14px}
   function deleteRoutine(id) {
     var R = S.settings.routines, i = R.findIndex(function (r) { return r.id === id; }); if (i < 0) return;
     var item = clone(R[i]); R.splice(i, 1); persistSettings(); renderAll();
-    toast('루틴을 삭제했어요', function () { S.settings.routines.splice(Math.min(i, S.settings.routines.length), 0, item); persistSettings(); renderAll(); });
+    toast('루틴을 삭제했소', function () { S.settings.routines.splice(Math.min(i, S.settings.routines.length), 0, item); persistSettings(); renderAll(); });
   }
 
   /* routine editor */
@@ -1665,7 +1677,7 @@ body.hasbm main{padding-right:14px}
     renderEditor(); sheetOpen($('#editor'));
   }
   function renderEditor() {
-    if (!ed.items.length) { $('#edItems').innerHTML = '<div class="card empty"><p>아래 버튼으로 라이브러리에서 종목을 골라 담아 보세요.</p></div>'; return; }
+    if (!ed.items.length) { $('#edItems').innerHTML = '<div class="card empty"><p>아래 버튼으로 라이브러리에서 종목을 골라 담아 보시오.</p></div>'; return; }
     $('#edItems').innerHTML = ed.items.map(function (it, i) {
       var timeMode = it.mode === 'time';
       return '<div class="card eitem" data-i="' + i + '"><div class="ehead"><button type="button" class="dh" data-drag="' + i + '" aria-label="' + esc(it.ex) + ' 순서 바꾸기"><svg viewBox="0 0 14 20" aria-hidden="true"><circle cx="4" cy="4" r="1.8"/><circle cx="10" cy="4" r="1.8"/><circle cx="4" cy="10" r="1.8"/><circle cx="10" cy="10" r="1.8"/><circle cx="4" cy="16" r="1.8"/><circle cx="10" cy="16" r="1.8"/></svg></button><div class="tt"><h3>' + esc(it.ex) + '</h3><span class="tag">' + esc(it.m) + '</span></div><div class="ectl">' +
@@ -1757,24 +1769,24 @@ body.hasbm main{padding-right:14px}
 
   function saveEditor() {
     var name = $('#edName').value.trim(), msg = $('#edMsg');
-    if (!name) { msg.textContent = '루틴 이름을 입력해 주세요'; $('#edName').focus(); return; }
-    if (!ed.items.length) { msg.textContent = '종목을 한 개 이상 담아 주세요'; return; }
+    if (!name) { msg.textContent = '루틴 이름을 입력해 주시오'; $('#edName').focus(); return; }
+    if (!ed.items.length) { msg.textContent = '종목을 한 개 이상 담아 주시오'; return; }
     ed.name = name;
     var R = S.settings.routines;
     if (ed.id) { var i = R.findIndex(function (r) { return r.id === ed.id; }); if (i >= 0) R[i] = clone(ed); else R.push(clone(ed)); }
     else { ed.id = uid(); R.push(clone(ed)); }
-    persistSettings(); sheetClose($('#editor')); renderAll(); toast('루틴을 저장했어요');
+    persistSettings(); sheetClose($('#editor')); renderAll(); toast('루틴을 저장했소');
   }
 
   /* swap an exercise for another */
   function swapExercise(key, nu) {
-    if (!S.loaded) { toast('기록을 불러오는 중이에요. 잠시 후 다시 눌러 주세요'); return false; }
+    if (!S.loaded) { toast('기록을 불러오는 중이오. 잠시 후 다시 눌러 주시오'); return false; }
     var dt = selDate, d = getDay(dt);
     var und = d.sets.filter(function (s) { return normEx(s.ex) === key && !isDone(s); });
-    if (!und.length) { toast('모두 완료한 종목은 바꿀 수 없어요. 새 종목을 추가해 주세요'); return false; }
-    if (d.sets.some(function (s) { return normEx(s.ex) === normEx(nu.name); })) { toast('오늘 운동에 이미 있는 종목이에요'); return false; }
+    if (!und.length) { toast('모두 완료한 종목은 바꿀 수 없소. 새 종목을 추가해 주시오'); return false; }
+    if (d.sets.some(function (s) { return normEx(s.ex) === normEx(nu.name); })) { toast('오늘 운동에 이미 있는 종목이오'); return false; }
     var fresh = makeSetsFor({ ex: nu.name, m: nu.m, n: und.length, r: und[0].r || 10 }, dt);
-    withUndo('‘' + nu.name + '’(으)로 바꿨어요', dt, function (dd) {
+    withUndo('‘' + nu.name + '’(으)로 바꿨소', dt, function (dd) {
       var i = 0;
       dd.sets.forEach(function (s) {
         if (normEx(s.ex) === key && !isDone(s)) { s.ex = nu.name; s.m = nu.m; s.mode = 'reps'; s.targetSec = null; s.w = fresh[i].w; s.r = fresh[i].r; s.s = null; i++; }
@@ -1785,9 +1797,9 @@ body.hasbm main{padding-right:14px}
   function doSwap(nu) {
     var o = pk.old;
     if (pk.ctx === 'swap-routine') {
-      if (ed.items.some(function (x, i) { return i !== o.idx && normEx(x.ex) === normEx(nu.name); })) { toast('이미 루틴에 있는 종목이에요'); return false; }
+      if (ed.items.some(function (x, i) { return i !== o.idx && normEx(x.ex) === normEx(nu.name); })) { toast('이미 루틴에 있는 종목이오'); return false; }
       ed.items[o.idx].ex = nu.name; ed.items[o.idx].m = nu.m; renderEditor();
-      toast('‘' + nu.name + '’(으)로 바꿨어요. 저장을 눌러야 루틴에 반영돼요'); return true;
+      toast('‘' + nu.name + '’(으)로 바꿨소. 저장을 눌러야 루틴에 반영되오'); return true;
     }
     return swapExercise(o.key, nu);
   }
@@ -1815,7 +1827,7 @@ body.hasbm main{padding-right:14px}
       .sort(function (x, y) { return x.fav - y.fav || x.i - y.i; }).map(function (x) { return x.e; });
     var nFav = L.filter(function (e) { return isFavEx(e.name); }).length, heads = !q && pk.mf !== '★' && nFav > 0 && nFav < L.length;
     var sel = pk.ctx !== 'browse', swp = !!pk.old;
-    $('#pCount').textContent = L.length + '종목' + (swp ? ' · ' + pk.old.name + ' 대신 할 운동을 눌러 주세요' : sel ? ' · 눌러서 여러 개 선택' : '');
+    $('#pCount').textContent = L.length + '종목' + (swp ? ' · ' + pk.old.name + ' 대신 할 운동을 눌러 주시오' : sel ? ' · 눌러서 여러 개 선택' : '');
     $('#pList').innerHTML = L.length ? L.map(function (e, idx) {
       var on = !!pk.sel[normEx(e.name)], fv = isFavEx(e.name);
       var head = heads && idx === 0 ? '<li class="phead">★ 즐겨찾기</li>' : heads && idx === nFav ? '<li class="phead">전체 운동</li>' : '';
@@ -1823,11 +1835,11 @@ body.hasbm main{padding-right:14px}
       return head + '<li>' + (sel ? '<button type="button" class="pitem" data-pk="' + esc(e.name) + '" aria-pressed="' + on + '">' + inner + '</button>' : '<div class="pitem static">' + inner + '</div>') +
         starBtn(fv, 'data-pkfav', e.name, fv ? '즐겨찾기 해제' : '즐겨찾기 추가') +
         (e.custom ? '<button type="button" class="x" data-pkdel="' + esc(e.name) + '" aria-label="' + esc(e.name) + ' 삭제">×</button>' : '') + '</li>';
-    }).join('') : '<li><div class="pitem static"><span class="pn">' + (pk.mf === '★' && !q ? '즐겨찾기한 운동이 아직 없어요. 다른 칸에서 별(☆)을 눌러 추가해 보세요' : '검색 결과가 없어요') + '</span></div></li>';
+    }).join('') : '<li><div class="pitem static"><span class="pn">' + (pk.mf === '★' && !q ? '즐겨찾기한 운동이 아직 없소. 다른 칸에서 별(☆)을 눌러 추가해 보시오' : '검색 결과가 없소') + '</span></div></li>';
     var exact = raw && libFind(raw);
-    $('#pCustom').innerHTML = raw && !exact ? '<div class="card empty"><p>라이브러리에 없는 운동이면 직접 추가할 수 있어요. 위에서 부위를 고른 뒤 눌러 주세요.</p><button type="button" class="btn" data-act="pk-custom">‘' + esc(raw) + '’ 내 운동으로 추가</button><div class="msg" id="pkMsg" role="alert"></div></div>' : '';
+    $('#pCustom').innerHTML = raw && !exact ? '<div class="card empty"><p>라이브러리에 없는 운동이면 직접 추가할 수 있소. 위에서 부위를 고른 뒤 눌러 주시오.</p><button type="button" class="btn" data-act="pk-custom">‘' + esc(raw) + '’ 내 운동으로 추가</button><div class="msg" id="pkMsg" role="alert"></div></div>' : '';
     var n = Object.keys(pk.sel).length, foot = $('#pFoot');
-    foot.hidden = !sel || swp; if (sel && !swp) { $('#pDone').textContent = n ? n + '종목 ' + (pk.ctx === 'routine' ? '루틴에 담기' : '오늘 운동에 추가') : '종목을 골라 주세요'; $('#pDone').disabled = !n; }
+    foot.hidden = !sel || swp; if (sel && !swp) { $('#pDone').textContent = n ? n + '종목 ' + (pk.ctx === 'routine' ? '루틴에 담기' : '오늘 운동에 추가') : '종목을 골라 주시오'; $('#pDone').disabled = !n; }
   }
   function pkDone() {
     var items = Object.keys(pk.sel).map(function (k) { return pk.sel[k]; });
@@ -1840,11 +1852,11 @@ body.hasbm main{padding-right:14px}
   }
   function pkCustom() {
     var raw = $('#pQ').value.trim().slice(0, 40), msg = $('#pkMsg');
-    if (pk.mf === '전체' || pk.mf === '★') { if (msg) msg.textContent = '부위를 먼저 골라 주세요'; return; }
+    if (pk.mf === '전체' || pk.mf === '★') { if (msg) msg.textContent = '부위를 먼저 골라 주시오'; return; }
     if (libFind(raw)) return;
     S.settings.custom.push({ name: raw, m: pk.mf, eq: '직접' }); persistSettings();
     if (pk.ctx !== 'browse') pk.sel[normEx(raw)] = { name: raw, m: pk.mf };
-    pkRender(); toast('내 운동에 추가했어요');
+    pkRender(); toast('내 운동에 추가했소');
   }
   $('#pChips').addEventListener('click', function (e) { var b = e.target.closest('[data-pm]'); if (!b) return; pk.mf = b.getAttribute('data-pm'); pkChips(); pkRender(); });
   $('#pQ').addEventListener('input', pkRender);
@@ -1854,7 +1866,7 @@ body.hasbm main{padding-right:14px}
     var del = e.target.closest('[data-pkdel]');
     if (del) {
       var nm = del.getAttribute('data-pkdel'), c = S.settings.custom, i = c.findIndex(function (x) { return normEx(x.name) === normEx(nm); });
-      if (i >= 0) { var it = clone(c[i]); c.splice(i, 1); delete pk.sel[normEx(nm)]; persistSettings(); pkRender(); toast('내 운동을 삭제했어요', function () { S.settings.custom.push(it); persistSettings(); if ($('#picker').hidden === false) pkRender(); }); }
+      if (i >= 0) { var it = clone(c[i]); c.splice(i, 1); delete pk.sel[normEx(nm)]; persistSettings(); pkRender(); toast('내 운동을 삭제했소', function () { S.settings.custom.push(it); persistSettings(); if ($('#picker').hidden === false) pkRender(); }); }
       return;
     }
     var b = e.target.closest('[data-pk]'); if (!b) return;
@@ -1942,28 +1954,28 @@ body.hasbm main{padding-right:14px}
   }
   function setFeedback(st, dt) {
     var out = [], day = getDay(dt), g = groupsOf(day).filter(function (x) { return x.key === normEx(st.ex); })[0] || { sets: [st] }, idx = Math.max(0, g.sets.indexOf(st));
-    if (st.mode === 'time') { out.push(fb('good', '목표 ' + mmss(st.targetSec || 60) + ' · 실제 ' + mmss(st.s || 0) + ' 수행했어요')); }
+    if (st.mode === 'time') { out.push(fb('good', '목표 ' + mmss(st.targetSec || 60) + ' · 실제 ' + mmss(st.s || 0) + ' 수행했소')); }
     var tf = st.mode === 'time' ? null : tempoFlag(st, dt);
     if (st.mode !== 'time' && tf) {
       var tp = st.s / st.r, base = tempoBase(st.ex, dt);
-      if (tf === 'fast') out.push(fb('warn', '1회에 ' + fw(tp) + '초로 ' + (base ? '평소(' + fw(base) + '초)보다 빨라요' : '꽤 빨라요') + '. 대충 했거나 반동을 썼을 수 있어요. 내릴 때 2~3초를 써 보세요'));
-      else if (tf === 'slow') out.push(fb('info', '1회에 ' + fw(tp) + '초로 평소보다 느렸어요. 세트 중간에 쉬었거나 힘이 빠졌다면 무게를 조금 낮춰 보세요'));
-      else out.push(fb('good', '템포 좋아요 (1회 ' + fw(tp) + '초)'));
-    } else if (st.mode !== 'time' && !st.s) out.push(fb('info', '▶로 세트 시간을 재면 템포도 봐드릴 수 있어요'));
+      if (tf === 'fast') out.push(fb('warn', '1회에 ' + fw(tp) + '초로 ' + (base ? '평소(' + fw(base) + '초)보다 빠르오' : '꽤 빠르오') + '. 대충 했거나 반동을 썼을 수 있소. 내릴 때 2~3초를 써 보시오'));
+      else if (tf === 'slow') out.push(fb('info', '1회에 ' + fw(tp) + '초로 평소보다 느렸소. 세트 중간에 쉬었거나 힘이 빠졌다면 무게를 조금 낮춰 보시오'));
+      else out.push(fb('good', '템포 좋소 (1회 ' + fw(tp) + '초)'));
+    } else if (st.mode !== 'time' && !st.s) out.push(fb('info', '▶로 세트 시간을 재면 템포도 봐드릴 수 있소'));
     var prev = null;
     day.sets.forEach(function (x) { if (x !== st && isDone(x) && x.t && x.t < st.t && (!prev || x.t > prev.t)) prev = x; });
     if (prev && st.s) {
       var rest = (st.t - st.s * 1000 - prev.t) / 1000, want = restFor(prev.ex);
-      if (rest > 5 && rest < 1500 && rest < want * 0.6) out.push(fb('warn', '휴식이 설정한 ' + want + '초보다 짧았어요 (약 ' + Math.round(rest) + '초). 너무 짧게 쉬면 횟수가 떨어질 수 있어요'));
+      if (rest > 5 && rest < 1500 && rest < want * 0.6) out.push(fb('warn', '휴식이 설정한 ' + want + '초보다 짧았소 (약 ' + Math.round(rest) + '초). 너무 짧게 쉬면 횟수가 떨어질 수 있소'));
     }
     var ls = st.mode === 'time' ? null : lastSession(st.ex, dt);
     if (ls) {
       var ref = ls.sets[Math.min(idx, ls.sets.length - 1)];
-      if (st.w > ref.w) out.push(fb('good', '지난번보다 무게가 ' + fw(st.w - ref.w) + 'kg 올랐어요'));
-      else if (st.w === ref.w && st.r > ref.r) out.push(fb('good', '같은 무게로 지난번보다 ' + (st.r - ref.r) + '회 더 했어요'));
-      else if (st.w === ref.w && st.r <= ref.r - 3) out.push(fb('info', '지난번보다 횟수가 줄었어요. 컨디션이나 휴식 시간을 확인해 보세요'));
+      if (st.w > ref.w) out.push(fb('good', '지난번보다 무게가 ' + fw(st.w - ref.w) + 'kg 올랐소'));
+      else if (st.w === ref.w && st.r > ref.r) out.push(fb('good', '같은 무게로 지난번보다 ' + (st.r - ref.r) + '회 더 했소'));
+      else if (st.w === ref.w && st.r <= ref.r - 3) out.push(fb('info', '지난번보다 횟수가 줄었소. 컨디션이나 휴식 시간을 확인해 보시오'));
     }
-    if (g.sets.length > 1 && g.sets.every(isDone) && g.sets.every(function (x) { return x.r >= 12 && x.w === g.sets[0].w; }) && g.sets[0].w > 0) out.push(fb('info', '모든 세트를 12회 이상 했어요. 다음엔 무게를 조금 올려 보세요'));
+    if (g.sets.length > 1 && g.sets.every(isDone) && g.sets.every(function (x) { return x.r >= 12 && x.w === g.sets[0].w; }) && g.sets[0].w > 0) out.push(fb('info', '모든 세트를 12회 이상 했소. 다음엔 무게를 조금 올려 보시오'));
     return out;
   }
   function nextTip(dt) {
@@ -1981,17 +1993,17 @@ body.hasbm main{padding-right:14px}
   function volOf(arr) { return arr.reduce(function (a, s) { return a + s.w * s.r; }, 0); }
   function dietLines(d) {
     var out = [], G = S.settings;
-    if (!d.meals.length) { out.push(fb('info', '식단 기록이 없어요')); return out; }
+    if (!d.meals.length) { out.push(fb('info', '식단 기록이 없소')); return out; }
     var kc = sumBy(d.meals, 'kcal'), pr = sumBy(d.meals, 'p');
     out.push(fb(pr >= G.protein * 0.9 ? 'good' : 'warn', '단백질 ' + nf(pr) + 'g / 목표 ' + nf(G.protein) + 'g' + (pr < G.protein * 0.9 ? ' (' + nf(G.protein - pr) + 'g 부족)' : '')));
-    out.push(fb(kc >= G.kcal * 0.9 ? 'good' : 'warn', '칼로리 ' + nf(kc) + ' / 목표 ' + nf(G.kcal) + 'kcal' + (kc < G.kcal * 0.9 ? ' · 벌크업은 먹는 양도 절반이에요' : '')));
+    out.push(fb(kc >= G.kcal * 0.9 ? 'good' : 'warn', '칼로리 ' + nf(kc) + ' / 목표 ' + nf(G.kcal) + 'kcal' + (kc < G.kcal * 0.9 ? ' · 벌크업은 먹는 양도 절반이오' : '')));
     return out;
   }
   function dayReview(dt) {
     var d = getDay(dt), done = d.sets.filter(isDone); if (!done.length) return null;
     var out = [], vol = volOf(done.filter(function (x) { return x.mode !== 'time'; })), timedSec = done.filter(function (x) { return x.mode === 'time'; }).reduce(function (a, x) { return a + (+x.s || 0); }, 0), groups = groupsOf(d);
     out.push(fb('info', '완료 ' + done.length + '/' + d.sets.length + '세트 · ' + groups.length + '종목 · 볼륨 ' + nf(vol) + 'kg' + (timedSec ? ' · 시간 운동 ' + mmss(timedSec) : '')));
-    out.push(done.length < d.sets.length ? fb('warn', '못 끝낸 세트가 ' + (d.sets.length - done.length) + '개 남았어요') : fb('good', '계획한 세트를 모두 끝냈어요'));
+    out.push(done.length < d.sets.length ? fb('warn', '못 끝낸 세트가 ' + (d.sets.length - done.length) + '개 남았소') : fb('good', '계획한 세트를 모두 끝냈소'));
     if (d.routine) {
       var pd = Object.keys(S.days).filter(function (x) { return x < dt && S.days[x].routine === d.routine && S.days[x].sets.some(isDone); }).sort().pop();
       if (pd) {
@@ -2009,12 +2021,12 @@ body.hasbm main{padding-right:14px}
     var timed = done.filter(function (s) { return s.s; }), fast = timed.filter(function (s) { return tempoFlag(s, dt) === 'fast'; }).length;
     if (timed.length) {
       var avg = Math.round(timed.reduce(function (a, s) { return a + s.s; }, 0) / timed.length);
-      out.push(fast ? fb('warn', '템포가 너무 빠른 세트가 ' + fast + '/' + timed.length + '개예요. 다음엔 내릴 때 2~3초를 의식해 보세요') : fb('good', '세트 템포가 안정적이었어요 (평균 ' + avg + '초)'));
-    } else out.push(fb('info', '세트 시간을 재지 않았어요. ▶로 재면 템포를 분석해 드려요'));
+      out.push(fast ? fb('warn', '템포가 너무 빠른 세트가 ' + fast + '/' + timed.length + '개요. 다음엔 내릴 때 2~3초를 의식해 보시오') : fb('good', '세트 템포가 안정적이었소 (평균 ' + avg + '초)'));
+    } else out.push(fb('info', '세트 시간을 재지 않았소. ▶로 재면 템포를 분석해 드리겠소'));
     var rs = restsOf(d);
     if (rs.length >= 3) {
       var shortN = rs.filter(function (r) { return r.actual < r.want * 0.6; }).length;
-      out.push(shortN / rs.length >= 0.4 ? fb('warn', '설정한 휴식보다 짧게 쉰 세트가 ' + shortN + '/' + rs.length + '개예요') : fb('good', '휴식 시간을 잘 지켰어요'));
+      out.push(shortN / rs.length >= 0.4 ? fb('warn', '설정한 휴식보다 짧게 쉰 세트가 ' + shortN + '/' + rs.length + '개요') : fb('good', '휴식 시간을 잘 지켰소'));
     }
     return { items: out.concat(dietLines(d)) };
   }
@@ -2032,37 +2044,37 @@ body.hasbm main{padding-right:14px}
       if (d.meals.length) diet.push({ k: sumBy(d.meals, 'kcal'), p: sumBy(d.meals, 'p') });
     }
     MUSCLES.forEach(function (m) { tot += cur[m].sets; vol += cur[m].vol; pvol += prv[m].vol; });
-    if (!tot) return { items: [fb('info', '이 주에는 완료한 세트가 없어요')], next: [] };
+    if (!tot) return { items: [fb('info', '이 주에는 완료한 세트가 없소')], next: [] };
     var out = [], next = [];
     out.push(fb(days >= 3 ? 'good' : 'warn', '운동한 날 ' + days + '일 · 총 ' + tot + '세트 · 볼륨 ' + nf(vol) + 'kg'));
-    if (days < 3) next.push('주 3일 이상 운동일을 만들어 보세요');
+    if (days < 3) next.push('주 3일 이상 운동일을 만들어 보시오');
     if (pvol > 0) { var ch = (vol - pvol) / pvol * 100; out.push(fb(ch >= 0 ? 'good' : ch <= -15 ? 'warn' : 'info', '지난주 볼륨 대비 ' + (ch >= 0 ? '+' : '') + Math.round(ch) + '%')); }
     var tgt = function (m) { return m === '복근' || m === '전완' ? Math.ceil(goal / 2) : goal; };
     var lack = MUSCLES.map(function (m) { return { m: m, n: cur[m].sets, t: tgt(m) }; }).filter(function (r) { return r.n < r.t * 0.6; }).sort(function (a, b) { var oa = a.t < goal ? 1 : 0, ob = b.t < goal ? 1 : 0; return oa - ob || (a.n / a.t) - (b.n / b.t); });
     if (lack.length) {
       out.push(fb('warn', '목표의 60%에 못 미친 부위: ' + lack.slice(0, 4).map(function (r) { return r.m + ' ' + r.n + '/' + r.t + '세트'; }).join(', ')));
-      next.push(lack.slice(0, 3).map(function (r) { return r.m + ' +' + Math.max(2, Math.round(r.t - r.n)) + '세트'; }).join(', ') + ' 정도 늘려 보세요 (복근·전완은 목표를 절반으로 계산해요)');
-    } else out.push(fb('good', '모든 부위가 주간 목표의 60% 이상이에요'));
+      next.push(lack.slice(0, 3).map(function (r) { return r.m + ' +' + Math.max(2, Math.round(r.t - r.n)) + '세트'; }).join(', ') + ' 정도 늘려 보시오 (복근·전완은 목표를 절반으로 계산하오)');
+    } else out.push(fb('good', '모든 부위가 주간 목표의 60% 이상이오'));
     if (timed >= 5) {
-      if (fast / timed >= 0.3) { out.push(fb('warn', '템포가 빠른 세트가 ' + fast + '/' + timed + '개예요')); next.push('내릴 때 2~3초를 세면서 천천히 내려요'); }
-      else out.push(fb('good', '세트 템포가 대체로 안정적이었어요'));
+      if (fast / timed >= 0.3) { out.push(fb('warn', '템포가 빠른 세트가 ' + fast + '/' + timed + '개요')); next.push('내릴 때 2~3초를 세면서 천천히 내리시오'); }
+      else out.push(fb('good', '세트 템포가 대체로 안정적이었소'));
     }
     var kAvg = null, pAvg = null;
     if (diet.length) {
       kAvg = diet.reduce(function (a, x) { return a + x.k; }, 0) / diet.length; pAvg = diet.reduce(function (a, x) { return a + x.p; }, 0) / diet.length;
       out.push(fb(kAvg >= G.kcal * 0.9 ? 'good' : 'warn', '식단 기록 ' + diet.length + '일 · 평균 ' + nf(kAvg) + 'kcal (목표 ' + nf(G.kcal) + ')'));
       out.push(fb(pAvg >= G.protein * 0.9 ? 'good' : 'warn', '평균 단백질 ' + nf(pAvg) + 'g (목표 ' + nf(G.protein) + 'g)'));
-      if (diet.length < 4) out.push(fb('info', '식단 기록이 ' + diet.length + '일뿐이라 참고용이에요'));
-      if (pAvg < G.protein * 0.9) next.push('단백질을 하루 ' + nf(G.protein - pAvg) + 'g 더 채워 보세요');
-    } else out.push(fb('info', '이 주에는 식단 기록이 없어요'));
+      if (diet.length < 4) out.push(fb('info', '식단 기록이 ' + diet.length + '일뿐이라 참고용이오'));
+      if (pAvg < G.protein * 0.9) next.push('단백질을 하루 ' + nf(G.protein - pAvg) + 'g 더 채워 보시오');
+    } else out.push(fb('info', '이 주에는 식단 기록이 없소'));
     var wc = weightAvg(ws), wp = weightAvg(addDays(ws, -7));
     if (wc != null && wp != null) {
       var dw = wc - wp;
       out.push(fb(dw >= 0.1 && dw <= 0.7 ? 'good' : 'info', '평균 체중 ' + fw(wc) + 'kg (지난주 대비 ' + (dw >= 0 ? '+' : '') + dw.toFixed(1) + 'kg)'));
-      if (dw < 0.1) next.push(kAvg != null && kAvg < G.kcal * 0.95 ? '체중이 늘지 않았어요. 목표 칼로리까지 먼저 채워 보세요' : '체중이 정체라면 하루 +150~250kcal를 더해 보세요');
-      else if (dw > 0.7) next.push('체중이 빠르게 늘고 있어요. 지방이 섞일 수 있으니 하루 100~150kcal를 줄여도 좋아요');
-    } else if (wc != null) out.push(fb('info', '평균 체중 ' + fw(wc) + 'kg · 지난주 기록이 있으면 변화를 비교해 드려요'));
-    next.push('무게나 횟수가 오른 운동은 유지하고, 정체된 운동은 +1~2회 또는 +2.5kg을 시도해 보세요');
+      if (dw < 0.1) next.push(kAvg != null && kAvg < G.kcal * 0.95 ? '체중이 늘지 않았소. 목표 칼로리까지 먼저 채워 보시오' : '체중이 정체라면 하루 +150~250kcal를 더해 보시오');
+      else if (dw > 0.7) next.push('체중이 빠르게 늘고 있소. 지방이 섞일 수 있으니 하루 100~150kcal를 줄여도 좋소');
+    } else if (wc != null) out.push(fb('info', '평균 체중 ' + fw(wc) + 'kg · 지난주 기록이 있으면 변화를 비교해 드리겠소'));
+    next.push('무게나 횟수가 오른 운동은 유지하고, 정체된 운동은 +1~2회 또는 +2.5kg을 시도해 보시오');
     return { items: out, next: next.slice(0, 5) };
   }
 
@@ -2084,22 +2096,22 @@ body.hasbm main{padding-right:14px}
       '<div class="ai-actions"><button type="button" class="mini" data-ai-action="summary">오늘 운동 AI 총평</button><button type="button" class="mini" data-ai-action="set">방금 한 세트 분석</button></div>'+
       '<div class="ai-messages" id="aiMessages">'+messages+'</div>'+
       '<form class="ai-chat-form" id="aiChatForm"><input id="aiQuestion" type="text" maxlength="500" placeholder="운동이나 식단에 대해 질문하기" autocomplete="off"><button type="submit" '+(aiState.busy?'disabled':'')+'>보내기</button></form>'+
-      '<p class="note" style="margin-top:7px">AI 응답에는 인터넷 연결이 필요해요. 기록 입력과 기존 자동 피드백은 오프라인에서도 계속 작동합니다.</p></div>';
+      '<p class="note" style="margin-top:7px">AI 응답에는 인터넷 연결이 필요하오. 기록 입력과 기존 자동 피드백은 오프라인에서도 계속 작동하오.</p></div>';
   }
   function aiSend(question) {
     question=String(question||'').trim(); if(!question||aiState.busy)return;
-    if(!window.AndroidBridge||!window.AndroidBridge.askGroq){aiState.messages.push({role:'assistant',text:'설치된 앱에서만 AI 연결을 사용할 수 있어요.'});renderCoach();return;}
-    if(!window.AndroidBridge.hasGroqApiKey()){aiState.messages.push({role:'assistant',text:'먼저 설정 탭에서 Groq API 키를 저장해 주세요.'});renderCoach();return;}
+    if(!window.AndroidBridge||!window.AndroidBridge.askGroq){aiState.messages.push({role:'assistant',text:'설치된 앱에서만 AI 연결을 사용할 수 있소.'});renderCoach();return;}
+    if(!window.AndroidBridge.hasGroqApiKey()){aiState.messages.push({role:'assistant',text:'먼저 설정 탭에서 Groq API 키를 저장해 주시오.'});renderCoach();return;}
     aiState.messages.push({role:'user',text:question}); aiState.busy=true; renderCoach();
     var id='ai_'+Date.now()+'_'+Math.floor(Math.random()*100000);
     var history=aiState.messages.slice(-7).map(function(m){return (m.role==='user'?'사용자: ':'코치: ')+m.text;}).join('\n');
     aiPending[id]=true;
     try { window.AndroidBridge.askGroq(id,question,aiContext()+'\n\n응답 말투 지침: 돌쇠록스의 코치답게 조선 시대 머슴의 구수하고 담백한 말투를 쓰시오. 문장 끝은 하오체/하소서체(예: 좋소, 유지하시오, 해보시오)로 하되 돌쇠가 주인에게 아뢰는 듯한 자연스러운 조선식 말투(예: 하오, 하시오, 했소, 좋소, 알겠소)를 일관되게 쓰시오. 과장된 사극 대사나 어려운 한자어는 피하시오. 운동 수치와 근거는 정확하고 현대적인 표현으로 유지하시오.\n\n최근 대화:\n'+history); }
-    catch(e){ delete aiPending[id]; aiState.busy=false; aiState.messages.push({role:'assistant',text:'AI 요청을 시작하지 못했어요. 앱을 다시 실행해 주세요.'}); renderCoach(); }
+    catch(e){ delete aiPending[id]; aiState.busy=false; aiState.messages.push({role:'assistant',text:'AI 요청을 시작하지 못했소. 앱을 다시 실행해 주시오.'}); renderCoach(); }
   }
   window.onNativeAiResult=function(id,ok,message){
     if(!aiPending[id])return; delete aiPending[id]; aiState.busy=false;
-    aiState.messages.push({role:'assistant',text:dolsoeFeedbackText(String(message|| (ok?'답변이 비어 있어요.':'요청에 실패했어요.')))});
+    aiState.messages.push({role:'assistant',text:dolsoeFeedbackText(String(message|| (ok?'답변이 비어 있소.':'요청에 실패했소.')))});
     renderCoach();
     var box=$('#aiMessages'); if(box){box.scrollTop=box.scrollHeight; var last=box.lastElementChild; if(last)last.scrollIntoView({block:'nearest',behavior:'smooth'});}
   };
@@ -2142,14 +2154,14 @@ body.hasbm main{padding-right:14px}
       }
       if (nt) {
         h += '<div class="cb"><div class="cbh">' + (nt.first ? '시작 전 체크' : '다음 세트') + ' · ' + esc(nt.ex) + ' ' + (nt.idx + 1) + '/' + nt.total + '세트 · 휴식 ' + nt.rest + '초</div>' +
-          (nt.first ? '<p class="cue">' + esc(dolsoeFeedbackText(nt.cue.k)) + '</p>' + fbHtml(nt.cue.t.map(function (x) { return fb('info', x); })) : fbHtml([fb('info', nt.cue.t[nt.idx % nt.cue.t.length]), fb('info', '무게와 횟수를 앞 세트와 비슷하게 유지해요')])) + '</div>';
+          (nt.first ? '<p class="cue">' + esc(dolsoeFeedbackText(nt.cue.k)) + '</p>' + fbHtml(nt.cue.t.map(function (x) { return fb('info', x); })) : fbHtml([fb('info', nt.cue.t[nt.idx % nt.cue.t.length]), fb('info', '무게와 횟수를 앞 세트와 비슷하게 유지하오')])) + '</div>';
       }
-    } else if (isToday) h += '<p class="note" style="margin:0">루틴을 시작하면 세트마다 템포, 휴식, 지난 기록과 비교한 피드백과 운동별 핵심 포인트를 알려드려요.</p>';
+    } else if (isToday) h += '<p class="note" style="margin:0">루틴을 시작하면 세트마다 템포, 휴식, 지난 기록과 비교한 피드백과 운동별 핵심 포인트를 알려드리겠소.</p>';
     h += '<div class="coach-btns"><button type="button" class="mini" data-coach="day" aria-expanded="' + dayOpen + '">' + (isToday ? '오늘' : fmtShort(selDate)) + ' 총평</button>' +
       '<button type="button" class="mini" data-coach="week" aria-expanded="' + weekOpen + '">' + (sunday ? '일요일 주간 총평' : '주간 총평') + '</button></div>';
     if (dayOpen) {
       var dr = dayReview(selDate);
-      h += '<div class="cb"><div class="cbh">' + (isToday ? '오늘' : fmtShort(selDate)) + ' 운동 총평' + (dr && !allDone ? ' (진행 중)' : '') + '</div>' + (dr ? fbHtml(dr.items) : '<p class="note" style="margin:0">완료한 세트가 생기면 총평을 볼 수 있어요.</p>') + '</div>';
+      h += '<div class="cb"><div class="cbh">' + (isToday ? '오늘' : fmtShort(selDate)) + ' 운동 총평' + (dr && !allDone ? ' (진행 중)' : '') + '</div>' + (dr ? fbHtml(dr.items) : '<p class="note" style="margin:0">완료한 세트가 생기면 총평을 볼 수 있소.</p>') + '</div>';
     }
     if (weekOpen) {
       var wr = weekReview(ws);
@@ -2201,7 +2213,7 @@ body.hasbm main{padding-right:14px}
       if(kind==='summary') aiSend('선택한 날짜의 운동 기록을 분석해 총평해줘. 잘한 점 2개, 개선점 2개, 다음 운동에서 실행할 구체적인 목표를 알려줘.');
       else {
         var last=null; (d.sets||[]).forEach(function(s){if(isDone(s)&&(!last||s.t>last.t))last=s;});
-        aiSend(last?'방금 완료한 '+last.ex+' 세트('+last.w+'kg × '+last.r+'회)를 분석하고 다음 세트에서 조정할 점을 알려줘.':'아직 완료한 세트가 없어요. 현재 운동 계획을 보고 시작할 때 주의할 점을 알려줘.');
+        aiSend(last?'방금 완료한 '+last.ex+' 세트('+last.w+'kg × '+last.r+'회)를 분석하고 다음 세트에서 조정할 점을 알려줘.':'아직 완료한 세트가 없소. 현재 운동 계획을 보고 시작할 때 주의할 점을 알려줘.');
       }
       return;
     }
@@ -2233,18 +2245,18 @@ body.hasbm main{padding-right:14px}
     var maxSets = Math.max.apply(null, rows.map(function (r) { return r.sets; }));
     var axis = Math.max(Math.ceil(goal * 1.4), maxSets, 1);
     $('#weekLabel').textContent = fmtShort(ws) + ' – ' + fmtShort(we) + (ws <= t && t <= we ? ' (이번 주)' : '');
-    $('#barsNote').textContent = '세로선은 주간 목표 ' + goal + '세트 (복근, 전완은 목표를 낮춰 봐도 돼요)';
+    $('#barsNote').textContent = '세로선은 주간 목표 ' + goal + '세트 (복근, 전완은 목표를 낮춰 봐도 되오)';
     var ins = '';
     if (Object.keys(S.days).length === 0) {
-      ins = '<div class="empty"><p>아직 분석할 기록이 없어요. 운동 탭에서 세트를 체크하거나 예시 기록으로 화면을 먼저 볼 수 있어요.</p><button type="button" class="btn" data-act="sample-add">예시 기록으로 둘러보기</button></div>';
+      ins = '<div class="empty"><p>아직 분석할 기록이 없소. 운동 탭에서 세트를 체크하거나 예시 기록으로 화면을 먼저 볼 수 있소.</p><button type="button" class="btn" data-act="sample-add">예시 기록으로 둘러보기</button></div>';
     } else if (total === 0) {
-      ins = '<span class="big">이 주에는 완료한 세트가 없어요</span>';
+      ins = '<span class="big">이 주에는 완료한 세트가 없소</span>';
     } else {
       var lack = rows.filter(function (r) { return r.sets < goal * 0.6; }).sort(function (a, b) { return a.sets - b.sets; });
       if (lack.length) {
         ins = '<span class="big">가장 부족한 부위 · ' + lack[0].m + ' ' + lack[0].sets + '/' + goal + '세트</span>';
         if (lack.length > 1) ins += '<span class="sub">목표의 60%에 못 미친 부위 · ' + lack.slice(1).map(function (r) { return r.m + ' ' + r.sets; }).join(', ') + '</span>';
-      } else ins = '<span class="big">모든 부위가 주간 목표의 60% 이상이에요</span>';
+      } else ins = '<span class="big">모든 부위가 주간 목표의 60% 이상이오</span>';
       if (ws <= t && t <= we) ins += '<span class="sub">이번 주 ' + (6 - ((parse(t).getDay() + 6) % 7)) + '일 남음</span>';
     }
     $('#insight').innerHTML = ins;
@@ -2268,7 +2280,7 @@ body.hasbm main{padding-right:14px}
     var box = $('#wChart'), sm = $('#wSummary');
     var wi = $('#wInput'); if (document.activeElement !== wi) wi.value = getDay(selDate).weight == null ? '' : fw(getDay(selDate).weight);
     if (pts.length < 2) {
-      sm.textContent = pts.length ? '체중을 한 번 더 기록하면 변화 그래프가 나와요' : '체중을 두 번 이상 기록하면 변화 그래프가 나와요';
+      sm.textContent = pts.length ? '체중을 한 번 더 기록하면 변화 그래프가 나오' : '체중을 두 번 이상 기록하면 변화 그래프가 나오';
       box.innerHTML = ''; return;
     }
     var delta = pts[pts.length - 1].w - pts[0].w;
@@ -2297,9 +2309,9 @@ body.hasbm main{padding-right:14px}
   $('#wForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var v = parseFloat($('#wInput').value);
-    if ($('#wInput').value.trim() === '') { mutate(selDate, function (d) { d.weight = null; }); toast('체중 기록을 지웠어요'); return; }
-    if (isNaN(v) || v < 20 || v > 300) { toast('20~300kg 사이로 입력해 주세요'); return; }
-    if (mutate(selDate, function (d) { d.weight = Math.round(v * 10) / 10; })) toast(fmtShort(selDate) + ' 체중 ' + fw(v) + 'kg 저장했어요');
+    if ($('#wInput').value.trim() === '') { mutate(selDate, function (d) { d.weight = null; }); toast('체중 기록을 지웠소'); return; }
+    if (isNaN(v) || v < 20 || v > 300) { toast('20~300kg 사이로 입력해 주시오'); return; }
+    if (mutate(selDate, function (d) { d.weight = Math.round(v * 10) / 10; })) toast(fmtShort(selDate) + ' 체중 ' + fw(v) + 'kg 저장했소');
   });
   $('#prevWeek').addEventListener('click', function () { setDate(addDays(selDate, -7)); });
   $('#nextWeek').addEventListener('click', function () { setDate(addDays(selDate, 7)); });
@@ -2420,7 +2432,7 @@ body.hasbm main{padding-right:14px}
         var removed = favList('myFood').splice(di, 1)[0], fi2 = favFoodIdx(dn), removedFav = null;
         if (fi2 >= 0 && favList('favFood')[fi2].k == null) removedFav = favList('favFood').splice(fi2, 1)[0];
         persistSettings(); showSug();
-        toast('‘' + dn + '’을 음식 목록에서 지웠어요', function () { favList('myFood').push(removed); if (removedFav) favList('favFood').push(removedFav); persistSettings(); showSug(); });
+        toast('‘' + dn + '’을 음식 목록에서 지웠소', function () { favList('myFood').push(removed); if (removedFav) favList('favFood').push(removedFav); persistSettings(); showSug(); });
       }
       return;
     }
@@ -2447,12 +2459,12 @@ body.hasbm main{padding-right:14px}
   function renderDiet() {
     var d = getDay(selDate), G = S.settings;
     var kcal = sumBy(d.meals, 'kcal'), prot = sumBy(d.meals, 'p');
-    $('#dietNotice').innerHTML = d.sample ? '<div class="notice">이 날짜는 예시 기록이에요. 설정에서 예시를 지우면 함께 지워져요.</div>' : '';
+    $('#dietNotice').innerHTML = d.sample ? '<div class="notice">이 날짜는 예시 기록이오. 설정에서 예시를 지우면 함께 지워지오.</div>' : '';
     var row = function (k, val, unit, goal) {
       var pct = Math.min(100, goal ? val / goal * 100 : 0), left = goal - val;
       return '<div class="mrow"><div class="mtop"><span class="k">' + k + '</span><span class="n">' + nf(val) + '<small> / ' + nf(goal) + unit + '</small></span></div>' +
         '<div class="meter" role="meter" aria-label="' + k + '" aria-valuemin="0" aria-valuemax="' + goal + '" aria-valuenow="' + Math.round(val) + '"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
-        '<div class="mfoot">' + (left > 0 ? '목표까지 ' + nf(left) + unit : '목표를 채웠어요') + '</div></div>';
+        '<div class="mfoot">' + (left > 0 ? '목표까지 ' + nf(left) + unit : '목표를 채웠소') + '</div></div>';
     };
     $('#dietSummary').innerHTML = row('칼로리', kcal, 'kcal', G.kcal) + row('단백질', prot, 'g', G.protein);
     var seen = {}; quick = [];
@@ -2462,7 +2474,7 @@ body.hasbm main{padding-right:14px}
     $('#quick').innerHTML = quick.map(function (m, i) { return '<button type="button" class="qchip" data-q="' + i + '">' + esc(m.name) + '<small>' + nf(m.kcal) + 'kcal · ' + fw(m.p) + 'g</small></button>'; }).join('');
     $('#quickWrap').hidden = !quick.length;
     if (!d.meals.length) {
-      $('#mealList').innerHTML = '<div class="card empty"><p>' + (selDate === today() ? '오늘' : fmtShort(selDate)) + ' 먹은 음식이 아직 없어요. 위에서 첫 식사를 추가해 보세요.</p></div>';
+      $('#mealList').innerHTML = '<div class="card empty"><p>' + (selDate === today() ? '오늘' : fmtShort(selDate)) + ' 먹은 음식이 아직 없소. 위에서 첫 식사를 추가해 보시오.</p></div>';
     } else {
       $('#mealList').innerHTML = '<div class="card"><ul class="meals">' + d.meals.map(function (m) {
         var fv = favFoodIdx(m.name) >= 0;
@@ -2477,24 +2489,24 @@ body.hasbm main{padding-right:14px}
   $('#mealForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var name = $('#mName').value.trim(), kcal = parseFloat($('#mKcal').value), p = parseFloat($('#mProt').value), msg = $('#mealMsg');
-    if (!name) { msg.textContent = '음식 이름을 입력해 주세요'; $('#mName').focus(); return; }
-    if (isNaN(kcal) || kcal < 0) { msg.textContent = '칼로리를 입력해 주세요'; $('#mKcal').focus(); return; }
+    if (!name) { msg.textContent = '음식 이름을 입력해 주시오'; $('#mName').focus(); return; }
+    if (isNaN(kcal) || kcal < 0) { msg.textContent = '칼로리를 입력해 주시오'; $('#mKcal').focus(); return; }
     if (isNaN(p) || p < 0) p = 0;
     msg.textContent = '';
     var label = selFood ? selFood[0] + ' ' + foodAmount(selFood, foodQty) : name;
-    if (addMeal({ name: label, kcal: kcal, p: p })) { var saved = !selFood && rememberFood(name, kcal, p); $('#mName').value = ''; $('#mKcal').value = ''; $('#mProt').value = ''; clearFood(); hideSug(); toast(label + ' 추가했어요' + (saved ? ' · 내 음식 목록에 저장됨' : '')); }
+    if (addMeal({ name: label, kcal: kcal, p: p })) { var saved = !selFood && rememberFood(name, kcal, p); $('#mName').value = ''; $('#mKcal').value = ''; $('#mProt').value = ''; clearFood(); hideSug(); toast(label + ' 추가했소' + (saved ? ' · 내 음식 목록에 저장됨' : '')); }
   });
-  $('#quick').addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (!b) return; var m = quick[+b.getAttribute('data-q')]; if (!m) return; withUndo(m.name + ' 추가했어요', selDate, function (d) { d.meals.push({ id: uid(), name: m.name, kcal: m.kcal, p: m.p, t: Date.now() }); }); });
+  $('#quick').addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (!b) return; var m = quick[+b.getAttribute('data-q')]; if (!m) return; withUndo(m.name + ' 추가했소', selDate, function (d) { d.meals.push({ id: uid(), name: m.name, kcal: m.kcal, p: m.p, t: Date.now() }); }); });
   $('#mealList').addEventListener('click', function (e) {
     var sf = e.target.closest('[data-mfav]');
     if (sf) {
       var mid = sf.getAttribute('data-mfav'), mm = getDay(selDate).meals.filter(function (x) { return x.id === mid; })[0];
-      if (mm) { var was = favFoodIdx(mm.name) >= 0; toggleFavFood(mm.name, mm.kcal, mm.p); renderDiet(); toast(was ? '즐겨찾기에서 뺐어요' : '즐겨찾기에 넣었어요'); }
+      if (mm) { var was = favFoodIdx(mm.name) >= 0; toggleFavFood(mm.name, mm.kcal, mm.p); renderDiet(); toast(was ? '즐겨찾기에서 뺐소' : '즐겨찾기에 넣었소'); }
       return;
     }
     var b = e.target.closest('[data-del-meal]'); if (!b) return;
     var id = b.getAttribute('data-del-meal'), dt = selDate, i = getDay(dt).meals.findIndex(function (m) { return m.id === id; });
-    if (i >= 0) withUndo('식사를 삭제했어요', dt, function (dd) { dd.meals.splice(i, 1); });
+    if (i >= 0) withUndo('식사를 삭제했소', dt, function (dd) { dd.meals.splice(i, 1); });
   });
 
   /* ---------- settings tab ---------- */
@@ -2502,8 +2514,8 @@ body.hasbm main{padding-right:14px}
   function fillSettings() { Object.keys(GF).forEach(function (id) { var el = $('#' + id); if (document.activeElement !== el) el.value = S.settings[GF[id][0]]; }); }
   function renderStoreNote() {
     $('#storeNote').textContent = mode === 'cloud'
-      ? '이 계정의 개인 저장 공간에 기록돼요. 같은 계정으로 다른 기기에서 이 페이지를 열면 이어서 쓸 수 있어요.'
-      : mode === 'local' ? '지금은 이 브라우저에만 저장돼요. 다른 기기나 브라우저에서는 보이지 않고, 사이트 데이터를 지우면 함께 사라져요.' : '저장 위치를 확인하고 있어요.';
+      ? '이 계정의 개인 저장 공간에 기록되오. 같은 계정으로 다른 기기에서 이 페이지를 열면 이어서 쓸 수 있소.'
+      : mode === 'local' ? '지금은 이 브라우저에만 저장되오. 다른 기기나 브라우저에서는 보이지 않고, 사이트 데이터를 지우면 함께 사라지오.' : '저장 위치를 확인하고 있소.';
   }
   function latestWeight() {
     var ds = Object.keys(S.days).filter(function (d) { return S.days[d].weight != null; }).sort();
@@ -2512,49 +2524,49 @@ body.hasbm main{padding-right:14px}
   function renderSettings() {
     fillSettings(); renderStoreNote();
     var keyStatus=$('#groqStatus');
-    if(keyStatus) keyStatus.textContent=(window.AndroidBridge&&window.AndroidBridge.hasGroqApiKey&&window.AndroidBridge.hasGroqApiKey())?'API 키가 이 기기에 안전하게 저장되어 있어요.':'API 키를 저장하면 AI 코치를 사용할 수 있어요.';
+    if(keyStatus) keyStatus.textContent=(window.AndroidBridge&&window.AndroidBridge.hasGroqApiKey&&window.AndroidBridge.hasGroqApiKey())?'API 키가 이 기기에 안전하게 저장되어 있소.':'API 키를 저장하면 AI 코치를 사용할 수 있소.';
     $('#groqKey').value='';
     $('#bkShare').hidden = !(window.AndroidBridge && window.AndroidBridge.share);
     $('#appCard').hidden = !IS_APP;
-    if (IS_APP) $('#appNote').textContent = '설치된 버전: 빌드 #' + BUILD + '. 새 버전이 나오면 아래 버튼으로 받아 설치하세요. 같은 앱 위에 덮어 설치되고 기록과 설정은 그대로 유지돼요. (GitHub 로그인이 필요할 수 있어요)';
+    if (IS_APP) $('#appNote').textContent = '설치된 버전: 빌드 #' + BUILD + '. 새 버전이 나오면 아래 버튼으로 받아 설치하시오. 같은 앱 위에 덮어 설치되고 기록과 설정은 그대로 유지되오. (GitHub 로그인이 필요할 수 있소)';
     var n = sampleDays().length;
     $('#sampleClear').disabled = !n; $('#sampleClear').textContent = n ? '예시 지우기 (' + n + '일)' : '예시 지우기';
     $('#calcProt').disabled = latestWeight() == null;
-    $('#calcNote').textContent = latestWeight() == null ? '분석 탭에서 체중을 먼저 기록하면 계산할 수 있어요. 일반적인 범위는 체중 1kg당 1.6~2.2g이에요.' : '체중 1kg당 1.6~2.2g이 일반적인 범위예요. 이 버튼은 최근 체중 ' + fw(latestWeight()) + 'kg에 1.8g을 곱해요.';
+    $('#calcNote').textContent = latestWeight() == null ? '분석 탭에서 체중을 먼저 기록하면 계산할 수 있소. 일반적인 범위는 체중 1kg당 1.6~2.2g이오.' : '체중 1kg당 1.6~2.2g이 일반적인 범위이오. 이 버튼은 최근 체중 ' + fw(latestWeight()) + 'kg에 1.8g을 곱하오.';
   }
   Object.keys(GF).forEach(function (id) {
     $('#' + id).addEventListener('change', function () {
       var f = GF[id], v = parseFloat(this.value), msg = $('#goalMsg');
-      if (isNaN(v) || v < f[1] || v > f[2]) { msg.textContent = f[1] + '~' + f[2] + ' 사이로 입력해 주세요'; this.value = S.settings[f[0]]; return; }
-      msg.textContent = ''; S.settings[f[0]] = Math.round(v); persistSettings(); toast('목표를 저장했어요');
+      if (isNaN(v) || v < f[1] || v > f[2]) { msg.textContent = f[1] + '~' + f[2] + ' 사이로 입력해 주시오'; this.value = S.settings[f[0]]; return; }
+      msg.textContent = ''; S.settings[f[0]] = Math.round(v); persistSettings(); toast('목표를 저장했소');
     });
   });
   $('#goalForm').addEventListener('submit', function (e) { e.preventDefault(); });
   $('#groqSave').addEventListener('click',function(){
     var key=$('#groqKey').value.trim();
-    if(!key){$('#groqStatus').textContent='API 키를 입력해 주세요.';return;}
-    if(!window.AndroidBridge||!window.AndroidBridge.saveGroqApiKey){$('#groqStatus').textContent='설치된 앱에서만 키를 저장할 수 있어요.';return;}
-    try{window.AndroidBridge.saveGroqApiKey(key);$('#groqKey').value='';$('#groqStatus').textContent='API 키를 암호화해 이 기기에 저장했어요.';toast('Groq API 키 저장 완료');}catch(e){$('#groqStatus').textContent='저장 실패: '+e.message;}
+    if(!key){$('#groqStatus').textContent='API 키를 입력해 주시오.';return;}
+    if(!window.AndroidBridge||!window.AndroidBridge.saveGroqApiKey){$('#groqStatus').textContent='설치된 앱에서만 키를 저장할 수 있소.';return;}
+    try{window.AndroidBridge.saveGroqApiKey(key);$('#groqKey').value='';$('#groqStatus').textContent='API 키를 암호화해 이 기기에 저장했소.';toast('Groq API 키 저장 완료');}catch(e){$('#groqStatus').textContent='저장 실패: '+e.message;}
   });
   $('#groqDelete').addEventListener('click',function(){
     if(window.AndroidBridge&&window.AndroidBridge.deleteGroqApiKey)window.AndroidBridge.deleteGroqApiKey();
-    $('#groqKey').value='';$('#groqStatus').textContent='저장된 API 키를 삭제했어요.';toast('API 키 삭제 완료');
+    $('#groqKey').value='';$('#groqStatus').textContent='저장된 API 키를 삭제했소.';toast('API 키 삭제 완료');
   });
   $('#groqGetKey').addEventListener('click',function(){openExternal('https://console.groq.com/keys');});
   $('#groqTest').addEventListener('click',function(){
-    if(!window.AndroidBridge||!window.AndroidBridge.hasGroqApiKey||!window.AndroidBridge.hasGroqApiKey()){ $('#groqStatus').textContent='먼저 API 키를 저장해 주세요.';return;}
+    if(!window.AndroidBridge||!window.AndroidBridge.hasGroqApiKey||!window.AndroidBridge.hasGroqApiKey()){ $('#groqStatus').textContent='먼저 API 키를 저장해 주시오.';return;}
     $('#groqStatus').textContent='연결 확인 중…';
     var id='test_'+Date.now(); aiPending[id]='test';
-    window.AndroidBridge.askGroq(id,'한 문장으로 한국어 인사와 연결 상태만 알려줘.','테스트 요청입니다.');
+    window.AndroidBridge.askGroq(id,'한 문장으로 한국어 인사와 연결 상태만 알려줘.','테스트 요청이오.');
   });
   var priorAiResult=window.onNativeAiResult;
   window.onNativeAiResult=function(id,ok,message){
-    if(aiPending[id]==='test'){delete aiPending[id];$('#groqStatus').textContent=ok?'연결 성공! Groq AI 코치를 사용할 수 있어요.':'연결 실패: '+message;return;}
+    if(aiPending[id]==='test'){delete aiPending[id];$('#groqStatus').textContent=ok?'연결 성공! Groq AI 코치를 사용할 수 있소.':'연결 실패: '+message;return;}
     if(priorAiResult)priorAiResult(id,ok,message);
   };
   $('#calcProt').addEventListener('click', function () {
     var w = latestWeight(); if (w == null) return;
-    S.settings.protein = Math.round(w * 1.8); persistSettings(); fillSettings(); toast('단백질 목표를 ' + S.settings.protein + 'g으로 정했어요');
+    S.settings.protein = Math.round(w * 1.8); persistSettings(); fillSettings(); toast('단백질 목표를 ' + S.settings.protein + 'g으로 정했소');
   });
 
 
@@ -2573,13 +2585,13 @@ body.hasbm main{padding-right:14px}
     return 'BULKNOTE1:' + b64enc(JSON.stringify(obj));
   }
   function parseBackup(raw) {
-    var text = String(raw || '').trim(); if (!text) throw new Error('붙여넣은 내용이 없어요');
+    var text = String(raw || '').trim(); if (!text) throw new Error('붙여넣은 내용이 없소');
     var obj, flat = text.replace(/\s+/g, ''), at = flat.indexOf('BULKNOTE1:');
     try {
       if (at >= 0) obj = JSON.parse(b64dec(flat.slice(at + 10)));
       else if (text.charAt(0) === '{') obj = JSON.parse(text);
     } catch (e) { obj = null; }
-    if (!obj || obj.app !== 'bulknote' || !obj.settings || typeof obj.settings !== 'object') throw new Error('백업 형식이 아니에요. 복사한 글자를 처음부터 끝까지 그대로 붙여넣어 주세요');
+    if (!obj || obj.app !== 'bulknote' || !obj.settings || typeof obj.settings !== 'object') throw new Error('백업 형식이 아니오. 복사한 글자를 처음부터 끝까지 그대로 붙여넣어 주시오');
     var st = Object.assign(clone(DEF), clone(obj.settings));
     ['routines', 'custom', 'favEx', 'favFood', 'myFood'].forEach(function (k) { if (!Array.isArray(st[k])) st[k] = []; });
     if (!st.restEx || typeof st.restEx !== 'object' || Array.isArray(st.restEx)) st.restEx = {};
@@ -2601,7 +2613,7 @@ body.hasbm main{padding-right:14px}
     S.settings = pb.settings; persistSettings();
     Object.keys(pb.days).forEach(function (d) { S.days[d] = pb.days[d]; persistDay(d); });
     fillSettings(); renderAll();
-    toast('불러왔어요 · 루틴 ' + pb.settings.routines.length + '개' + (pb.nd ? ' · 기록 ' + pb.nd + '일' : ''), function () {
+    toast('불러왔소 · 루틴 ' + pb.settings.routines.length + '개' + (pb.nd ? ' · 기록 ' + pb.nd + '일' : ''), function () {
       S.settings = prevSettings; persistSettings();
       Object.keys(prevDays).forEach(function (d) { if (prevDays[d]) S.days[d] = prevDays[d]; else delete S.days[d]; persistDay(d); });
       fillSettings(); renderAll();
@@ -2623,16 +2635,16 @@ body.hasbm main{padding-right:14px}
   $('#bkCopy').addEventListener('click', function () {
     var txt = backupText($('#bkDays').checked), msg = $('#bkMsg');
     copyText(txt).then(function (ok) {
-      if (ok) { msg.textContent = ''; toast('백업을 복사했어요 (' + nf(txt.length) + '글자). 메모나 카카오톡 나와의 채팅에 붙여 두세요'); }
-      else { var ta = $('#bkText'); ta.value = txt; ta.focus(); ta.select(); msg.textContent = '자동 복사가 안 돼요. 아래 칸의 글자를 길게 눌러 전체 선택 후 복사해 주세요'; }
+      if (ok) { msg.textContent = ''; toast('백업을 복사했소 (' + nf(txt.length) + '글자). 메모나 카카오톡 나와의 채팅에 붙여 두시오'); }
+      else { var ta = $('#bkText'); ta.value = txt; ta.focus(); ta.select(); msg.textContent = '자동 복사가 안 되오. 아래 칸의 글자를 길게 눌러 전체 선택 후 복사해 주시오'; }
     });
   });
   $('#bkShare').addEventListener('click', function () {
-    try { window.AndroidBridge.share(backupText($('#bkDays').checked)); } catch (e) { toast('공유를 열 수 없어요. 백업 복사를 이용해 주세요'); }
+    try { window.AndroidBridge.share(backupText($('#bkDays').checked)); } catch (e) { toast('공유를 열 수 없소. 백업 복사를 이용해 주시오'); }
   });
   $('#bkImport').addEventListener('click', function () {
     var msg = $('#bkMsg');
-    if (!S.loaded) { toast('기록을 불러오는 중이에요. 잠시 후 다시 눌러 주세요'); return; }
+    if (!S.loaded) { toast('기록을 불러오는 중이오. 잠시 후 다시 눌러 주시오'); return; }
     var pb; try { pb = parseBackup($('#bkText').value); } catch (e) { msg.textContent = e.message; return; }
     msg.textContent = ''; $('#bkText').value = ''; applyBackup(pb);
   });
@@ -2650,7 +2662,7 @@ body.hasbm main{padding-right:14px}
     return y + '-' + m + '-' + day;
   }
   function exportAnalysis(period) {
-    if (!S.loaded) { toast('기록을 불러오는 중이에요. 잠시 후 다시 눌러 주세요'); return; }
+    if (!S.loaded) { toast('기록을 불러오는 중이오. 잠시 후 다시 눌러 주시오'); return; }
     var anchor = new Date((selDate || today()) + 'T12:00:00');
     var start = '', end = '';
     if (period === 'week') {
@@ -2704,7 +2716,7 @@ body.hasbm main{padding-right:14px}
       },
       goals: clone(S.settings),
       days: days,
-      note: '운동량은 중량(kg) x 반복횟수의 합이며 체중운동·시간기반 운동은 포함되지 않을 수 있습니다. 기록되지 않은 값은 추정하지 마세요.'
+      note: '운동량은 중량(kg) x 반복횟수의 합이며 체중운동·시간기반 운동은 포함되지 않을 수 있소. 기록되지 않은 값은 추정하지 마시오.'
     };
     var json = JSON.stringify(report, null, 2);
     var fileName = '돌쇠록스_' + period + '_' + start + '_' + end + '.json';
@@ -2712,13 +2724,13 @@ body.hasbm main{padding-right:14px}
     try {
       if (window.AndroidBridge && typeof window.AndroidBridge.saveTextFile === 'function') {
         window.AndroidBridge.saveTextFile(fileName, json);
-        msg.textContent = '파일 저장 위치를 선택해 주세요. 저장 후 이 채팅에 JSON 파일을 첨부하면 됩니다.';
+        msg.textContent = '파일 저장 위치를 선택해 주시오. 저장 후 이 채팅에 JSON 파일을 첨부하면 되오.';
       } else {
         var blob = new Blob([json], { type: 'application/json;charset=utf-8' });
         var url = URL.createObjectURL(blob), a = document.createElement('a');
         a.href = url; a.download = fileName; document.body.appendChild(a); a.click(); a.remove();
         setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
-        msg.textContent = '분석 파일을 다운로드했어요.';
+        msg.textContent = '분석 파일을 다운로드했소.';
       }
     } catch (e) {
       msg.textContent = '내보내기 오류: ' + (e && e.message ? e.message : e);
@@ -2741,19 +2753,19 @@ body.hasbm main{padding-right:14px}
     return { sets: sets, meals: meals, weight: n % 3 === 0 ? Math.round((71.4 + n * 0.06) * 10) / 10 : null, sample: true, routine: '' };
   }
   function addSamples() {
-    if (!S.loaded) { toast('기록을 불러오는 중이에요. 잠시 후 다시 눌러 주세요'); return; }
+    if (!S.loaded) { toast('기록을 불러오는 중이오. 잠시 후 다시 눌러 주시오'); return; }
     var c = 0;
     for (var off = -14; off <= -1; off++) {
       var date = addDays(today(), off);
       if (S.days[date]) continue;
       S.days[date] = makeSample(off); persistDay(date); c++;
     }
-    renderAll(); toast(c ? '예시 기록 ' + c + '일치를 넣었어요' : '예시를 넣을 빈 날짜가 없어요');
+    renderAll(); toast(c ? '예시 기록 ' + c + '일치를 넣었소' : '예시를 넣을 빈 날짜가 없소');
   }
   function clearSamples() {
     var ds = sampleDays();
     ds.forEach(function (d) { delete S.days[d]; persistDay(d); });
-    renderAll(); toast('예시 기록 ' + ds.length + '일치를 지웠어요');
+    renderAll(); toast('예시 기록 ' + ds.length + '일치를 지웠소');
   }
 
   /* ---------- calendar ---------- */
@@ -2822,7 +2834,7 @@ body.hasbm main{padding-right:14px}
     else if (act === 'wo-add') openPicker('workout');
     else if (act === 'wo-time-open') { $('#wtName').value = '러닝'; $('#wtSets').value = '1'; $('#wtMinutes').value = '10'; $('#wtSeconds').value = '0'; sheetOpen($('#workoutTimeAdd')); $('#wtName').focus(); }
     else if (act === 'wo-time-cancel') sheetClose($('#workoutTimeAdd'));
-    else if (act === 'wo-time-add') { var nm = $('#wtName').value.trim(), sn = Math.max(1, Math.min(10, +$('#wtSets').value || 1)), mins = Math.max(0, Math.min(60, +$('#wtMinutes').value || 0)), secs = Math.max(0, Math.min(59, +$('#wtSeconds').value || 0)), duration = Math.max(5, Math.min(3600, mins * 60 + secs)); if (!nm) { toast('운동 이름을 입력해 주세요'); $('#wtName').focus(); return; } if (getDay(selDate).sets.some(function(x){ return normEx(x.ex) === normEx(nm); })) { toast('오늘 운동에 이미 있는 운동이에요'); return; } var libItem = libFind(nm), muscle = libItem ? libItem.m : '하체'; if (mutate(selDate, function(dd){ makeSetsFor({ex:nm,m:muscle,n:sn,mode:'time',durationSec:duration},selDate).forEach(function(x){dd.sets.push(x);}); })) { sheetClose($('#workoutTimeAdd')); renderLog(); toast(nm + ' 시간 운동을 추가했어요'); } }
+    else if (act === 'wo-time-add') { var nm = $('#wtName').value.trim(), sn = Math.max(1, Math.min(10, +$('#wtSets').value || 1)), mins = Math.max(0, Math.min(60, +$('#wtMinutes').value || 0)), secs = Math.max(0, Math.min(59, +$('#wtSeconds').value || 0)), duration = Math.max(5, Math.min(3600, mins * 60 + secs)); if (!nm) { toast('운동 이름을 입력해 주시오'); $('#wtName').focus(); return; } if (getDay(selDate).sets.some(function(x){ return normEx(x.ex) === normEx(nm); })) { toast('오늘 운동에 이미 있는 운동이오'); return; } var libItem = libFind(nm), muscle = libItem ? libItem.m : '하체'; if (mutate(selDate, function(dd){ makeSetsFor({ex:nm,m:muscle,n:sn,mode:'time',durationSec:duration},selDate).forEach(function(x){dd.sets.push(x);}); })) { sheetClose($('#workoutTimeAdd')); renderLog(); toast(nm + ' 시간 운동을 추가했소'); } }
     else if (act === 'wo-finish') finishWorkout();
     else if (act === 'wo-review') { coachUI.dayKey = selDate; coachUI.day = true; setTab('log'); renderCoach(); $('#coachCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     else if (act === 'ed-close') sheetClose($('#editor'));
@@ -2832,11 +2844,11 @@ body.hasbm main{padding-right:14px}
     else if (act === 'ed-time-cancel') $('#edTimeQuick').hidden = true;
     else if (act === 'ed-time-add') {
       var nm = $('#tqName').value.trim(), sn = Math.max(1, Math.min(10, +$('#tqSets').value || 1)), mins = Math.max(1, Math.min(60, +$('#tqMinutes').value || 10));
-      if (!nm) { toast('운동 이름을 입력해 주세요'); $('#tqName').focus(); return; }
-      if (ed.items.some(function(x){ return normEx(x.ex) === normEx(nm); })) { toast('이미 루틴에 있는 운동이에요'); return; }
+      if (!nm) { toast('운동 이름을 입력해 주시오'); $('#tqName').focus(); return; }
+      if (ed.items.some(function(x){ return normEx(x.ex) === normEx(nm); })) { toast('이미 루틴에 있는 운동이오'); return; }
       ed.items.push({ ex: nm, m: '복근', n: sn, r: 0, mode: 'time', durationSec: mins * 60 });
       $('#edTimeQuick').hidden = true; renderEditor();
-      toast(nm + ' 시간 운동을 추가했어요');
+      toast(nm + ' 시간 운동을 추가했소');
     }
     else if (act === 'pk-close') sheetClose($('#picker'));
     else if (act === 'pk-done') pkDone();

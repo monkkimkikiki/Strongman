@@ -993,6 +993,31 @@ input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb
   letter-spacing:0!important;
 }
 
+
+/* v1.45 — remove weight/group frames; convert dotted outer rules to continuous hairlines */
+*,*::before,*::after{
+  border-image:none!important;
+  border-style:solid!important;
+}
+.group-weight-line{
+  padding:0!important;
+  margin-top:7px!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.grp{
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+}
+.grp header{
+  border:0!important;
+  box-shadow:none!important;
+}
+
 </style>
 
 <div class="app">

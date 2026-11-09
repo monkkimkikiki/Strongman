@@ -1,7 +1,7 @@
 <!-- BulkNote 1.24: completed set weights are fixed -->
 <title>벌크업 노트</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Nanum+Myeongjo:wght@400;700;800&family=Oswald:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <style>
 /* Layout concept: 한 손으로 쓰는 헬스장 기록장. 위에 날짜, 가운데 한 칸 콘텐츠, 아래 탭 5개. 타이머는 화면 아래에 떠서 어느 탭에서나 보인다. 숫자는 좁은 고딕으로 크게. */
 :root{
@@ -332,6 +332,92 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
 .tip{position:fixed;left:0;top:0;z-index:90;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;line-height:1.4;padding:6px 9px;border-radius:7px;max-width:260px}
 @media (prefers-reduced-motion:reduce){.bf,.meter i{transition:none}}
 @media (max-width:360px){.rb-digits{font-size:34px}.sets li{grid-template-columns:18px minmax(0,1fr) 16px minmax(0,1fr) 46px 34px;gap:3px}.set-weight-lock{width:16px;min-width:16px;height:22px}}
+
+/* DOLSOE FORGE — charcoal, aged paper, hammered iron and cinnabar */
+:root{
+ --bg:#171513;--surface:#24211e;--surface2:#302b26;--line:#494039;
+ --ink:#eee3cf;--ink2:#b8aa94;--ink3:#817565;
+ --accent:#c52d27;--accent-ink:#fff0dc;--accent-wash:#482522;--star:#d49b45;
+ --ai-user:#422723;--ai-assistant:#2b2722;--ai-border:#594038;--highlight:#e04a37;
+ --warn:#e3a34d;--warn-wash:#3c2d1e;--good:#83a77c;--good-wash:#243629;--danger:#f06b5e;
+ color-scheme:dark;
+ --font-body:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+ --font-num:'Oswald','Arial Narrow',sans-serif;
+}
+:root[data-theme="dark"]{color-scheme:dark}
+body{
+ background-color:var(--bg);color:var(--ink);
+ background-image:radial-gradient(ellipse at 50% -15%,rgba(128,88,48,.17),transparent 58%),repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 4px);
+}
+body::before{background:#171513}
+.top{background:rgba(23,21,19,.96);border-bottom:1px solid #514233;backdrop-filter:blur(12px)}
+.brand{font-family:'Black Han Sans',var(--font-body);font-size:19px;letter-spacing:.02em;color:#e8d6b7;text-shadow:0 1px 0 #000}
+.status{color:#a89982}
+.card{
+ background:linear-gradient(145deg,rgba(255,255,255,.035),transparent 42%),var(--surface);
+ border:1px solid #51463a;border-radius:9px;box-shadow:0 5px 16px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.035);
+}
+h2,h3,.ptitle,.grp h3,.calt,.weeknav .wl{font-family:'Nanum Myeongjo',serif;font-weight:800;letter-spacing:-.025em;color:#f0dfc3}
+h2{font-size:17px}
+.top .chip,.ib,.datepick,.mchip,.qchip,.mini,.play,.mode-icon,.mode-toggle button,.stp button{
+ background:#302b26;color:var(--ink);border-color:#594b3c;border-radius:7px;
+}
+.chip.primary,.btn.primary,.mchip[aria-checked="true"],.cd.sel,.srow.done .ck{
+ background:linear-gradient(135deg,#d34232,#9f211d);border-color:#e15a43;color:#fff1df;
+ box-shadow:inset 0 1px rgba(255,255,255,.16),0 2px 5px rgba(0,0,0,.25);
+}
+.btn{background:#39322b;border-color:#62513e;color:#eadcc5;border-radius:7px}
+.btn.primary{font-weight:700}
+input[type=text],input[type=number]{
+ background:#171614;border-color:#5b4d3e;color:#f4e8d4;border-radius:6px;
+}
+input::placeholder{color:#827565}
+input:focus,button:focus-visible{outline-color:#d34a38}
+.lbl,.psub,.note,.cnt,.ghint,.sets li.shead,.callegend,.mfoot,.mtop .k{color:#b3a38c}
+.tag,.notice{background:#3b3025;color:#e5cba5;border:1px solid #574431}
+.notice{border-radius:6px}
+.pnum,.sets .n,.sets input,.live,.sdone,.mtop .n,.meals b,.bv,.stp b,.calgrid .dn{
+ font-family:'Oswald','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums;
+}
+.pnum{font-size:38px;color:#f0dfc3}
+.meter{background:#44362e;border:1px solid #594538;border-radius:2px}
+.meter i,.bf{background:linear-gradient(90deg,#a92320,#e04b37)}
+.sets li{border-radius:5px}
+.srow.next{background:#44302a}
+.srow.nav-focus{outline:2px solid #e05a43;background:#50302a;box-shadow:0 0 14px rgba(197,45,39,.24)}
+.srow.done input{color:#a99b87}
+.ck{background:#302b26;border-color:#665544;color:#c4b59e}
+.set-weight-lock,.weight-lock-mini{background:#302b26}
+.is-locked .lock-glyph .lock-body{fill:#f5e9d5;stroke:#f5e9d5}
+.is-locked .lock-glyph .lock-shackle{stroke:#f5e9d5}
+.is-unlocked .lock-glyph .lock-body{stroke:#9c8c76}
+.is-unlocked .lock-glyph .lock-shackle{stroke:#9c8c76}
+.exercise-info{background:#3a2b25;color:#ddc7aa;border:1px solid #654136}
+.tabs{background:rgba(31,28,25,.97);border-top:1px solid #594936;backdrop-filter:blur(12px)}
+.tabs button{color:#988a76;border-radius:5px;font-family:'Nanum Myeongjo',serif;font-weight:700}
+.tabs button[aria-selected="true"]{background:#4a2924;color:#f3c7a5;box-shadow:inset 0 -2px #d44937}
+.toast,.tip{background:#e7d6b9;color:#211b16;border:1px solid #9e835e;box-shadow:0 5px 20px rgba(0,0,0,.35)}
+.alarm-flash{background:#a92520;color:#fff2df;border:1px solid #ed7761;border-radius:6px}
+.sug{background:#292521;border-color:#665542}
+.sug .sgo:hover,.sug .sgo:active{background:#49312a}
+.star[aria-pressed="true"]{color:#e0a34b}
+.pill.warn{background:#4a3520;color:#f0bd76}
+.pill.good{background:#263b2b;color:#a8c99e}
+.cd{border-radius:5px}
+.cd.on{background:#3b3027}
+.cd.today{border-color:#c4a57b}
+.dm{background:#d54a38}
+.dm.plan{border-color:#aa987d}
+table th,table td{border-color:#514538}
+thead th{color:#a99880}
+.ln{stroke:#df5944}.ar{fill:#df5944;opacity:.13}.dot{fill:#df5944;stroke:var(--surface)}
+.x:hover{background:#3b332b;color:#f2e4ce}
+button:active,.btn:active,.ib:active,.chip:active{filter:brightness(1.15)}
+@media(prefers-reduced-motion:no-preference){
+ .card,.btn,.tabs button{transition:background .18s,border-color .18s,box-shadow .18s}
+ .card:active{box-shadow:inset 0 1px rgba(255,255,255,.04),0 2px 8px rgba(0,0,0,.2)}
+}
+
 </style>
 
 <div class="app">

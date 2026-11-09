@@ -983,8 +983,8 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
   var selDate = today(), tab = 'log';
 
   function getDay(d) { return S.days[d] || EMPTY; }
-  function pack(d) { return { sets: clone(d.sets), meals: clone(d.meals), weight: d.weight == null ? null : d.weight, sample: !!d.sample, routine: d.routine || '', workoutEndedAt: d.workoutEndedAt || null }; }
-  function unpack(v) { return { sets: v.sets || [], meals: v.meals || [], weight: v.weight == null ? null : v.weight, sample: !!v.sample, routine: v.routine || '', workoutEndedAt: v.workoutEndedAt || null }; }
+  function pack(d) { return { sets: clone(d.sets), meals: clone(d.meals), weight: d.weight == null ? null : d.weight, sample: !!d.sample, routine: d.routine || '', routineId: d.routineId || '', workoutEndedAt: d.workoutEndedAt || null }; }
+  function unpack(v) { return { sets: v.sets || [], meals: v.meals || [], weight: v.weight == null ? null : v.weight, sample: !!v.sample, routine: v.routine || '', routineId: v.routineId || '', workoutEndedAt: v.workoutEndedAt || null }; }
   function lib() { return BUILTIN.concat((S.settings.custom || []).map(function (c) { return { name: c.name, m: c.m, eq: c.eq || '직접', custom: true }; })); }
   function libFind(name) { var k = normEx(name), L = lib(); for (var i = 0; i < L.length; i++) if (normEx(L[i].name) === k) return L[i]; return null; }
 
@@ -1322,21 +1322,38 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
       (rs > 0 ? '<button type="button" class="mini" data-rst="reset" data-key="' + k + '">기본값</button>' : '') + '</div>';
   }
 
-  // 날짜별 운동 책갈피: 자주 찾는 종목을 상단에 모아 한 번에 이동한다.
+  // 루틴별 고정 책갈피: 날짜가 바뀌어도 같은 루틴이면 같은 위치를 기억한다.
   var BMK = 'bn_scroll_bookmarks_v1';
+  function routineBookmarkKey(day) {
+    var d = day || getDay(selDate), rid = d.routineId || '';
+    if (!rid && d.routine) {
+      var found = (S.settings.routines || []).filter(function (r) { return r.name === d.routine; })[0];
+      if (found) rid = found.id;
+    }
+    return rid ? 'routine:' + rid : (d.routine ? 'routine-name:' + String(d.routine).trim().toLowerCase() : 'manual');
+  }
   function readBookmarks() {
     try {
       var all = JSON.parse(localStorage.getItem(BMK) || '{}');
-      return all && typeof all === 'object' ? all : {};
+      if (!all || typeof all !== 'object') all = {};
+      // 예전 날짜별 책갈피가 있으면 해당 날짜의 루틴 책갈피로 옮긴다.
+      Object.keys(all).forEach(function (key) {
+        if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(key) || !Array.isArray(all[key])) return;
+        var d = S.days && S.days[key], target = routineBookmarkKey(d || {});
+        all[target] = (Array.isArray(all[target]) ? all[target] : []).concat(all[key]).filter(function (v, i, a) { return a.indexOf(v) === i; });
+        delete all[key];
+      });
+      try { localStorage.setItem(BMK, JSON.stringify(all)); } catch (e) {}
+      return all;
     } catch (e) { return {}; }
   }
   function dayBookmarks() {
-    var all = readBookmarks(), list = all[selDate];
+    var all = readBookmarks(), list = all[routineBookmarkKey()];
     return Array.isArray(list) ? list : [];
   }
   function saveBookmarks(list) {
     var all = readBookmarks();
-    all[selDate] = list;
+    all[routineBookmarkKey()] = list;
     try { localStorage.setItem(BMK, JSON.stringify(all)); } catch (e) {}
   }
   function toggleExerciseBookmark(key) {
@@ -1606,7 +1623,7 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
         if (have[normEx(it.ex)]) return;
         makeSetsFor(it, dt).forEach(function (s) { d.sets.push(s); }); made++;
       });
-      if (!d.routine) d.routine = r.name;
+      if (!d.routine) d.routine = r.name;\n      d.routineId = r.id;\n      d.routineId = r.id;
     });
     if (ok) { if (tab !== 'log') setTab('log'); toast(made ? r.name + ' 루틴을 불러왔어요' : '이미 모두 들어 있는 루틴이에요'); }
   }

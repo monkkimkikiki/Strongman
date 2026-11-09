@@ -929,6 +929,17 @@ input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb
 }
 .weight-lock-mini{flex:0 0 28px!important;width:28px!important;min-width:28px!important;height:28px!important}
 
+
+
+/* v1.38 — 굵은 운동명, 한 줄 자동 맞춤, 아이콘 안전영역 */
+.ptitle,.grp h3{
+ font-family:'Gungsuh','궁서체','궁서','Batang','Noto Serif KR',serif!important;
+ font-size:20px!important;font-weight:800!important;letter-spacing:0!important;
+ line-height:1.25!important;white-space:nowrap!important;overflow:hidden!important;
+ text-overflow:clip!important;max-width:100%!important;overflow-wrap:normal!important;
+}
+.grp header .tt,.phead>div:first-child{min-width:0!important;max-width:100%!important}
+
 </style>
 
 <div class="app">
@@ -3290,4 +3301,28 @@ input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb
   if (T.phase !== 'idle') lockOn();
   boot();
 })();
+
+  // Keep long exercise/routine names on one line by reducing their font size to fit.
+  (function(){
+    function fitWorkoutTitles(){
+      document.querySelectorAll('.ptitle,.grp h3').forEach(function(el){
+        if(!el.clientWidth) return;
+        var base=20,min=12;
+        el.style.fontSize=base+'px';
+        while(el.scrollWidth>el.clientWidth && base>min){
+          base-=0.5;el.style.fontSize=base+'px';
+        }
+      });
+    }
+    var fitQueued=false;
+    function queueFit(){
+      if(fitQueued)return;fitQueued=true;
+      requestAnimationFrame(function(){fitQueued=false;fitWorkoutTitles();});
+    }
+    var titleObserver=new MutationObserver(queueFit);
+    titleObserver.observe(document.body,{childList:true,subtree:true,characterData:true});
+    window.addEventListener('resize',queueFit,{passive:true});
+    queueFit();
+  })();
+
 </script>

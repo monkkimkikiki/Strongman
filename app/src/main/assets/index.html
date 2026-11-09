@@ -966,6 +966,24 @@ input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb
 .grp .exinfo-btn{flex:0 0 16px!important;width:16px!important;height:16px!important;
   min-width:16px!important;font-size:10px!important;line-height:14px!important}
 
+
+/* v1.43 — completed/total set count in black; remove every dotted/hatched line treatment */
+.pnum,.pnum small{
+  color:#171713!important;
+  -webkit-text-fill-color:#171713!important;
+  text-shadow:none!important;
+}
+*,*::before,*::after{
+  border-image:none!important;
+  border-style:solid!important;
+}
+body,body::before,body::after,.card,.bookmark-rail,.meter i,.bf{
+  background-image:none!important;
+}
+body::after{display:none!important}
+.meter i,.bf{background:#292821!important}
+.card::before{background:#77766e!important;opacity:1!important}
+
 </style>
 
 <div class="app">

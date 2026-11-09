@@ -994,10 +994,16 @@ input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb
 }
 
 
-/* v1.45 — remove weight/group frames; convert dotted outer rules to continuous hairlines */
+/* v1.46 — lighter outer hairlines; remove pale frames from workout set cells */
 *,*::before,*::after{
   border-image:none!important;
   border-style:solid!important;
+}
+/* Outer rules: keep them continuous, but make them genuinely fine. */
+.card,.phead,.grp header,.restrow,.cb,.ai-coach,.bookmark-rail,.startrow,
+.tabs,.rb{
+  border-width:.5px!important;
+  box-shadow:none!important;
 }
 .group-weight-line{
   padding:0!important;
@@ -1016,6 +1022,17 @@ input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb
 .grp header{
   border:0!important;
   box-shadow:none!important;
+}
+/* Remove the pale outlined boxes around the weight/reps and action cells. */
+.sets input,.sets .ck,.sets .play{
+  border:0!important;
+  border-image:none!important;
+  box-shadow:none!important;
+  background:transparent!important;
+}
+.srow.done .ck{
+  background:#292821!important;
+  color:#fffefa!important;
 }
 
 </style>

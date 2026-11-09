@@ -967,22 +967,31 @@ input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb
   min-width:16px!important;font-size:10px!important;line-height:14px!important}
 
 
-/* v1.43 — completed/total set count in black; remove every dotted/hatched line treatment */
+/* v1.44 — restore fine, quiet rules; keep progress count black */
 .pnum,.pnum small{
   color:#171713!important;
   -webkit-text-fill-color:#171713!important;
   text-shadow:none!important;
 }
-*,*::before,*::after{
-  border-image:none!important;
+/* Use the original hairline weight rather than forcing every border into a heavy rule. */
+.phead,.grp header,.restrow,.cb,.ai-coach,.bookmark-rail,.startrow{
+  border-width:1px!important;
   border-style:solid!important;
 }
-body,body::before,body::after,.card,.bookmark-rail,.meter i,.bf{
-  background-image:none!important;
+.phead,.grp header,.restrow,.cb,.ai-coach,.bookmark-rail,.startrow{
+  box-shadow:none!important;
 }
-body::after{display:none!important}
+.meter{height:8px!important;border-width:1px!important}
 .meter i,.bf{background:#292821!important}
-.card::before{background:#77766e!important;opacity:1!important}
+.card::before{height:1px!important;background:#77766e!important;opacity:.45!important}
+/* Keep long exercise names visible on one line without clipping their last characters. */
+.grp header .tt{flex:1 1 auto!important;min-width:0!important}
+.grp h3,.ptitle{
+  white-space:nowrap!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  letter-spacing:0!important;
+}
 
 </style>
 
@@ -3351,7 +3360,10 @@ body::after{display:none!important}
     function fitWorkoutTitles(){
       document.querySelectorAll('.ptitle,.grp h3').forEach(function(el){
         if(!el.clientWidth) return;
-        var base=15,min=9;
+        var base=15,min=7;
+        el.style.whiteSpace='nowrap';
+        el.style.overflow='visible';
+        el.style.textOverflow='clip';
         el.style.fontSize=base+'px';
         while(el.scrollWidth>el.clientWidth && base>min){
           base-=0.5;el.style.fontSize=base+'px';

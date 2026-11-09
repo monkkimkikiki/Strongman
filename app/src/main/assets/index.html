@@ -1,5 +1,5 @@
 <!-- BulkNote 1.24: completed set weights are fixed -->
-<title>벌크업 노트</title>
+<title>돌쇠록스</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gugi&family=Nanum+Myeongjo:wght@400;700;800&family=Song+Myung&family=Oswald:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <style>
@@ -613,6 +613,52 @@ button,.btn,.chip,.mini,.qchip,.mchip,.play,.rbb,.mode-toggle button{
 .rb-digits{color:#f0d9b2}
 .toast,.tip{background:#e8d6b6!important;color:#38271b!important;border-color:#9d7950!important}
 :focus-visible{outline-color:#d28b56!important}
+
+
+/* DOLSOE v4 — lighter ink lettering, rough chalk / woodblock edges */
+.brand{
+ font-family:'Song Myung','Nanum Myeongjo',serif!important;
+ font-size:23px!important;font-weight:400!important;letter-spacing:.11em!important;
+ color:#d8c4a0!important;text-shadow:1px 1px 0 #17110c!important;
+}
+.brand::after{content:none!important}
+h1,h2,h3,.ptitle,.grp h3,.calt,.weeknav .wl,.phead,.ai-title{
+ font-family:'Song Myung','Nanum Myeongjo',serif!important;
+ font-weight:400!important;letter-spacing:.035em!important;
+}
+body,button,input,textarea,select,.lbl,.note,.status,.tag,.ai-msg,.tabs button{
+ font-family:'Nanum Myeongjo','Song Myung',serif!important;
+}
+:root{
+ --bg:#211b16;--surface:#342a21;--surface2:#403126;--line:#796044;
+ --ink:#e4d2b2;--ink2:#c1a987;--ink3:#9b8263;
+ --accent:#a43a2c;--accent-ink:#ead7b6;--accent-wash:#503126;
+ --ai-user:#493026;--ai-assistant:#30271f;--ai-border:#75583d;--highlight:#b64a35;
+}
+.card,.sheet,.sheet-in,.rb{
+ border-color:#80674a!important;
+ border-radius:13px 9px 12px 8px!important;
+ box-shadow:1px 1px 0 rgba(194,157,105,.16),-1px 2px 0 rgba(12,8,5,.4),inset 0 0 0 1px rgba(15,10,7,.22);
+}
+.card{background-image:repeating-linear-gradient(173deg,rgba(221,190,145,.018) 0 1px,transparent 1px 5px),linear-gradient(145deg,rgba(220,185,130,.05),transparent 48%),linear-gradient(180deg,#382d23,#2d241d)!important}
+.btn,.mini,.play,.mode-icon,.mode-toggle button,.mchip,.qchip,.chip,.ib,.datepick,.rbb{
+ border-style:dashed!important;border-width:1px!important;
+ border-radius:7px 5px 8px 6px!important;
+ box-shadow:1px 1px 0 rgba(218,190,145,.13),-1px 1px 0 rgba(12,8,5,.35)!important;
+}
+input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
+ border-style:dashed!important;border-radius:6px 5px 7px 4px!important;
+ box-shadow:inset 1px 1px 2px rgba(0,0,0,.35)!important;
+}
+.tabs{border-top:2px dashed #8b6845!important}
+.tabs button[aria-selected="true"]{box-shadow:inset 0 -2px #bc5136!important}
+.nav-glyph{filter:drop-shadow(1px 1px 0 #17100b)!important}
+.workout-return{border-style:dashed!important;border-radius:9px 6px 10px 7px!important}
+.stone-dumbbell{filter:drop-shadow(1px 1px 0 #17100b) contrast(1.1)!important}
+.srow.next,.srow.nav-focus{outline:1px dashed #c57a4b!important;outline-offset:1px}
+.sets li{border-radius:5px 8px 4px 7px!important}
+.restrow,.ai-coach,.cb,.startrow{border-top-style:dashed!important}
+:focus-visible{outline:2px dashed #d28b56!important}
 
 </style>
 
@@ -2662,7 +2708,7 @@ button,.btn,.chip,.mini,.qchip,.mchip,.play,.rbb,.mode-toggle button{
     });
     totalVolume = Object.keys(exerciseMap).reduce(function (sum, k) { return sum + exerciseMap[k].volumeKg; }, 0);
     var report = {
-      app: 'BulkNote', exportVersion: 1, exportedAt: new Date().toISOString(),
+      app: '돌쇠록스', exportVersion: 1, exportedAt: new Date().toISOString(),
       period: { type: period, startDate: start, endDate: end, selectedDate: selDate },
       summary: {
         recordedDays: days.length, workoutDays: workoutDays, totalCompletedSets: totalSets,
@@ -2676,7 +2722,7 @@ button,.btn,.chip,.mini,.qchip,.mchip,.play,.rbb,.mode-toggle button{
       note: '운동량은 중량(kg) x 반복횟수의 합이며 체중운동·시간기반 운동은 포함되지 않을 수 있습니다. 기록되지 않은 값은 추정하지 마세요.'
     };
     var json = JSON.stringify(report, null, 2);
-    var fileName = 'BulkNote_' + period + '_' + start + '_' + end + '.json';
+    var fileName = '돌쇠록스_' + period + '_' + start + '_' + end + '.json';
     var msg = $('#exportMsg');
     try {
       if (window.AndroidBridge && typeof window.AndroidBridge.saveTextFile === 'function') {

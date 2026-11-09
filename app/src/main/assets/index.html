@@ -1623,7 +1623,8 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
         if (have[normEx(it.ex)]) return;
         makeSetsFor(it, dt).forEach(function (s) { d.sets.push(s); }); made++;
       });
-      if (!d.routine) d.routine = r.name;\n      d.routineId = r.id;\n      d.routineId = r.id;
+      if (!d.routine) d.routine = r.name;
+      d.routineId = r.id;
     });
     if (ok) { if (tab !== 'log') setTab('log'); toast(made ? r.name + ' 루틴을 불러왔어요' : '이미 모두 들어 있는 루틴이에요'); }
   }
@@ -1642,7 +1643,8 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
         have[key] = true;
         added++;
       });
-      if (!d.routine) d.routine = r.name;\n      d.routineId = r.id;
+      if (!d.routine) d.routine = r.name;
+      d.routineId = r.id;
     });
     if (ok) {
       if (tab !== 'log') setTab('log');
@@ -1682,6 +1684,7 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
         makeSetsFor(it, dt).forEach(function (set) { dd.sets.push(set); });
       });
       dd.routine = r.name;
+      dd.routineId = r.id;
       dd.workoutEndedAt = null;
     });
     if (tab !== 'log') setTab('log');

@@ -674,6 +674,46 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
 .grp.nav-focus{outline:2px dashed #d08b57!important;outline-offset:3px;filter:brightness(1.08)}
 #toast{font-family:'Song Myung','Nanum Myeongjo',serif;letter-spacing:.015em}
 
+
+
+/* v1.33: hanji-colored controls, readable load field, and flat playback button */
+.group-weight-line input{
+  color:#f5ead7!important;
+  -webkit-text-fill-color:#f5ead7!important;
+  opacity:1!important;
+  background:#17130f!important;
+  border-color:#a58a68!important;
+  font-size:20px!important;
+  font-weight:700!important;
+  text-shadow:0 1px 0 #000!important;
+}
+/* Icons use warm hanji/ivory ink instead of the old blue accent. */
+.nav-glyph,.mode-icon,.mode-icon svg,.exinfo-btn,.bookmark-toggle,.stone-dumbbell{
+  color:#eee3cf!important;
+}
+.nav-glyph{filter:drop-shadow(0 1px 1px #120d09)!important}
+.mode-icon,.mode-icon[aria-label^="시간"]{
+  background:#3b3025!important;
+  border-color:#9a8263!important;
+  color:#eee3cf!important;
+}
+.mode-icon svg{stroke:#eee3cf!important;fill:none!important}
+.exinfo-btn,.exinfo-btn[aria-expanded="true"]{
+  background:#e9ddc7!important;
+  border-color:#b8a384!important;
+  color:#403225!important;
+}
+.bookmark-toggle{color:#eee3cf!important}
+.bookmark-toggle.is-marked{color:#f0d8ad!important;background:#51402f!important;border-color:#c5a77c!important;text-shadow:none!important}
+.stone-dumbbell{filter:sepia(.18) brightness(1.18)!important}
+/* The set playback control is deliberately flat: no gradient or glossy highlight. */
+.play{
+  background:#3b3027!important;
+  background-image:none!important;
+  border-color:#92785a!important;
+  color:#eee3cf!important;
+  box-shadow:none!important;
+}
 </style>
 
 <div class="app">
@@ -2223,7 +2263,7 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
     var id='ai_'+Date.now()+'_'+Math.floor(Math.random()*100000);
     var history=aiState.messages.slice(-7).map(function(m){return (m.role==='user'?'사용자: ':'코치: ')+m.text;}).join('\n');
     aiPending[id]=true;
-    try { window.AndroidBridge.askGroq(id,question,aiContext()+'\n\n최근 대화:\n'+history); }
+    try { window.AndroidBridge.askGroq(id,question,aiContext()+'\n\n응답 말투 지침: 돌쇠록스의 코치답게 조선 시대 머슴의 구수하고 담백한 말투를 쓰시오. 문장 끝은 하오체/하소서체(예: 좋소, 유지하시오, 해보시오)로 하되 과장된 사극 대사나 어려운 한자어는 피하시오. 운동 수치와 근거는 정확하고 현대적인 표현으로 유지하시오.\n\n최근 대화:\n'+history); }
     catch(e){ delete aiPending[id]; aiState.busy=false; aiState.messages.push({role:'assistant',text:'AI 요청을 시작하지 못했어요. 앱을 다시 실행해 주세요.'}); renderCoach(); }
   }
   window.onNativeAiResult=function(id,ok,message){
@@ -2232,8 +2272,20 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
     renderCoach();
     var box=$('#aiMessages'); if(box){box.scrollTop=box.scrollHeight; var last=box.lastElementChild; if(last)last.scrollIntoView({block:'nearest',behavior:'smooth'});}
   };
+  function dolsoeFeedbackText(value) {
+    var msg = String(value == null ? '' : value);
+    var rules = [
+      [/할 수 있어요/g, '할 수 있소'], [/해보세요/g, '해보시오'], [/추천해요/g, '권하오'],
+      [/좋아요/g, '좋소'], [/필요해요/g, '필요하오'], [/하세요/g, '하시오'],
+      [/보세요/g, '보시오'], [/해주세요/g, '해주시오'], [/입니다/g, '이오'],
+      [/됩니다/g, '되오'], [/했어요/g, '했소'], [/있어요/g, '있소'], [/없어요/g, '없소'],
+      [/해요/g, '하오'], [/돼요/g, '되오'], [/어요(?=[.!?]|$)/g, '소']
+    ];
+    rules.forEach(function (rule) { msg = msg.replace(rule[0], rule[1]); });
+    return msg;
+  }
   function fbHtml(items) {
-    return '<ul class="fb">' + items.map(function (i) { return '<li class="' + i.tone + '"><span class="ic" aria-hidden="true">' + (i.tone === 'good' ? '✓' : i.tone === 'warn' ? '!' : '·') + '</span><span>' + esc(i.text) + '</span></li>'; }).join('') + '</ul>';
+    return '<ul class="fb">' + items.map(function (i) { return '<li class="' + i.tone + '"><span class="ic" aria-hidden="true">' + (i.tone === 'good' ? '✓' : i.tone === 'warn' ? '!' : '·') + '</span><span>' + esc(dolsoeFeedbackText(i.text)) + '</span></li>'; }).join('') + '</ul>';
   }
   function renderCoach() {
     var box = $('#coachCard'), d = getDay(selDate), isToday = selDate === today(), ws = weekStart(selDate), t0 = today();
@@ -2250,7 +2302,7 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
       }
       if (nt) {
         h += '<div class="cb"><div class="cbh">' + (nt.first ? '시작 전 체크' : '다음 세트') + ' · ' + esc(nt.ex) + ' ' + (nt.idx + 1) + '/' + nt.total + '세트 · 휴식 ' + nt.rest + '초</div>' +
-          (nt.first ? '<p class="cue">' + esc(nt.cue.k) + '</p>' + fbHtml(nt.cue.t.map(function (x) { return fb('info', x); })) : fbHtml([fb('info', nt.cue.t[nt.idx % nt.cue.t.length]), fb('info', '무게와 횟수를 앞 세트와 비슷하게 유지해요')])) + '</div>';
+          (nt.first ? '<p class="cue">' + esc(dolsoeFeedbackText(nt.cue.k)) + '</p>' + fbHtml(nt.cue.t.map(function (x) { return fb('info', x); })) : fbHtml([fb('info', nt.cue.t[nt.idx % nt.cue.t.length]), fb('info', '무게와 횟수를 앞 세트와 비슷하게 유지해요')])) + '</div>';
       }
     } else if (isToday) h += '<p class="note" style="margin:0">루틴을 시작하면 세트마다 템포, 휴식, 지난 기록과 비교한 피드백과 운동별 핵심 포인트를 알려드려요.</p>';
     h += '<div class="coach-btns"><button type="button" class="mini" data-coach="day" aria-expanded="' + dayOpen + '">' + (isToday ? '오늘' : fmtShort(selDate)) + ' 총평</button>' +

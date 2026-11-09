@@ -637,14 +637,14 @@ body,button,input,textarea,select,.lbl,.note,.status,.tag,.ai-msg,.tabs button{
 }
 .card,.sheet,.sheet-in,.rb{
  border-color:#80674a!important;
- border-radius:13px 9px 12px 8px!important;
- box-shadow:1px 1px 0 rgba(194,157,105,.16),-1px 2px 0 rgba(12,8,5,.4),inset 0 0 0 1px rgba(15,10,7,.22);
+ border-radius:0!important;
+ box-shadow:none!important;
 }
 .card{background-image:repeating-linear-gradient(173deg,rgba(221,190,145,.018) 0 1px,transparent 1px 5px),linear-gradient(145deg,rgba(220,185,130,.05),transparent 48%),linear-gradient(180deg,#382d23,#2d241d)!important}
 .btn,.mini,.play,.mode-icon,.mode-toggle button,.mchip,.qchip,.chip,.ib,.datepick,.rbb{
  border-style:solid!important;border-width:1px!important;
- border-radius:7px 5px 8px 6px!important;
- box-shadow:1px 1px 0 rgba(218,190,145,.13),-1px 1px 0 rgba(12,8,5,.35)!important;
+ border-radius:0!important;
+ box-shadow:none!important;
 }
 input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
  border-style:solid!important;border-radius:6px 5px 7px 4px!important;
@@ -656,7 +656,7 @@ input[type=text],input[type=number],textarea,.ai-chat-form input,#groqKey{
 .workout-return{border-style:solid!important;border-radius:9px 6px 10px 7px!important}
 .stone-dumbbell{filter:drop-shadow(1px 1px 0 #17100b) contrast(1.1)!important}
 .srow.next,.srow.nav-focus{outline:1px solid #c57a4b!important;outline-offset:1px}
-.sets li{border-radius:5px 8px 4px 7px!important}
+.sets li{border-radius:0!important}
 .restrow,.ai-coach,.cb,.startrow{border-top-style:solid!important}
 :focus-visible{outline:2px solid #d28b56!important}
 
@@ -922,6 +922,7 @@ input[type=number],.sets input,.group-weight-line input,.pnum,.sets .n,.live,.rb
  background:transparent!important;border:0!important;width:auto!important;
 }
 .group-weight-line label{font-size:13px!important;font-weight:400!important}
+.group-weight-line label,.sets .n,.sets li.shead{color:#171713!important;-webkit-text-fill-color:#171713!important;font-weight:700!important}
 .group-weight-line input,[data-group-weight]{
  flex:0 0 52px!important;width:52px!important;min-width:52px!important;max-width:52px!important;
  height:40px!important;min-height:40px!important;padding:0 3px!important;

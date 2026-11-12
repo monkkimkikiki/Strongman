@@ -2264,13 +2264,46 @@ body.typing .restbar,body.typing .workout-return{display:none}
   function aiUsageSave(u) { try { localStorage.setItem(AIU_KEY, JSON.stringify(u)); } catch (e) {} }
   function geminiReady() { return !!(window.AndroidBridge && window.AndroidBridge.askGemini && window.AndroidBridge.hasGeminiApiKey && window.AndroidBridge.hasGeminiApiKey()); }
 
-  var gPending = {};
+  var gPending = {}, gQ = [], gTickets = {}, gActive = false, gLastStart = 0, gTimer = null, G_GAP = 2000;
+  // 무료 등급은 분당 요청 수가 적어서, 요청을 한 줄로 세워 간격을 두고 보내고 429이면 구글이 알려준 시간만큼 기다렸다 다시 보낸다.
+  function geminiBusy() { return gActive || gQ.length > 0; }
   function geminiStream(model, body, h) {
-    var id = 'g_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
-    gPending[id] = { h: h, parts: [], text: '', meta: null, blocked: '', finish: '' };
-    try { window.AndroidBridge.askGemini(id, model, JSON.stringify(body)); }
-    catch (e) { delete gPending[id]; setTimeout(function () { h.onEnd(String(e && e.message || '요청을 시작하지 못했소'), { parts: [], text: '', meta: null }); }, 0); }
-    return id;
+    var ticket = 'g_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    var item = { ticket: ticket, model: model, body: body, h: h, tries: 0, cancelled: false, rid: null };
+    gTickets[ticket] = item; gQ.push(item); gPump();
+    return ticket;
+  }
+  function gFinish(item, err, p) { delete gTickets[item.ticket]; try { item.h.onEnd(err, p || { parts: [], text: '', meta: null }); } catch (e) {} }
+  function gPump() {
+    if (gActive) return;
+    while (gQ.length && gQ[0].cancelled) gFinish(gQ.shift(), 'cancel');
+    if (!gQ.length) return;
+    var wait = gLastStart + G_GAP - Date.now();
+    if (wait > 0) { if (!gTimer) gTimer = setTimeout(function () { gTimer = null; gPump(); }, wait); return; }
+    var item = gQ.shift(); gActive = true; gLastStart = Date.now();
+    var rid = item.ticket + '_' + item.tries; item.rid = rid;
+    gPending[rid] = { parts: [], text: '', meta: null, blocked: '', finish: '', h: {
+      onText: item.h.onText,
+      onEnd: function (err, p) {
+        gActive = false;
+        var m = err && /429/.test(err) && !/한도 0/.test(err) && !item.h.noRetry && !item.cancelled && item.tries < 2;
+        if (m) {
+          var sec = (/\[(\d+)초 뒤 재시도\]/.exec(err) || [0, 15])[1] * 1 + 1; sec = Math.min(Math.max(sec, 6), 30); item.tries++;
+          if (item.h.onWait) item.h.onWait('요청이 몰려 ' + sec + '초 쉬었다 다시 보내는 중이오…');
+          setTimeout(function () { if (item.cancelled) { gFinish(item, 'cancel'); gPump(); } else { gQ.unshift(item); gPump(); } }, sec * 1000);
+          return;
+        }
+        gFinish(item, err, p); gPump();
+      } } };
+    try { window.AndroidBridge.askGemini(rid, item.model, JSON.stringify(item.body)); }
+    catch (e) { var pp = gPending[rid]; delete gPending[rid]; setTimeout(function () { pp.h.onEnd(String(e && e.message || '요청을 시작하지 못했소'), pp); }, 0); }
+  }
+  function geminiCancel(ticket) {
+    var item = gTickets[ticket]; if (!item) return;
+    item.cancelled = true;
+    var qi = gQ.indexOf(item);
+    if (qi >= 0) { gQ.splice(qi, 1); gFinish(item, 'cancel'); return; }
+    if (item.rid && gPending[item.rid]) { try { window.AndroidBridge.cancelGemini(item.rid); } catch (e) {} }
   }
   window.onNativeGemini = function (id, type, payload) {
     var p = gPending[id]; if (!p) return;
@@ -2421,6 +2454,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
       if (cfg.tools !== false) body.tools = [{ functionDeclarations: AI_TOOLS }];
       ref.id = geminiStream(cfg.model, body, {
         onText: function (t) { if (cfg.onText) cfg.onText(t); },
+        onWait: function (m) { if (cfg.onStatus) cfg.onStatus(m); },
         onEnd: function (err, p) {
           var uu = aiUsage(); if (p && p.meta) { uu.inTok += p.meta.promptTokenCount || 0; uu.outTok += (p.meta.candidatesTokenCount || 0) + (p.meta.thoughtsTokenCount || 0); aiUsageSave(uu); }
           if (err) return cfg.onDone(err);
@@ -2437,7 +2471,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
       });
     }
     once();
-    return { cancel: function () { if (ref.id) { try { window.AndroidBridge.cancelGemini(ref.id); } catch (e) {} } } };
+    return { cancel: function () { if (ref.id) geminiCancel(ref.id); } };
   }
   function aiContextLine() {
     var d = getDay(today()), done = d.sets.filter(isDone).length;
@@ -2511,7 +2545,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
   // 실시간 피드백: 세트를 마칠 때마다 빠른 모델이 한 문장으로 조언한다(쿨다운·일일 한도 적용).
   function aiAutoOk() { return !!(aiPrefs.auto && geminiReady() && aiUsage().n < aiPrefs.max); }
   function aiSetCoach(id, dt) {
-    if (!aiAutoOk() || Date.now() - aiLastAuto < 35000) return;
+    if (!aiAutoOk() || Date.now() - aiLastAuto < 35000 || geminiBusy()) return;
     var st = findSet(id); if (!st) return;
     var gg = groupsOf(getDay(dt)), order = 0, n = 0;
     gg.forEach(function (g, i) { var ix = g.sets.indexOf(st); if (ix >= 0) { order = i + 1; n = ix + 1; } });
@@ -3126,6 +3160,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
       if (i >= order.length) return done(null, label + ' 모두 실패\n' + notes.join('\n'));
       var model = order[i];
       geminiStream(model, { contents: [{ role: 'user', parts: [{ text: '하오체로 한 문장 인사만 하시오.' }] }], generationConfig: { maxOutputTokens: 256 } }, {
+        noRetry: true,
         onEnd: function (err, p) {
           if (!err) return done(model, label + ' ' + model + ' 성공' + (model !== pref ? ' (기존 ' + pref + ' 대신 자동 변경)' : ''));
           notes.push(model + ' → ' + String(err).slice(0, 160));

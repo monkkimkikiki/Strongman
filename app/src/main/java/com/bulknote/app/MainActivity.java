@@ -233,13 +233,20 @@ public class MainActivity extends Activity {
             });
         }
         private String geminiErrorText(int code, InputStream es) {
-            String detail="HTTP "+code;
+            String detail="HTTP "+code, raw="";
             try{
                 ByteArrayOutputStream out=new ByteArrayOutputStream(); byte[] buf=new byte[4096]; int n;
                 while(es!=null&&(n=es.read(buf))!=-1)out.write(buf,0,n);
-                detail=new JSONObject(new String(out.toByteArray(),StandardCharsets.UTF_8)).getJSONObject("error").optString("message",detail);
+                raw=new String(out.toByteArray(),StandardCharsets.UTF_8);
+                detail=new JSONObject(raw).getJSONObject("error").optString("message",detail);
             }catch(Exception ignored){}
-            if(code==429)return "구글이 요청을 막았소(429, 사용 한도). 구글 설명: "+(detail.length()>260?detail.substring(0,260)+"…":detail);
+            String wait="";
+            if(code==429){
+                java.util.regex.Matcher m=java.util.regex.Pattern.compile("retry(?:Delay\"\\s*:\\s*\"| in )([0-9]+)").matcher(raw);
+                if(m.find())wait=" ["+m.group(1)+"초 뒤 재시도]";
+                if(detail.contains("limit: 0"))wait+=" [이 모델은 무료 한도 0]";
+            }
+            if(code==429)return "구글이 요청을 막았소(429, 사용 한도)."+wait+" 구글 설명: "+(detail.length()>200?detail.substring(0,200)+"…":detail);
             if(code==401)return "키가 인증되지 않았소(401): "+detail;
             if(code==400&&detail.toLowerCase().contains("api key"))return "API 키가 올바르지 않소: "+detail;
             if(code==403)return "이 키로는 사용할 수 없소(권한·지역 확인): "+detail;

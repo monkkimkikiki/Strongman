@@ -525,6 +525,24 @@ body.hasbm main{padding-right:14px}
 .fin-tx b,.fin-tx span{display:block;overflow:hidden;text-overflow:ellipsis}
 .toast span{word-break:keep-all;overflow-wrap:break-word}.toast button{white-space:nowrap}
 body{word-break:keep-all}
+/* v1.52 */
+.askmodal{position:fixed;inset:0;z-index:95;background:rgba(43,33,24,.5);display:flex;align-items:center;justify-content:center;padding:24px}
+.askmodal[hidden]{display:none}
+.ask-in{width:100%;max-width:360px;background:var(--surface);border:1px solid var(--line2);border-radius:16px;padding:20px 18px 16px;box-shadow:0 12px 40px rgba(43,33,24,.35)}
+.ask-in p{margin:0 0 16px;font-size:16px;line-height:1.55;white-space:pre-line;word-break:keep-all;color:var(--ink)}
+.ask-in .row .btn{flex:1 1 0}
+body.typing .restbar,body.typing .workout-return{display:none}
+.donecard .doneflag{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:13px;font-weight:700}
+.donebox{padding:0}
+.donebox summary{list-style:none;cursor:pointer;padding:14px 16px;font-family:var(--font-brush);font-size:20px;color:var(--ink);display:flex;justify-content:space-between;align-items:center}
+.donebox summary::-webkit-details-marker{display:none}
+.donebox summary::after{content:'▾';font-size:16px;color:var(--ink3);transition:transform .15s}
+.donebox:not([open]) summary::after{transform:rotate(-90deg)}
+.donelist{list-style:none;margin:0;padding:0 16px 12px}
+.donelist li{padding:10px 0;border-top:1px solid var(--line)}
+.donelist b{display:block;margin-bottom:3px;word-break:keep-all}
+.donelist span{font-size:14px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.donepick h2{margin:0 0 4px;font-size:18px}
 </style>
 
 <div class="app">
@@ -693,6 +711,7 @@ body{word-break:keep-all}
     <div class="rb-tip" id="rbTip" hidden></div>
   </div>
 </div>
+<div class="askmodal" id="askModal" role="dialog" aria-modal="true" aria-labelledby="askMsg" hidden><div class="ask-in"><p id="askMsg"></p><div class="row"><button type="button" class="btn" data-ask="no">취소</button><button type="button" class="btn primary" data-ask="yes" id="askYes">그리하오</button></div></div></div>
 <button type="button" class="workout-return" id="workoutReturn" aria-label="현재 운동 위치로 이동" title="현재 운동으로 이동" hidden><svg class="stone-dumbbell" viewBox="0 0 64 44" aria-hidden="true"><path d="M5 10 Q8 5 14 7 L19 11 Q22 14 21 20 L20 31 Q17 38 10 35 L5 31 Q2 27 3 20Z M43 11 Q46 6 53 7 L59 12 Q62 17 60 25 L57 33 Q52 39 46 35 L42 31 Q40 25 41 19Z" fill="#282720"/><path d="M17 19 Q28 15 47 19 L47 26 Q31 23 17 28Z" fill="#282720"/><path d="M7 13 Q10 10 15 12 M7 29 L12 32 M48 11 L55 13 M48 32 L54 30 M22 19 L28 18 M36 26 L43 25" fill="none" stroke="#fffefa" stroke-width="1.5" stroke-linecap="round"/><path d="M8 5l2-2m42 3 3-2M1 34l3 2m55-1 3-2" stroke="#282720" stroke-width="2" stroke-linecap="round"/><path d="M29 17l4-1m-7 12 5-1" stroke="#fffefa" stroke-width="1" stroke-linecap="round"/></svg></button>
 
 <div class="bmfloat" id="bmFloat" role="navigation" aria-label="책갈피" hidden></div>
@@ -880,10 +899,10 @@ body{word-break:keep-all}
   function mutate(date, fn) {
     if (!S.loaded) { toast('기록을 불러오는 중이오. 잠시 후 다시 눌러 주시오'); return false; }
     var d = S.days[date] ? S.days[date] : { sets: [], meals: [], weight: null, sample: false, routine: '', workoutEndedAt: null };
-    var wasEnded = d.workoutEndedAt || null;
+    var wasEnded = d.workoutEndedAt || null, setsBefore = wasEnded ? JSON.stringify(d.sets) : '';
     fn(d);
-    // Any later edit reopens the workout so its final review cannot become stale.
-    if (wasEnded && d.workoutEndedAt === wasEnded) d.workoutEndedAt = null;
+    // 운동 기록(세트)이 바뀌면 평가가 낡지 않도록 다시 연다. 식단·체중만 고친 경우엔 종료 상태를 유지한다.
+    if (wasEnded && d.workoutEndedAt === wasEnded && JSON.stringify(d.sets) !== setsBefore) d.workoutEndedAt = null;
     if (!d.sets.length && !d.meals.length && d.weight == null) delete S.days[date]; else S.days[date] = d;
     persistDay(date); renderAll(); return true;
   }
@@ -1033,6 +1052,7 @@ body{word-break:keep-all}
     if (T.phase === 'set') updateWorkoutStatus(T.label || '운동 진행 중', T.targetSec ? '시간 운동 진행 중' : '세트 진행 중');
     else if (T.phase === 'rest') updateWorkoutStatus('휴식 중', '다음 세트를 준비하시오');
     else if (T.phase === 'done') updateWorkoutStatus('운동 진행 중', '다음 세트를 시작하시오');
+    if (!workoutNav.active && T.phase === 'idle') stopWorkoutStatus();
   };
   function cancelRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.cancelRestNotification) AndroidBridge.cancelRestNotification(); } catch (e) {} }
   function cancelScheduledRestAlarm() { try { if (window.AndroidBridge && AndroidBridge.cancelScheduledRestAlarm) AndroidBridge.cancelScheduledRestAlarm(); } catch (e) {} }
@@ -1136,6 +1156,22 @@ body{word-break:keep-all}
   }
   $('#todayList').addEventListener('focusout', function () { setTimeout(function () { if (listDirty && !inRowFocus()) renderLog(); }, 0); });
 
+  var askCb = null;
+  function askConfirm(msg, yesLabel, cb) {
+    // WebView는 window.confirm을 막는 경우가 있어 앱 안 확인창을 쓴다.
+    $('#askMsg').textContent = msg; $('#askYes').textContent = yesLabel || '그리하오';
+    askCb = cb; $('#askModal').hidden = false; document.body.classList.add('noscroll');
+    setTimeout(function () { var y = $('#askYes'); if (y) y.focus(); }, 0);
+  }
+  function askClose(yes) {
+    var cb = askCb; askCb = null; $('#askModal').hidden = true;
+    if ($('#editor').hidden && $('#picker').hidden && $('#calSheet').hidden && $('#routineSwap').hidden && $('#routinePreview').hidden && $('#workoutTimeAdd').hidden) document.body.classList.remove('noscroll');
+    if (yes && cb) cb();
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-ask]'); if (b) askClose(b.getAttribute('data-ask') === 'yes');
+    else if (e.target.id === 'askModal') askClose(false);
+  });
   function finishWorkout() {
     var dt = selDate, d = getDay(dt);
     if (!d.sets.length) { toast('먼저 운동 종목을 추가해 주시오'); return; }
@@ -1144,7 +1180,9 @@ body{word-break:keep-all}
     var msg = left > 0
       ? '아직 완료하지 않은 세트가 ' + left + '개 있소.\n미완료 세트는 제외하고 운동을 종료하겠소?'
       : '오늘 운동을 종료하고 운동 평가를 확인하겠소?';
-    if (!window.confirm(msg)) return;
+    askConfirm(msg, '운동 종료', function () { doFinishWorkout(dt); });
+  }
+  function doFinishWorkout(dt) {
     if (mutate(dt, function (dd) { dd.workoutEndedAt = Date.now(); })) {
       // 종료 버튼은 타이머 상태와 무관하게 화면 바·예약 알람·진행 알림을 모두 정리한다.
       T = { phase: 'idle' }; saveT();
@@ -1153,11 +1191,35 @@ body{word-break:keep-all}
       if (restBar) restBar.hidden = true;
       document.body.classList.remove('hasbar');
       workoutNav.active = false; workoutNav.exercise = null; saveWorkoutNav(); syncWorkoutReturn();
-      stopWorkoutStatus();
+      stopWorkoutStatus(); setTimeout(stopWorkoutStatus, 600);
       coachUI.dayKey = dt; coachUI.day = true; renderCoach();
-      toast('오늘 운동을 종료했소. 운동 평가를 확인해 보시오');
-      var box = $('#coachCard'); if (box) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      alarmFlash('운동 완료!');
+      toast('운동을 마쳤소. 수고했소! 다음 루틴을 고르거나 한 운동을 살펴보시오');
+      if (tab !== 'log') setTab('log');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  }
+  function renderEndedTop(d, head, foot) {
+    var label = selDate === today() ? '오늘' : fmtShort(selDate);
+    var gs = groupsOf(d).map(function (g) { return { key: g.key, ex: g.sets[0].ex, sets: g.sets.filter(isDone) }; }).filter(function (g) { return g.sets.length; });
+    var done = d.sets.filter(isDone), vol = done.reduce(function (a, s) { return a + (s.mode === 'time' ? 0 : s.w * s.r); }, 0);
+    var pct = d.sets.length ? done.length / d.sets.length * 100 : 0;
+    var list = gs.length ? gs.map(function (g) {
+      return '<li><b>' + esc(g.ex) + '</b><span>' + g.sets.map(function (st, i) { return (i + 1) + '세트 ' + (st.mode === 'time' ? mmss(st.s || st.targetSec || 0) : fw(st.w) + 'kg×' + st.r); }).join(' · ') + '</span></li>';
+    }).join('') : '<li><span>완료한 세트가 없소.</span></li>';
+    var R = S.settings.routines || [];
+    var pick = R.length
+      ? '<h2>' + label + ' 한 번 더 하겠소?</h2><div class="startlist">' + R.map(function (r) {
+          return '<div class="startrow"><div class="tx"><b>' + esc(r.name) + '</b><span>' + r.items.length + '종목 · ' + r.items.reduce(function (a, i) { return a + (i.n || 0); }, 0) + '세트</span></div><button type="button" class="btn primary" data-act="rt-start" data-id="' + esc(r.id) + '">시작</button></div>';
+        }).join('') + '</div>'
+      : '<h2>' + label + ' 한 번 더 하겠소?</h2><p class="note">루틴을 만들어 두면 여기서 바로 고를 수 있소.</p><button type="button" class="btn" data-act="routine-new">루틴 만들기</button>';
+    head.innerHTML =
+      '<div class="card donecard"><div class="phead"><div class="ptitle-wrap"><svg class="wo-ico" viewBox="0 0 38 26" aria-hidden="true" stroke-width="2.6" stroke-linecap="round"><path d="M4 8v10M9 5v16M34 8v10M29 5v16M9 13h20"/></svg><div style="min-width:0"><div class="ptitle">' + esc(d.routine || (label + ' 운동')) + '</div><div class="psub">볼륨 ' + nf(vol) + 'kg · 운동 완료</div><span class="doneflag">✓ 운동 완료</span></div></div><div class="pnum">' + done.length + '<small> / ' + d.sets.length + '세트</small></div></div>' +
+      '<div class="meter" role="meter" aria-label="완료한 세트" aria-valuemin="0" aria-valuemax="' + d.sets.length + '" aria-valuenow="' + done.length + '"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>' +
+      '<details class="card donebox" id="doneBox" open><summary>' + label + ' 한 운동 보기</summary><ul class="donelist">' + list + '</ul></details>' +
+      '<div class="card donepick">' + pick + '</div>';
+    foot.innerHTML = '<div class="row"><button type="button" class="btn" data-act="wo-review">운동 평가 다시 보기</button><button type="button" class="btn" data-act="wo-reopen">기록 고치기</button></div>' +
+      '<div class="row" style="margin-top:8px"><button type="button" class="btn" data-act="wo-add">종목 직접 골라 더하기</button></div>';
   }
   function renderWoTop() {
     var d = getDay(selDate), foot = $('#woFoot'), head = $('#woHead');
@@ -1175,6 +1237,7 @@ body{word-break:keep-all}
       foot.innerHTML = '<div class="row"><button type="button" class="btn" data-act="wo-add">루틴 없이 종목 직접 고르기</button><button type="button" class="btn" data-act="wo-time-open">시간 운동 추가</button></div>' + (all ? '<button type="button" class="btn" style="margin-top:10px" data-act="sample-add">예시 기록으로 둘러보기</button>' : '');
       return;
     }
+    if (d.workoutEndedAt) { renderEndedTop(d, head, foot); return; }
     var done = d.sets.filter(isDone), vol = done.reduce(function (a, s) { return a + s.w * s.r; }, 0), pct = done.length / d.sets.length * 100;
     head.innerHTML = '<div class="card"><div class="phead"><div class="ptitle-wrap"><svg class="wo-ico" viewBox="0 0 38 26" aria-hidden="true" stroke-width="2.6" stroke-linecap="round"><path d="M4 8v10M9 5v16M34 8v10M29 5v16M9 13h20"/></svg><div style="min-width:0"><div class="ptitle">' + esc(d.routine || (selDate === today() ? '오늘 운동' : fmtShort(selDate) + ' 운동')) + '</div><div class="psub">볼륨 ' + nf(vol) + 'kg 완료</div></div></div><div class="pnum">' + done.length + '<small> / ' + d.sets.length + '세트</small></div></div>' +
       '<div class="meter" role="meter" aria-label="완료한 세트" aria-valuemin="0" aria-valuemax="' + d.sets.length + '" aria-valuenow="' + done.length + '"><i style="width:' + pct.toFixed(1) + '%"></i></div></div>';
@@ -1259,7 +1322,7 @@ body{word-break:keep-all}
     var d = getDay(selDate), gs = groupsOf(d), nextId = null;
     for (var a = 0; a < gs.length && !nextId; a++) for (var b = 0; b < gs[a].sets.length; b++) if (!isDone(gs[a].sets[b])) { nextId = gs[a].sets[b].id; break; }
     var bookmarks = dayBookmarks();
-    if (!gs.length) { $('#todayList').innerHTML = ''; renderBmFloat(gs, []); return; }
+    if (!gs.length || d.workoutEndedAt) { $('#todayList').innerHTML = ''; renderBmFloat(gs, []); return; }
     var bookmarkRail = ''; renderBmFloat(gs, bookmarks);
     $('#todayList').innerHTML = bookmarkRail + gs.map(function (g) {
       var first = g.sets[0], timed = first.mode === 'time', ls = lastSession(first.ex, selDate), bookmarked = bookmarks.indexOf(g.key) >= 0;
@@ -1610,6 +1673,19 @@ body{word-break:keep-all}
       }, delay);
     });
   }
+  // 식단·AI·설정 입력창을 누르면 키보드 위로 타이머 바가 올라와 글을 가리므로 잠시 숨긴다.
+  (function () {
+    var tt;
+    function isField(el) { return el && el.matches && el.matches('input:not([type=checkbox]):not([type=radio]):not([type=button]), textarea'); }
+    document.addEventListener('focusin', function (e) {
+      var el = e.target; clearTimeout(tt);
+      if (isField(el) && !el.closest('#tab-log') && !el.closest('.sheet')) {
+        document.body.classList.add('typing');
+        setTimeout(function () { if (el.isConnected && document.activeElement === el) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 250);
+      }
+    });
+    document.addEventListener('focusout', function () { clearTimeout(tt); tt = setTimeout(function () { if (!isField(document.activeElement)) document.body.classList.remove('typing'); }, 150); });
+  })();
   $('#todayList').addEventListener('focusin', function (e) {
     var input = e.target;
     if (input.matches && input.matches('input, textarea')) keepFocusedFieldClearOfTimer(input);
@@ -2836,6 +2912,7 @@ body{word-break:keep-all}
     else if (act === 'wo-time-cancel') sheetClose($('#workoutTimeAdd'));
     else if (act === 'wo-time-add') { var nm = $('#wtName').value.trim(), sn = Math.max(1, Math.min(10, +$('#wtSets').value || 1)), mins = Math.max(0, Math.min(60, +$('#wtMinutes').value || 0)), secs = Math.max(0, Math.min(59, +$('#wtSeconds').value || 0)), duration = Math.max(5, Math.min(3600, mins * 60 + secs)); if (!nm) { toast('운동 이름을 입력해 주시오'); $('#wtName').focus(); return; } if (getDay(selDate).sets.some(function(x){ return normEx(x.ex) === normEx(nm); })) { toast('오늘 운동에 이미 있는 운동이오'); return; } var libItem = libFind(nm), muscle = libItem ? libItem.m : '하체'; if (mutate(selDate, function(dd){ makeSetsFor({ex:nm,m:muscle,n:sn,mode:'time',durationSec:duration},selDate).forEach(function(x){dd.sets.push(x);}); })) { sheetClose($('#workoutTimeAdd')); renderLog(); toast(nm + ' 시간 운동을 추가했소'); } }
     else if (act === 'wo-finish') finishWorkout();
+    else if (act === 'wo-reopen') { mutate(selDate, function (dd) { dd.workoutEndedAt = null; }); toast('운동 기록을 다시 열었소. 고친 뒤 운동 완료를 눌러 주시오'); }
     else if (act === 'wo-review') { coachUI.dayKey = selDate; coachUI.day = true; setTab('log'); renderCoach(); $('#coachCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     else if (act === 'ed-close') sheetClose($('#editor'));
     else if (act === 'ed-save') saveEditor();

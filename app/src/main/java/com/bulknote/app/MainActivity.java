@@ -239,7 +239,7 @@ public class MainActivity extends Activity {
                 while(es!=null&&(n=es.read(buf))!=-1)out.write(buf,0,n);
                 detail=new JSONObject(new String(out.toByteArray(),StandardCharsets.UTF_8)).getJSONObject("error").optString("message",detail);
             }catch(Exception ignored){}
-            if(code==429)return "무료 사용 한도에 도달했소. 잠시 뒤 다시 시도하시오.";
+            if(code==429)return "구글이 요청을 막았소(429, 사용 한도). 구글 설명: "+(detail.length()>260?detail.substring(0,260)+"…":detail);
             if(code==401)return "키가 인증되지 않았소(401): "+detail;
             if(code==400&&detail.toLowerCase().contains("api key"))return "API 키가 올바르지 않소: "+detail;
             if(code==403)return "이 키로는 사용할 수 없소(권한·지역 확인): "+detail;

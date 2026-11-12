@@ -3106,30 +3106,50 @@ body.typing .restbar,body.typing .workout-return{display:none}
     } } };
     try { window.AndroidBridge.listGeminiModels(id); } catch (e) { delete gPending[id]; cb(String(e && e.message || '요청을 시작하지 못했소')); }
   }
-  function pickGeminiModel(names, lite) {
-    var best = null, bestV = null;
+  function geminiCandidates(names, lite) {
+    var list = [];
     names.forEach(function (n) {
       var m = /^gemini-(\d+(?:\.\d+)*)-flash(-lite)?$/.exec(n); if (!m || !!m[2] !== lite) return;
-      var v = m[1].split('.').map(Number);
-      if (!bestV || (function () { for (var i = 0; i < Math.max(v.length, bestV.length); i++) { var a = v[i] || 0, b = bestV[i] || 0; if (a !== b) return a > b; } return false; })()) { best = n; bestV = v; }
+      list.push({ n: n, v: m[1].split('.').map(Number) });
     });
-    if (!best && names.indexOf(lite ? 'gemini-flash-lite-latest' : 'gemini-flash-latest') >= 0) best = lite ? 'gemini-flash-lite-latest' : 'gemini-flash-latest';
-    return best;
+    list.sort(function (x, y) { for (var i = 0; i < Math.max(x.v.length, y.v.length); i++) { var a = x.v[i] || 0, b = y.v[i] || 0; if (a !== b) return b - a; } return 0; });
+    var out = list.map(function (o) { return o.n; });
+    var alias = lite ? 'gemini-flash-lite-latest' : 'gemini-flash-latest';
+    if (names.indexOf(alias) >= 0) out.push(alias);
+    return out;
+  }
+  function pickGeminiModel(names, lite) { return geminiCandidates(names, lite)[0] || null; }
+  // 선호 모델을 먼저, 한도(429)·없음(404)이면 쓸 수 있는 다른 모델을 차례로 시험해 처음 되는 것을 쓴다.
+  function gemFindWorking(pref, cands, label, done) {
+    var order = [pref].concat(cands.filter(function (c) { return c !== pref; })).slice(0, 5), notes = [];
+    (function next(i) {
+      if (i >= order.length) return done(null, label + ' 모두 실패\n' + notes.join('\n'));
+      var model = order[i];
+      geminiStream(model, { contents: [{ role: 'user', parts: [{ text: '하오체로 한 문장 인사만 하시오.' }] }], generationConfig: { maxOutputTokens: 256 } }, {
+        onEnd: function (err, p) {
+          if (!err) return done(model, label + ' ' + model + ' 성공' + (model !== pref ? ' (기존 ' + pref + ' 대신 자동 변경)' : ''));
+          notes.push(model + ' → ' + String(err).slice(0, 160));
+          var retry = /429|한도|찾지 못/.test(err);
+          if (retry) next(i + 1); else done(null, label + ' ' + model + ' 실패 · ' + err);
+        } });
+    })(0);
   }
   $('#gemTest').addEventListener('click', function () {
     if (!geminiReady()) { $('#gemStatus').textContent = '먼저 API 키를 저장해 주시오.'; return; }
     var st = $('#gemStatus'); st.textContent = '키와 모델 확인 중…';
     geminiListModels(function (err, names) {
       if (err) { st.textContent = '키 확인 실패 · ' + err; return; }
-      var note = [];
-      if (names.indexOf(aiPrefs.model) < 0) { var m = pickGeminiModel(names, false); if (m) { note.push('채팅 모델을 ' + m + '(으)로 바꿨소'); aiPrefs.model = m; } }
-      if (names.indexOf(aiPrefs.fast) < 0) { var f = pickGeminiModel(names, true) || pickGeminiModel(names, false); if (f) { note.push('세트 코칭 모델을 ' + f + '(으)로 바꿨소'); aiPrefs.fast = f; } }
-      saveAiPrefs();
-      st.textContent = '키 확인 성공 · 사용 가능한 모델 ' + names.length + '개' + (note.length ? '\n' + note.join('\n') : '') + '\n모델 응답 확인 중…';
-      gemTestOne(aiPrefs.model, '채팅 모델 ' + aiPrefs.model, function (a) { gemTestOne(aiPrefs.fast, '세트 코칭 모델 ' + aiPrefs.fast, function (b) {
-        var base = '키 확인 성공 · 사용 가능한 모델 ' + names.length + '개' + (note.length ? '\n' + note.join('\n') : '');
-        renderGeminiSettings(); $('#gemStatus').textContent = base + '\n' + a + '\n' + b;
-      }); });
+      var head = '키 확인 성공 · 사용 가능한 모델 ' + names.length + '개';
+      st.textContent = head + '\n모델 응답 확인 중…';
+      var main = geminiCandidates(names, false), fast = geminiCandidates(names, true);
+      if (!fast.length) fast = main;
+      gemFindWorking(aiPrefs.model, main, '채팅 모델', function (m1, t1) {
+        if (m1) aiPrefs.model = m1;
+        gemFindWorking(aiPrefs.fast, fast, '세트 코칭 모델', function (m2, t2) {
+          if (m2) aiPrefs.fast = m2;
+          saveAiPrefs(); renderGeminiSettings(); $('#gemStatus').textContent = head + '\n' + t1 + '\n' + t2;
+        });
+      });
     });
   });
   function gemPrefsFromForm() {

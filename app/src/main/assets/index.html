@@ -554,6 +554,34 @@ body.typing .restbar,body.typing .workout-return{display:none}
 .ai-wait{color:var(--ink3)}
 .ai-msg.err{border-left-color:var(--danger)}
 .ai-chat-form button[data-ai-action=stop]{background:var(--danger);color:#fff}
+.sets li .smeta{grid-column:1/-1;margin:-1px 4px 2px;font-size:12px;color:var(--ink3);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.msrc{display:block;font-size:11.5px;color:var(--ink3);margin-top:2px}
+.mmacro{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:14px;color:var(--ink2)}
+.mmacro small{color:var(--ink3)}
+#dietWeek h2{margin:0 0 8px;font-size:18px}
+.wkd{list-style:none;margin:0;padding:0}
+.wkd li{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:baseline;padding:7px 0;border-top:1px solid var(--line);font-size:14px;font-variant-numeric:tabular-nums}
+.wkd li:first-child{border-top:0}
+.wkd li>span:first-child{white-space:nowrap}
+.wkd .tg{font-size:11.5px;padding:1px 7px;border-radius:999px;background:var(--accent-wash);color:var(--accent);margin-left:4px}
+.wksum{margin:10px 0 0;padding:0;list-style:none;font-size:14px;line-height:1.7;color:var(--ink2)}
+.pricebox summary{list-style:none;cursor:pointer;font-family:var(--font-brush);font-size:20px;color:var(--ink);display:flex;justify-content:space-between;align-items:center}
+.pricebox summary::-webkit-details-marker{display:none}
+.pricebox summary::after{content:'▾';font-size:16px;color:var(--ink3)}
+.pricebox:not([open]) summary::after{transform:rotate(-90deg)}
+.pricebox[open] summary{margin-bottom:10px}
+#priceSort,#pName,#pStore,#pPrice,#pServ,#pServG,#pProt,#pKcal,#pCarb,#pFat,#pNa,#mCarb,#mFat{width:100%;box-sizing:border-box;height:46px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:0 12px;font-size:16px;color:var(--ink)}
+.pitemc{border-top:1px solid var(--line);padding:12px 0}
+.pitemc:first-child{border-top:0}
+.pitemc .ph{display:flex;gap:8px;align-items:baseline;justify-content:space-between}
+.pitemc .ph b{word-break:keep-all;overflow-wrap:anywhere}
+.pitemc .rk{flex:none;font-family:var(--font-brush);font-size:20px;color:var(--accent)}
+.pitemc .pm{margin:4px 0 0;font-size:14px;line-height:1.6;color:var(--ink2);font-variant-numeric:tabular-nums}
+.pitemc .pd{margin:2px 0 0;font-size:12px;color:var(--ink3)}
+.pitemc .pb{display:flex;gap:8px;margin-top:8px}
+.pitemc .pb .mini{flex:1 1 0}
+.pitemc.best .rk::after{content:' 가성비 1위';font-size:13px;font-family:inherit;color:var(--accent)}
 </style>
 
 <div class="app">
@@ -631,12 +659,45 @@ body.typing .restbar,body.typing .workout-return{display:none}
           <div class="field"><label class="lbl" for="mKcal">칼로리 (kcal)</label><input type="number" id="mKcal" inputmode="numeric" min="0" placeholder="0"></div>
           <div class="field"><label class="lbl" for="mProt">단백질 (g)</label><input type="number" id="mProt" inputmode="decimal" min="0" placeholder="0"></div>
         </div>
+        <div class="grid2">
+          <div class="field"><label class="lbl" for="mCarb">탄수화물 (g, 선택)</label><input type="number" id="mCarb" inputmode="decimal" min="0" placeholder="모르면 비워 두시오"></div>
+          <div class="field"><label class="lbl" for="mFat">지방 (g, 선택)</label><input type="number" id="mFat" inputmode="decimal" min="0" placeholder="모르면 비워 두시오"></div>
+        </div>
         <p class="estnote">음식을 고르면 1인분 평균값으로 칼로리와 단백질이 자동 계산되오. 브랜드나 조리법에 따라 달라서 대략치이오. 직접 고쳐도 되오. 직접 입력한 음식은 ‘내 음식’으로 저장돼 다음부터 검색에 나오. 별(☆)을 눌러 즐겨찾기에 넣으면 이름 칸을 누를 때 먼저 보이오.</p>
         <div class="msg" id="mealMsg" role="alert"></div>
         <button type="submit" class="btn primary">추가</button>
       </form>
       <div id="mealList"></div>
-      <p class="note" id="dietWeek"></p>
+      <div class="card" id="dietWeek" hidden></div>
+      <details class="card form pricebox" id="priceBox">
+        <summary id="priceSum">식품 가성비 비교</summary>
+        <p class="note">제품 가격과 영양정보를 직접 적어 두면 단백질 가성비를 계산해 비교하오. 가격은 입력한 날짜와 함께 저장되며 실시간 가격이 아니오. 계산은 앱이 하오.</p>
+        <form id="priceForm" novalidate>
+          <div class="field"><label class="lbl" for="pName">제품명 (브랜드 포함)</label><input type="text" id="pName" autocomplete="off" placeholder="예: 닭가슴살 소시지 (OO브랜드)"></div>
+          <div class="grid2">
+            <div class="field"><label class="lbl" for="pStore">구매처 (선택)</label><input type="text" id="pStore" autocomplete="off"></div>
+            <div class="field"><label class="lbl" for="pPrice">가격 (원)</label><input type="number" id="pPrice" inputmode="numeric" min="1" placeholder="0"></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label class="lbl" for="pServ">제품 전체 제공 횟수</label><input type="number" id="pServ" inputmode="decimal" min="0.5" step="0.5" placeholder="예: 10"></div>
+            <div class="field"><label class="lbl" for="pServG">1회 섭취량 (선택)</label><input type="text" id="pServG" autocomplete="off" placeholder="예: 100g, 1팩"></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label class="lbl" for="pProt">1회 단백질 (g)</label><input type="number" id="pProt" inputmode="decimal" min="0" placeholder="0"></div>
+            <div class="field"><label class="lbl" for="pKcal">1회 칼로리 (kcal)</label><input type="number" id="pKcal" inputmode="numeric" min="0" placeholder="0"></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label class="lbl" for="pCarb">1회 탄수화물 (g, 선택)</label><input type="number" id="pCarb" inputmode="decimal" min="0"></div>
+            <div class="field"><label class="lbl" for="pFat">1회 지방 (g, 선택)</label><input type="number" id="pFat" inputmode="decimal" min="0"></div>
+          </div>
+          <div class="field"><label class="lbl" for="pNa">1회 나트륨 (mg, 선택)</label><input type="number" id="pNa" inputmode="numeric" min="0"></div>
+          <div class="msg" id="priceMsg" role="alert"></div>
+          <button type="submit" class="btn primary">비교 목록에 저장</button>
+        </form>
+        <div class="field" id="priceSortWrap" hidden><label class="lbl" for="priceSort">정렬 기준</label>
+          <select id="priceSort"><option value="p1000">단백질 g / 1,000원 (높을수록 좋음)</option><option value="cost10">단백질 10g당 비용 (낮을수록 좋음)</option><option value="p100k">100kcal당 단백질 (높을수록 좋음)</option></select></div>
+        <div id="priceList"></div>
+      </details>
     </section>
 
     <section id="tab-ai" class="tab" aria-label="AI 코치" hidden>
@@ -848,7 +909,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
     { name: '상체 (예시)', items: [['바벨 벤치프레스', 4, 8], ['인클라인 덤벨 프레스', 3, 10], ['랫풀다운', 3, 10], ['시티드 케이블 로우', 3, 10], ['덤벨 숄더 프레스', 3, 10], ['사이드 레터럴 레이즈', 3, 15], ['케이블 푸시다운', 3, 12], ['덤벨 컬', 3, 12]] },
     { name: '하체 (예시)', items: [['바벨 백스쿼트', 4, 8], ['레그프레스', 3, 12], ['루마니안 데드리프트', 3, 10], ['레그 익스텐션', 3, 12], ['라잉 레그 컬', 3, 12], ['스탠딩 카프레이즈', 4, 15], ['행잉 레그레이즈', 3, 12]] }
   ];
-  var DEF = { kcal: 3000, protein: 150, weeklySets: 12, rest: 90, routines: [], custom: [], favEx: [], favFood: [], myFood: [], restEx: {} };
+  var DEF = { kcal: 3000, protein: 150, weeklySets: 12, rest: 90, routines: [], custom: [], favEx: [], favFood: [], myFood: [], restEx: {}, priceItems: [] };
   var DOW = ['일', '월', '화', '수', '목', '금', '토'];
 
   /* ---------- helpers ---------- */
@@ -1037,7 +1098,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
       var j = JSON.parse(localStorage.getItem(TK));
       if (j && j.phase === 'rest') return j.restEnd > Date.now() ? j : { phase: 'done', tip: j.tip || '' };
       if (j && j.phase === 'done') return j;
-      if (j && j.phase === 'set' && Date.now() - j.start < 3600000) return j;
+      if (j && j.phase === 'set' && Date.now() - j.start < 7200000) return j;
     } catch (e) {}
     return { phase: 'idle' };
   })();
@@ -1081,6 +1142,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
     try { var o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = 880; g.gain.value = 0.15; o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.25); } catch (e) {}
     try { if (window.AndroidBridge && window.AndroidBridge.vibrateShort) window.AndroidBridge.vibrateShort(); else if (navigator.vibrate) navigator.vibrate(110); } catch (e) {}
   }
+  var hms = function (ms) { var d = new Date(ms); return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()); };
   var mmss = function (sec) { sec = Math.max(0, sec); return pad(Math.floor(sec / 60)) + ':' + pad(Math.floor(sec % 60)); };
   function startRest(sec, tip, exerciseKey, setId) { T = { phase: 'rest', setId: setId || null, restEnd: Date.now() + (sec > 0 ? sec : S.settings.rest) * 1000, tip: tip || '', exerciseKey: exerciseKey || workoutNav.exercise || null }; saveT(); scheduleRestAlarm(); updateWorkoutStatus('휴식 중', '다음 세트를 준비하시오'); lockOn(); tick(); }
   function finishRest() {
@@ -1127,7 +1189,9 @@ body.typing .restbar,body.typing .workout-return{display:none}
   }
   $('#rbMinus').addEventListener('click', function () { if (T.phase === 'rest') { T.restEnd = Math.max(Date.now() + 1000, T.restEnd - 15000); saveT(); scheduleRestAlarm(); tick(); } });
   $('#rbPlus').addEventListener('click', function () { if (T.phase === 'rest') { T.restEnd += 15000; saveT(); scheduleRestAlarm(); tick(); } });
-  $('#rbSkip').addEventListener('click', function () { T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); tick(); renderLog(); });
+  $('#rbSkip').addEventListener('click', function () {
+    if (T.phase === 'set' && T.setId) { var cs = findSet(T.setId); if (cs && !isDone(cs)) { cs.st = null; persistDay(selDate); } }
+    T = { phase: 'idle' }; saveT(); cancelRestAlarm(); lockOff(); tick(); renderLog(); });
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) {
       if (T.phase !== 'idle') lockOn();
@@ -1334,6 +1398,14 @@ body.typing .restbar,body.typing .workout-return{display:none}
     var show = !!box.children.length && tab === 'log';
     box.hidden = !show; document.body.classList.toggle('hasbm', show);
   }
+  function setMetaHtml(s, dn, timing) {
+    var bits = [];
+    if (s.st) bits.push('시작 ' + hms(s.st));
+    if (dn && s.t) bits.push('완료 ' + hms(s.t));
+    if (dn && s.st && s.t) bits.push(Math.max(1, Math.round((s.t - s.st) / 1000)) + '초');
+    else if (!dn && timing && s.st) bits.push('측정 중');
+    return bits.length ? '<span class="smeta">' + bits.join(' · ') + '</span>' : '';
+  }
   function renderWoList() {
     var d = getDay(selDate), gs = groupsOf(d), nextId = null;
     for (var a = 0; a < gs.length && !nextId; a++) for (var b = 0; b < gs[a].sets.length; b++) if (!isDone(gs[a].sets[b])) { nextId = gs[a].sets[b].id; break; }
@@ -1358,7 +1430,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
           else cell = '<button type="button" class="play" data-play="' + esc(s.id) + '">' + (timed ? mmss(s.targetSec || 60) : '▶') + '</button>';
           var target = Math.max(5, +s.targetSec || 60);
           var fields = timed ? '<input type="number" inputmode="numeric" min="0" max="60" step="1" data-time-min="' + esc(s.id) + '" value="' + Math.floor(target / 60) + '" aria-label="목표 분"><input type="number" inputmode="numeric" min="0" max="59" step="1" data-time-sec="' + esc(s.id) + '" value="' + (target % 60) + '" aria-label="목표 초">' : '<input type="number" inputmode="decimal" step="0.5" min="0" data-f="w" value="' + fw(s.w) + '" aria-label="무게(kg)"' + (dn ? ' disabled title="완료한 세트의 무게는 고정되오"' : '') + '><button type="button" class="set-weight-lock ' + (s.setWeightLocked ? 'is-locked' : 'is-unlocked') + '" data-set-weight-lock="' + esc(s.id) + '" aria-pressed="' + !!s.setWeightLocked + '"' + (dn ? ' disabled title="완료한 세트는 잠금 설정을 변경할 수 없소"' : '') + '>' + LOCK_GLYPH + '</button><input type="number" inputmode="numeric" step="1" min="0" data-f="r" value="' + (s.r || '') + '" placeholder="0" aria-label="횟수">';
-          return '<li class="srow' + (timed ? ' timed' : '') + (dn ? ' done' : '') + (s.id === nextId ? ' next' : '') + '" data-set="' + esc(s.id) + '"><span class="n">' + (i + 1) + '</span>' + fields + cell + '<button type="button" class="ck" data-chk="' + esc(s.id) + '" aria-pressed="' + dn + '">✓</button></li>';
+          return '<li class="srow' + (timed ? ' timed' : '') + (dn ? ' done' : '') + (s.id === nextId ? ' next' : '') + '" data-set="' + esc(s.id) + '"><span class="n">' + (i + 1) + '</span>' + fields + cell + '<button type="button" class="ck" data-chk="' + esc(s.id) + '" aria-pressed="' + dn + '">✓</button>' + setMetaHtml(s, dn, timing) + '</li>';
         }).join('') + '</ul>' + restRowHtml(g, first) + '<div class="gfoot"><button type="button" class="mini" data-sadd="' + esc(g.key) + '">+ 세트 추가</button><button type="button" class="mini" data-sdel="' + esc(g.key) + '">− 마지막 세트 삭제</button></div></article>';
     }).join('');
   }
@@ -1423,12 +1495,13 @@ body.typing .restbar,body.typing .workout-return{display:none}
   function toggleDone(id) {
     var st = findSet(id), dt = selDate; if (!st) return;
     prepAudio();
-    if (isDone(st)) { mutate(dt, function (dd) { dd.sets.forEach(function (x) { if (x.id === id) { x.done = false; if (x.mode === 'time') x.s = null; } }); }); return; }
+    if (isDone(st)) { mutate(dt, function (dd) { dd.sets.forEach(function (x) { if (x.id === id) { x.done = false; if (x.mode === 'time') { x.s = null; x.st = null; } } }); }); return; }
     if (st.mode === 'time' && !(T.phase === 'set' && T.setId === id) && !st.s) { toast('먼저 타이머를 시작해 주시오'); var play = $('[data-play="' + id + '"]'); if (play) play.focus(); return; }
     if (st.mode !== 'time' && (!st.r || st.r < 1)) { toast('횟수를 먼저 입력해 주시오'); var inp = $('[data-set="' + id + '"] [data-f="r"]'); if (inp) inp.focus(); return; }
     var sec = st.s;
     if (T.phase === 'set' && T.setId === id) sec = Math.max(1, Math.round((Date.now() - T.start) / 1000));
-    if (mutate(dt, function (dd) { dd.sets.forEach(function (x) { if (x.id === id) { x.done = true; x.s = sec || null; x.t = Date.now(); } }); })) {
+    var startedAt = (T.phase === 'set' && T.setId === id) ? T.start : (st.st || null);
+    if (mutate(dt, function (dd) { dd.sets.forEach(function (x) { if (x.id === id) { x.done = true; x.s = sec || null; x.t = Date.now(); x.st = startedAt; } }); })) {
       if (T.phase === 'set' && T.setId === id) cancelRestAlarm();
       startRest(restFor(st.ex), tipLabel(nextTip(dt)), normEx(st.ex), id);
       aiSetCoach(id, dt);
@@ -1449,7 +1522,9 @@ body.typing .restbar,body.typing .workout-return{display:none}
     prepAudio();
     var g = groupsOf(getDay(selDate)).filter(function (x) { return x.key === normEx(st.ex); })[0], idx = g ? g.sets.indexOf(st) + 1 : 1;
     var cue = cueFor(st.ex, st.m);
-    T = { phase: 'set', setId: id, exerciseKey: normEx(st.ex), start: Date.now(), targetSec: st.mode === 'time' ? (st.targetSec || 60) : null, alerted: false, label: st.ex + ' ' + idx + '세트', tip: '지금 · ' + (idx === 1 ? cue.k : cue.t[(idx - 1) % cue.t.length]) }; saveT(); updateWorkoutStatus(T.label, T.targetSec ? '시간 운동 진행 중' : '세트 진행 중'); if (T.targetSec) scheduleExerciseAlarm(); lockOn(); renderLog(); tick();
+    T = { phase: 'set', setId: id, exerciseKey: normEx(st.ex), start: Date.now(), targetSec: st.mode === 'time' ? (st.targetSec || 60) : null, alerted: false, label: st.ex + ' ' + idx + '세트', tip: '지금 · ' + (idx === 1 ? cue.k : cue.t[(idx - 1) % cue.t.length]) }; saveT();
+    // 세트 시작 시각을 기록에 바로 남긴다(앱이 꺼져도 남음). 시작을 누르지 않은 세트에는 시각을 만들지 않는다.
+    st.st = T.start; persistDay(selDate); updateWorkoutStatus(T.label, T.targetSec ? '시간 운동 진행 중' : '세트 진행 중'); if (T.targetSec) scheduleExerciseAlarm(); lockOn(); renderLog(); tick();
   }
   function setField(id, f, raw) {
     var s = findSet(id); if (!s) return;
@@ -2039,8 +2114,9 @@ body.typing .restbar,body.typing .workout-return{display:none}
   function restsOf(d) {
     var ds = d.sets.filter(function (s) { return isDone(s) && s.t; }).sort(function (a, b) { return a.t - b.t; }), out = [];
     for (var i = 1; i < ds.length; i++) {
-      if (!ds[i].s) continue;
-      var actual = (ds[i].t - ds[i].s * 1000 - ds[i - 1].t) / 1000;
+      var startMs = ds[i].st || (ds[i].s ? ds[i].t - ds[i].s * 1000 : 0);
+      if (!startMs) continue;
+      var actual = (startMs - ds[i - 1].t) / 1000;
       if (actual > 5 && actual < 1500) out.push({ actual: actual, want: restFor(ds[i - 1].ex) });
     }
     return out;
@@ -2237,11 +2313,17 @@ body.typing .restbar,body.typing .workout-return{display:none}
     { name: 'get_daily_nutrition', description: '특정 날짜의 식단 기록(음식, kcal, 단백질 g)과 합계를 조회한다.', parameters: { type: 'object', properties: { date: { type: 'string', description: 'YYYY-MM-DD. 생략하면 선택한 날짜' } } } },
     { name: 'get_nutrition_history', description: '최근 며칠 동안 날짜별 식단 합계(kcal, 단백질)를 조회한다.', parameters: { type: 'object', properties: { days: { type: 'integer', description: '일 수. 기본 7' } } } },
     { name: 'get_recent_bodyweight', description: '최근 체중 기록을 조회한다.', parameters: { type: 'object', properties: { days: { type: 'integer', description: '일 수. 기본 30' } } } },
+    { name: 'search_food_nutrition', description: '앱 안의 음식 목록(내장 평균값, 내가 저장한 음식, 가격 비교 제품)에서 이름으로 영양정보를 찾는다. 내장 값은 1회 제공 단위 기준의 대략치이며 공식 DB 값이 아니다.', parameters: { type: 'object', properties: { query: { type: 'string', description: '음식 이름 일부. 예: 닭가슴살' } }, required: ['query'] } },
+    { name: 'compare_food_value', description: '사용자가 가격을 입력해 둔 제품들의 단백질 가성비(g/1,000원, 10g당 비용, 100kcal당 단백질)를 앱이 계산한 값으로 돌려준다. budget_won 을 주면 그 예산으로 살 수 있는 개수와 단백질 총량도 계산한다.', parameters: { type: 'object', properties: { names: { type: 'array', items: { type: 'string' }, description: '비교할 제품 이름(생략하면 전체)' }, budget_won: { type: 'integer', description: '예산(원). 선택' } } } },
     { name: 'get_user_goals', description: '사용자가 설정한 목표(칼로리, 단백질, 부위별 주간 세트, 기본 휴식)를 조회한다.', parameters: { type: 'object', properties: {} } }
   ];
   function aiClamp(v, lo, hi, def) { v = Math.round(Number(v)); return isFinite(v) ? Math.max(lo, Math.min(hi, v)) : def; }
   function aiRealDays() { return Object.keys(S.days).filter(function (k) { return !S.days[k].sample; }).sort(); }
-  function aiSetRow(s) { return s.mode === 'time' ? { target_sec: s.targetSec || null, actual_sec: s.s || null, done: isDone(s) } : { kg: s.w, reps: s.r, seconds: s.s || null, done: isDone(s) }; }
+  function aiSetRow(s) {
+    var r = s.mode === 'time' ? { target_sec: s.targetSec || null, actual_sec: s.s || null, done: isDone(s) } : { kg: s.w, reps: s.r, seconds: s.s || null, done: isDone(s) };
+    if (s.st) r.started_at = hms(s.st); if (isDone(s) && s.t) r.completed_at = hms(s.t);
+    return r;
+  }
   function runAiTool(name, a, sources) {
     function src(x) { if (sources.indexOf(x) < 0) sources.push(x); }
     var out;
@@ -2283,7 +2365,9 @@ body.typing .restbar,body.typing .workout-return{display:none}
       } else if (name === 'get_daily_nutrition') {
         var dt = /^\d{4}-\d{2}-\d{2}$/.test(a.date || '') ? a.date : selDate, dm = getDay(dt); src((dt === today() ? '오늘' : fmtShort(dt)) + ' 식단');
         var kc = 0, pr = 0; dm.meals.forEach(function (m) { kc += Number(m.kcal) || 0; pr += Number(m.p) || 0; });
-        out = { source: '앱 식단 기록', date: dt, meals: dm.meals.map(function (m) { return { name: m.name, kcal: m.kcal, protein_g: m.p }; }), total: { kcal: Math.round(kc), protein_g: Math.round(pr * 10) / 10 }, goals: { kcal: S.settings.kcal, protein_g: S.settings.protein } };
+        var mac = dayMacros(dm);
+        out = { source: '앱 식단 기록', date: dt, meals: dm.meals.map(function (m) { var r = { name: m.name, kcal: m.kcal, protein_g: m.p, data_source: m.src === 'builtin' ? '앱 내장 평균값(추정)' : m.src === 'price' ? '사용자 입력 가격 항목' : m.src === 'manual' ? '사용자 직접 입력' : '출처 미기록' }; if (m.c != null) r.carbs_g = m.c; if (m.f != null) r.fat_g = m.f; return r; }), total: { kcal: Math.round(kc), protein_g: Math.round(pr * 10) / 10 }, goals: { kcal: S.settings.kcal, protein_g: S.settings.protein } };
+        if (mac.nc || mac.nf) out.total_macros_entered_only = { carbs_g: Math.round(mac.c), fat_g: Math.round(mac.f), meals_with_carbs: mac.nc, meals_with_fat: mac.nf, meals_total: mac.n, note: '탄수화물·지방은 입력한 식사만 합친 값이오.' };
         if (!dm.meals.length) out.note = '이 날짜에는 식단 기록이 없소.';
       } else if (name === 'get_nutrition_history') {
         var nd = aiClamp(a.days, 1, 60, 7), rows = [], missing = 0; src('최근 ' + nd + '일 식단 합계');
@@ -2298,6 +2382,24 @@ body.typing .restbar,body.typing .workout-return{display:none}
         var bd = aiClamp(a.days, 1, 365, 30), cutb = addDays(today(), -bd); src('최근 체중');
         var ws2 = aiRealDays().filter(function (k) { return k >= cutb && S.days[k].weight != null; }).map(function (k) { return { date: k, kg: S.days[k].weight }; });
         out = { source: '앱 체중 기록', unit: 'kg', rows: ws2 }; if (!ws2.length) out.note = '체중 기록을 찾지 못했소.';
+      } else if (name === 'search_food_nutrition') {
+        var q = normEx(a.query || ''); if (!q) return { error: '검색어가 필요하오.' }; src('음식 영양정보 검색: ' + a.query);
+        var found = [];
+        FOODS.forEach(function (fd) { if (found.length < 8 && (normEx(fd[0]).indexOf(q) >= 0 || normEx(fd[4] || '').indexOf(q) >= 0)) found.push({ name: fd[0], per: fd[1], kcal: fd[2], protein_g: fd[3], source: '앱 내장 평균값(추정, 공식 DB 아님)' }); });
+        favList('myFood').forEach(function (fd) { if (found.length < 12 && normEx(fd.n).indexOf(q) >= 0) found.push({ name: fd.n, kcal: fd.k, protein_g: fd.p, source: '사용자가 저장한 값' }); });
+        priceItems().forEach(function (it) { if (found.length < 14 && normEx(it.name).indexOf(q) >= 0) found.push({ name: it.name, per: '1회' + (it.sv ? '(' + it.sv + ')' : ''), kcal: it.k, protein_g: it.p, carbs_g: it.c, fat_g: it.f, sodium_mg: it.na, source: '사용자 입력 제품 정보', checked_at: it.at ? ymd(new Date(it.at)) : null }); });
+        out = { source: '앱 음식 목록', matches: found }; if (!found.length) out.note = '일치하는 음식을 찾지 못했소.';
+      } else if (name === 'compare_food_value') {
+        src('식품 가성비 비교 목록');
+        var want = Array.isArray(a.names) ? a.names.map(normEx) : [], budget = Number(a.budget_won) || 0;
+        var rows2 = priceItems().filter(function (it) { return !want.length || want.some(function (w) { return normEx(it.name).indexOf(w) >= 0; }); }).map(function (it) {
+          var m = priceMetrics(it), r = { name: it.name, store: it.store || null, price_won: it.price, total_servings: it.serv, per_serving: { protein_g: it.p, kcal: it.k, carbs_g: it.c, fat_g: it.f, sodium_mg: it.na }, price_per_serving_won: m.perServ == null ? null : Math.round(m.perServ),
+            protein_g_per_1000won: m.p1000 == null ? null : Math.round(m.p1000 * 10) / 10, cost_won_per_10g_protein: m.cost10 == null ? null : Math.round(m.cost10), protein_g_per_100kcal: m.p100k == null ? null : Math.round(m.p100k * 10) / 10,
+            price_checked_at: it.at ? ymd(new Date(it.at)) : null, price_source: '사용자 직접 입력(실시간 가격 아님)' };
+          if (budget > 0 && it.price > 0) { var units = Math.floor(budget / it.price); r.budget_units = units; r.budget_protein_g = Math.round(units * m.totalP); }
+          return r;
+        });
+        out = { source: '사용자 입력 가격 목록', note: '계산은 앱이 했소. 가격은 입력 시점 기준이오.', items: rows2 }; if (!rows2.length) out.note = '가격이 입력된 제품이 없소.';
       } else if (name === 'get_user_goals') {
         src('내 목표 설정');
         out = { source: '앱 설정', kcal_per_day: S.settings.kcal, protein_g_per_day: S.settings.protein, weekly_sets_per_muscle: S.settings.weeklySets, default_rest_sec: S.settings.rest };
@@ -2792,7 +2894,9 @@ body.typing .restbar,body.typing .workout-return{display:none}
         '<div class="meter" role="meter" aria-label="' + k + '" aria-valuemin="0" aria-valuemax="' + goal + '" aria-valuenow="' + Math.round(val) + '"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
         '<div class="mfoot">' + (left > 0 ? '목표까지 ' + nf(left) + unit : '목표를 채웠소') + '</div></div>';
     };
-    $('#dietSummary').innerHTML = row('칼로리', kcal, 'kcal', G.kcal) + row('단백질', prot, 'g', G.protein);
+    var mc = dayMacros(d);
+    $('#dietSummary').innerHTML = row('칼로리', kcal, 'kcal', G.kcal) + row('단백질', prot, 'g', G.protein) +
+      (d.meals.length ? '<div class="mmacro">' + (mc.nc || mc.nf ? '탄수화물 ' + nf(mc.c) + 'g · 지방 ' + nf(mc.f) + 'g <small>(' + (mc.nc === mc.n && mc.nf === mc.n ? '모든 식사 기준' : '탄수화물·지방을 적은 식사만 합친 값이오') + ')</small>' : '<small>식사에 탄수화물·지방을 적으면 합계가 여기 나오오.</small>') + '</div>' : '');
     var seen = {}; quick = [];
     Object.keys(S.days).sort().reverse().forEach(function (dt) {
       S.days[dt].meals.slice().reverse().forEach(function (m) { var k = normEx(m.name); if (!seen[k] && quick.length < 8) { seen[k] = 1; quick.push(m); } });
@@ -2804,25 +2908,127 @@ body.typing .restbar,body.typing .workout-return{display:none}
     } else {
       $('#mealList').innerHTML = '<div class="card"><ul class="meals">' + d.meals.map(function (m) {
         var fv = favFoodIdx(m.name) >= 0;
-        return '<li><span class="nm">' + esc(m.name) + '</span><span class="kv"><b>' + nf(m.kcal) + '</b>kcal<br>' + fw(m.p) + 'g 단백질</span>' + starBtn(fv, 'data-mfav', m.id, fv ? '즐겨찾기 해제' : '즐겨찾기 추가').replace(esc(m.id) + ' 즐겨', esc(m.name) + ' 즐겨') + '<button type="button" class="mdel" data-del-meal="' + esc(m.id) + '" aria-label="' + esc(m.name) + ' 식사 삭제">삭제</button></li>';
+        return '<li><span class="nm">' + esc(m.name) + mealSrcHtml(m) + '</span><span class="kv"><b>' + nf(m.kcal) + '</b>kcal<br>' + fw(m.p) + 'g 단백질' + mealMacroText(m) + '</span>' + starBtn(fv, 'data-mfav', m.id, fv ? '즐겨찾기 해제' : '즐겨찾기 추가').replace(esc(m.id) + ' 즐겨', esc(m.name) + ' 즐겨') + '<button type="button" class="mdel" data-del-meal="' + esc(m.id) + '" aria-label="' + esc(m.name) + ' 식사 삭제">삭제</button></li>';
       }).join('') + '</ul></div>';
     }
-    var ws = weekStart(selDate), days = [];
-    for (var i = 0; i < 7; i++) { var x = getDay(addDays(ws, i)); if (x.meals.length) days.push(x); }
-    $('#dietWeek').textContent = days.length ? '이 주 평균 ' + nf(days.reduce(function (a, x) { return a + sumBy(x.meals, 'kcal'); }, 0) / days.length) + 'kcal · 단백질 ' + nf(days.reduce(function (a, x) { return a + sumBy(x.meals, 'p'); }, 0) / days.length) + 'g (식단을 기록한 ' + days.length + '일 기준)' : '';
+    renderDietWeek(); renderPrice();
   }
-  function addMeal(m) { var meal = { id: uid(), name: m.name, kcal: m.kcal, p: m.p, t: Date.now() }; return mutate(selDate, function (d) { d.meals.push(meal); }); }
+  function mealSrcHtml(m) {
+    var t = m.src === 'builtin' ? '내장 평균값(추정)' + (m.unit ? ' · ' + m.unit + ' 단위 × ' + fw(m.qty || 1) : '') : m.src === 'price' ? '가격 비교 항목 · 직접 입력' : m.src === 'manual' ? '직접 입력' : '';
+    return t ? '<small class="msrc">출처: ' + esc(t) + '</small>' : '';
+  }
+  function mealMacroText(m) {
+    var b = []; if (m.c != null && m.c !== '') b.push('탄 ' + fw(m.c) + 'g'); if (m.f != null && m.f !== '') b.push('지 ' + fw(m.f) + 'g');
+    return b.length ? '<br>' + b.join(' · ') : '';
+  }
+  function dayMacros(d) {
+    var c = 0, f = 0, nc = 0, nf2 = 0;
+    d.meals.forEach(function (m) { if (m.c != null && m.c !== '' && isFinite(+m.c)) { c += +m.c; nc++; } if (m.f != null && m.f !== '' && isFinite(+m.f)) { f += +m.f; nf2++; } });
+    return { c: c, f: f, nc: nc, nf: nf2, n: d.meals.length };
+  }
+  function dietWeekStats(ws) {
+    var G = S.settings, t0 = today(), rows = [], missing = 0;
+    for (var i = 0; i < 7; i++) {
+      var dk = addDays(ws, i), d = S.days[dk];
+      if (d && d.meals.length) rows.push({ date: dk, kcal: sumBy(d.meals, 'kcal'), p: sumBy(d.meals, 'p'), workout: d.sets.some(isDone) });
+      else if (dk <= t0) missing++;
+    }
+    var st = { rows: rows, missing: missing, goalK: G.kcal, goalP: G.protein };
+    if (rows.length) {
+      var avg = function (a, k) { return a.reduce(function (x, r) { return x + r[k]; }, 0) / a.length; };
+      st.avgK = avg(rows, 'kcal'); st.avgP = avg(rows, 'p');
+      st.minK = Math.min.apply(null, rows.map(function (r) { return r.kcal; })); st.maxK = Math.max.apply(null, rows.map(function (r) { return r.kcal; }));
+      st.lowP = rows.filter(function (r) { return r.p < G.protein * 0.9; }).length;
+      var w = rows.filter(function (r) { return r.workout; }), rest = rows.filter(function (r) { return !r.workout; });
+      if (w.length && rest.length) st.cmp = { wk: w.length, rk: rest.length, wK: avg(w, 'kcal'), rK: avg(rest, 'kcal'), wP: avg(w, 'p'), rP: avg(rest, 'p') };
+    }
+    return st;
+  }
+  function renderDietWeek() {
+    var box = $('#dietWeek'), st = dietWeekStats(weekStart(selDate));
+    if (!st.rows.length) { box.hidden = true; box.innerHTML = ''; return; }
+    var wd = ['일', '월', '화', '수', '목', '금', '토'];
+    var h = '<h2>이 주 식단 요약</h2><ul class="wkd">' + st.rows.map(function (r) {
+      return '<li><span>' + fmtShort(r.date) + ' (' + wd[parse(r.date).getDay()] + ')</span><span>' + nf(r.kcal) + 'kcal <small>(' + Math.round(r.kcal / st.goalK * 100) + '%)</small> · 단백질 ' + nf(r.p) + 'g <small>(' + Math.round(r.p / st.goalP * 100) + '%)</small></span><span>' + (r.workout ? '<em class="tg">운동일</em>' : '') + '</span></li>';
+    }).join('') + '</ul><ul class="wksum">' +
+      '<li>평균 ' + nf(st.avgK) + 'kcal · 단백질 ' + nf(st.avgP) + 'g (기록한 ' + st.rows.length + '일 기준, 목표 ' + nf(st.goalK) + 'kcal · ' + nf(st.goalP) + 'g)</li>' +
+      '<li>날짜별 칼로리 편차 ' + nf(st.minK) + '~' + nf(st.maxK) + 'kcal' + (st.lowP ? ' · 단백질이 목표의 90% 미만인 날 ' + st.lowP + '일' : '') + '</li>' +
+      (st.cmp ? '<li>운동일(' + st.cmp.wk + '일) 평균 ' + nf(st.cmp.wK) + 'kcal · ' + nf(st.cmp.wP) + 'g / 휴식일(' + st.cmp.rk + '일) 평균 ' + nf(st.cmp.rK) + 'kcal · ' + nf(st.cmp.rP) + 'g</li>' : '') +
+      (st.missing ? '<li>식단 기록이 없는 날 ' + st.missing + '일이 있소. 평균은 기록한 날만으로 계산했소.</li>' : '') + '</ul>';
+    box.innerHTML = h; box.hidden = false;
+  }
+
+  /* ---------- 식품 가격·가성비 ---------- */
+  function priceItems() { return favList('priceItems'); }
+  function priceMetrics(it) {
+    var serv = +it.serv || 0, price = +it.price || 0, p = +it.p || 0, k = +it.k || 0, totalP = p * serv;
+    return { perServ: serv > 0 ? price / serv : null, totalP: totalP, totalK: k * serv,
+      p1000: totalP > 0 && price > 0 ? totalP / price * 1000 : null, cost10: totalP > 0 && price > 0 ? price / totalP * 10 : null, p100k: k > 0 ? p / k * 100 : null };
+  }
+  function priceSorted(key) {
+    var arr = priceItems().map(function (it) { return { it: it, m: priceMetrics(it) }; });
+    var better = key === 'cost10' ? function (a, b) { return a - b; } : function (a, b) { return b - a; };
+    arr.sort(function (x, y) { var a = x.m[key], b = y.m[key]; if (a == null && b == null) return 0; if (a == null) return 1; if (b == null) return -1; return better(a, b); });
+    return arr;
+  }
+  function daysSince(ms) { return Math.floor((Date.now() - ms) / 86400000); }
+  function renderPrice() {
+    var items = priceItems(), key = $('#priceSort').value || 'p1000';
+    $('#priceSum').textContent = '식품 가성비 비교' + (items.length ? ' (' + items.length + '개)' : '');
+    $('#priceSortWrap').hidden = items.length < 2;
+    if (!items.length) { $('#priceList').innerHTML = '<p class="note" style="margin-top:12px">저장한 제품이 없소. 위에 적어서 비교 목록에 넣어 보시오.</p>'; return; }
+    var f1 = function (x, d) { return x == null ? '—' : (Math.round(x * Math.pow(10, d)) / Math.pow(10, d)).toLocaleString('ko-KR'); };
+    $('#priceList').innerHTML = '<p class="note" style="margin-top:12px">가성비 1위가 늘 최선은 아니오. 칼로리·나트륨·알레르기·입맛도 함께 보시오. 가격은 직접 입력한 값이오.</p>' + priceSorted(key).map(function (r, i) {
+      var it = r.it, m = r.m, age = it.at ? daysSince(it.at) : null;
+      var sub = [it.store ? esc(it.store) : '', it.sv ? '1회 ' + esc(it.sv) : ''].filter(Boolean).join(' · ');
+      return '<div class="pitemc' + (i === 0 && items.length > 1 ? ' best' : '') + '"><div class="ph"><b>' + esc(it.name) + '</b><span class="rk">' + (i + 1) + '위</span></div>' +
+        (sub ? '<p class="pd">' + sub + '</p>' : '') +
+        '<p class="pm">' + nf(it.price) + '원 · 총 ' + fw(it.serv) + '회 (회당 ' + f1(m.perServ, 0) + '원)<br>1회 ' + fw(it.p) + 'g 단백질 · ' + nf(it.k) + 'kcal' + (it.c != null ? ' · 탄 ' + fw(it.c) + 'g' : '') + (it.f != null ? ' · 지 ' + fw(it.f) + 'g' : '') + (it.na != null ? ' · 나트륨 ' + nf(it.na) + 'mg' : '') + '<br><b>단백질 ' + f1(m.p1000, 1) + 'g / 1,000원</b> · 10g당 ' + f1(m.cost10, 0) + '원 · 100kcal당 ' + f1(m.p100k, 1) + 'g</p>' +
+        '<p class="pd">가격 확인 ' + (it.at ? ymd(new Date(it.at)) : '날짜 없음') + ' · 출처: 직접 입력' + (age != null && age > 30 ? ' · ' + age + '일 지났으니 다시 확인하시오' : '') + '</p>' +
+        '<div class="pb"><button type="button" class="mini" data-padd="' + esc(it.id) + '">식사에 1회 추가</button><button type="button" class="mini" data-pdel="' + esc(it.id) + '">삭제</button></div></div>';
+    }).join('');
+  }
+  $('#priceSort').addEventListener('change', renderPrice);
+  $('#priceForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var g = function (id) { var v = $('#' + id).value.trim(); return v === '' ? null : parseFloat(v); }, msg = $('#priceMsg');
+    var name = $('#pName').value.trim(), price = g('pPrice'), serv = g('pServ'), p = g('pProt'), k = g('pKcal');
+    if (!name) { msg.textContent = '제품명을 입력해 주시오'; $('#pName').focus(); return; }
+    if (price == null || !(price > 0)) { msg.textContent = '가격을 입력해 주시오'; $('#pPrice').focus(); return; }
+    if (serv == null || !(serv > 0)) { msg.textContent = '제품 전체 제공 횟수를 입력해 주시오'; $('#pServ').focus(); return; }
+    if (p == null || !(p >= 0)) { msg.textContent = '1회 단백질(g)을 입력해 주시오'; $('#pProt').focus(); return; }
+    if (k == null || !(k >= 0)) { msg.textContent = '1회 칼로리를 입력해 주시오'; $('#pKcal').focus(); return; }
+    msg.textContent = '';
+    var a = priceItems(), key = normEx(name), idx = a.findIndex(function (x) { return normEx(x.name) === key; });
+    var item = { id: idx >= 0 ? a[idx].id : uid(), name: name, store: $('#pStore').value.trim(), sv: $('#pServG').value.trim(), price: price, serv: serv, p: p, k: k, c: g('pCarb'), f: g('pFat'), na: g('pNa'), at: Date.now(), src: 'manual' };
+    if (idx >= 0) a[idx] = item; else a.push(item);
+    persistSettings(); ['pName', 'pStore', 'pPrice', 'pServ', 'pServG', 'pProt', 'pKcal', 'pCarb', 'pFat', 'pNa'].forEach(function (id) { $('#' + id).value = ''; });
+    renderPrice(); toast(name + (idx >= 0 ? ' 가격을 새로 고쳤소' : ' 비교 목록에 넣었소'));
+  });
+  $('#priceList').addEventListener('click', function (e) {
+    var del = e.target.closest('[data-pdel]'), add = e.target.closest('[data-padd]');
+    if (del) {
+      var a = priceItems(), i = a.findIndex(function (x) { return x.id === del.getAttribute('data-pdel'); });
+      if (i >= 0) { var it = a.splice(i, 1)[0]; persistSettings(); renderPrice(); toast('‘' + it.name + '’을 지웠소', function () { priceItems().splice(Math.min(i, priceItems().length), 0, it); persistSettings(); renderPrice(); }); }
+    } else if (add) {
+      var x = priceItems().filter(function (y) { return y.id === add.getAttribute('data-padd'); })[0]; if (!x) return;
+      withUndo(x.name + ' 1회 추가했소', selDate, function (d) { d.meals.push({ id: uid(), name: x.name + (x.sv ? ' ' + x.sv : ' 1회'), kcal: x.k, p: x.p, c: x.c, f: x.f, src: 'price', t: Date.now() }); });
+    }
+  });
+  function addMeal(m) { var meal = { id: uid(), name: m.name, kcal: m.kcal, p: m.p, t: Date.now() }; if (m.c != null) meal.c = m.c; if (m.f != null) meal.f = m.f; if (m.src) meal.src = m.src; if (m.unit) { meal.unit = m.unit; meal.qty = m.qty; } return mutate(selDate, function (d) { d.meals.push(meal); }); }
   $('#mealForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var name = $('#mName').value.trim(), kcal = parseFloat($('#mKcal').value), p = parseFloat($('#mProt').value), msg = $('#mealMsg');
     if (!name) { msg.textContent = '음식 이름을 입력해 주시오'; $('#mName').focus(); return; }
     if (isNaN(kcal) || kcal < 0) { msg.textContent = '칼로리를 입력해 주시오'; $('#mKcal').focus(); return; }
     if (isNaN(p) || p < 0) p = 0;
+    var mc = parseFloat($('#mCarb').value), mf = parseFloat($('#mFat').value);
+    if (isNaN(mc) || mc < 0) mc = null; if (isNaN(mf) || mf < 0) mf = null;
     msg.textContent = '';
     var label = selFood ? selFood[0] + ' ' + foodAmount(selFood, foodQty) : name;
-    if (addMeal({ name: label, kcal: kcal, p: p })) { var saved = !selFood && rememberFood(name, kcal, p); $('#mName').value = ''; $('#mKcal').value = ''; $('#mProt').value = ''; clearFood(); hideSug(); toast(label + ' 추가했소' + (saved ? ' · 내 음식 목록에 저장됨' : '')); }
+    if (addMeal({ name: label, kcal: kcal, p: p, c: mc, f: mf, src: selFood ? 'builtin' : 'manual', unit: selFood ? selFood[1] : '', qty: foodQty })) { var saved = !selFood && rememberFood(name, kcal, p); $('#mName').value = ''; $('#mKcal').value = ''; $('#mProt').value = ''; $('#mCarb').value = ''; $('#mFat').value = ''; clearFood(); hideSug(); toast(label + ' 추가했소' + (saved ? ' · 내 음식 목록에 저장됨' : '')); }
   });
-  $('#quick').addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (!b) return; var m = quick[+b.getAttribute('data-q')]; if (!m) return; withUndo(m.name + ' 추가했소', selDate, function (d) { d.meals.push({ id: uid(), name: m.name, kcal: m.kcal, p: m.p, t: Date.now() }); }); });
+  $('#quick').addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (!b) return; var m = quick[+b.getAttribute('data-q')]; if (!m) return; withUndo(m.name + ' 추가했소', selDate, function (d) { var nm = { id: uid(), name: m.name, kcal: m.kcal, p: m.p, t: Date.now() }; ['c', 'f', 'src', 'unit', 'qty'].forEach(function (k) { if (m[k] != null && m[k] !== '') nm[k] = m[k]; }); d.meals.push(nm); }); });
   $('#mealList').addEventListener('click', function (e) {
     var sf = e.target.closest('[data-mfav]');
     if (sf) {
@@ -2932,7 +3138,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
     } catch (e) { obj = null; }
     if (!obj || obj.app !== 'bulknote' || !obj.settings || typeof obj.settings !== 'object') throw new Error('백업 형식이 아니오. 복사한 글자를 처음부터 끝까지 그대로 붙여넣어 주시오');
     var st = Object.assign(clone(DEF), clone(obj.settings));
-    ['routines', 'custom', 'favEx', 'favFood', 'myFood'].forEach(function (k) { if (!Array.isArray(st[k])) st[k] = []; });
+    ['routines', 'custom', 'favEx', 'favFood', 'myFood', 'priceItems'].forEach(function (k) { if (!Array.isArray(st[k])) st[k] = []; });
     if (!st.restEx || typeof st.restEx !== 'object' || Array.isArray(st.restEx)) st.restEx = {};
     ['kcal', 'protein', 'weeklySets', 'rest'].forEach(function (k) { if (typeof st[k] !== 'number' || !isFinite(st[k])) st[k] = DEF[k]; });
     st.routines = st.routines.filter(function (r) { return r && typeof r.name === 'string' && Array.isArray(r.items); }).map(function (r) {

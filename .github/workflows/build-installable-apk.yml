@@ -38,8 +38,8 @@ jobs:
       - name: Publish APK release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: bulknote-v1.61
-          name: 사나이클럽 v1.61
+          tag_name: bulknote-v1.62
+          name: 사나이클럽 v1.62
           files: app/build/outputs/apk/debug/app-debug.apk
           fail_on_unmatched_files: true
           make_latest: true

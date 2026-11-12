@@ -70,7 +70,7 @@ public class RestAlarmActivity extends Activity {
         root.addView(desc, descLp);
 
         Button go = new Button(this);
-        go.setText("운동으로 돌아가기");
+        go.setText("앱으로 돌아가기");
         LinearLayout.LayoutParams goLp = new LinearLayout.LayoutParams(-1, -2);
         goLp.topMargin = 42;
         root.addView(go, goLp);

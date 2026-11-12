@@ -437,6 +437,10 @@ public class MainActivity extends Activity {
     @Override protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        if (intent != null && intent.getBooleanExtra("dismiss_rest_alarm", false)) {
+            try { ((android.app.NotificationManager) getSystemService(NOTIFICATION_SERVICE)).cancel(RestAlarmReceiver.NOTIFICATION_ID); } catch (Exception ignored) {}
+            intent.removeExtra("dismiss_rest_alarm");
+        }
         if (intent != null && intent.getBooleanExtra("open_workout_next_set", false)) {
             pendingOpenWorkout = true;
             if (web != null) web.postDelayed(this::openWorkoutFromNotification, 250);

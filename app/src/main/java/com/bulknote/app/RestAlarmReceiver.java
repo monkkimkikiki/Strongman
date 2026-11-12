@@ -19,7 +19,7 @@ import android.os.VibratorManager;
 public class RestAlarmReceiver extends BroadcastReceiver {
     public static final String STATUS_CHANNEL_ID = "rest_timer_status_v4";
     public static final String WORKOUT_CHANNEL_ID = "workout_session_status_v2";
-    public static final String ALARM_CHANNEL_ID = "rest_timer_alarm_v6";
+    public static final String ALARM_CHANNEL_ID = "rest_timer_alarm_v7";
     public static final String WEEKLY_CHANNEL_ID = "weekly_review_v1";
     public static final String ACTION_WEEKLY_REVIEW = "com.bulknote.app.WEEKLY_REVIEW";
     private static final int WEEKLY_NOTIFICATION_ID = 7301;
@@ -56,8 +56,11 @@ public class RestAlarmReceiver extends BroadcastReceiver {
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build();
         alarm.setSound(alarmSound, attrs);
-        alarm.enableVibration(false);
+        alarm.enableVibration(true);
+        alarm.setVibrationPattern(new long[]{0, 450, 140, 450, 140, 650});
+        alarm.setBypassDnd(false);
         nm.createNotificationChannel(alarm);
+        try { nm.deleteNotificationChannel("rest_timer_alarm_v6"); } catch (Exception ignored) {}
 
         NotificationChannel weekly = new NotificationChannel(
             WEEKLY_CHANNEL_ID, "주간 총평 알림", NotificationManager.IMPORTANCE_DEFAULT);
@@ -110,6 +113,15 @@ public class RestAlarmReceiver extends BroadcastReceiver {
         open.putExtra("open_workout_next_set", true);
         open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(context, 4102, open,
+            PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0));
+    }
+
+    /** 알림을 누르면 운동 화면으로 강제 이동하지 않고, 있던 화면 그대로 앱으로 돌아간다. */
+    private static PendingIntent returnToAppIntent(Context context) {
+        Intent open = new Intent(context, MainActivity.class);
+        open.putExtra("dismiss_rest_alarm", true);
+        open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        return PendingIntent.getActivity(context, 4104, open,
             PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0));
     }
 
@@ -193,9 +205,9 @@ public class RestAlarmReceiver extends BroadcastReceiver {
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentTitle(exerciseTimer ? "운동 시간 완료" : "휴식 종료")
             .setContentText(exerciseTimer ? "설정한 운동 시간이 끝났습니다." : "다음 세트를 시작할 시간입니다.")
-            .setContentIntent(alarmScreenIntent(context, exerciseTimer))
-            // Keep the finished-rest alert visible until the user explicitly dismisses it.
-            .setAutoCancel(false)
+            .setContentIntent(returnToAppIntent(context))
+            // Tapping it goes straight back to the app; it stays until tapped or dismissed from the alarm screen.
+            .setAutoCancel(true)
             .setOngoing(true)
             .setOnlyAlertOnce(false)
             .setStyle(new Notification.BigTextStyle().bigText(exerciseTimer
@@ -213,21 +225,21 @@ public class RestAlarmReceiver extends BroadcastReceiver {
 
     private static void vibrateStrong(Context context) {
         try {
+            long[] pattern = new long[]{0, 450, 140, 450, 140, 650};
+            AudioAttributes alarmAttrs = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+            Vibrator v = null;
             if (Build.VERSION.SDK_INT >= 31) {
                 VibratorManager manager = (VibratorManager) context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
-                if (manager != null) {
-                    Vibrator v = manager.getDefaultVibrator();
-                    if (v != null && v.hasVibrator())
-                        v.vibrate(VibrationEffect.createWaveform(new long[]{0, 450, 140, 450, 140, 650}, -1));
-                }
+                if (manager != null) v = manager.getDefaultVibrator();
             } else {
-                Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-                if (v != null && v.hasVibrator()) {
-                    if (Build.VERSION.SDK_INT >= 26)
-                        v.vibrate(VibrationEffect.createWaveform(new long[]{0, 450, 140, 450, 140, 650}, -1));
-                    else v.vibrate(new long[]{0, 450, 140, 450, 140, 650}, -1);
-                }
+                v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
             }
+            if (v == null || !v.hasVibrator()) return;
+            if (Build.VERSION.SDK_INT >= 26) v.vibrate(VibrationEffect.createWaveform(pattern, -1), alarmAttrs);
+            else v.vibrate(pattern, -1, alarmAttrs);
         } catch (Exception ignored) {}
     }
 

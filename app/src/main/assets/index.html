@@ -103,7 +103,7 @@ input::placeholder{color:var(--ink3);opacity:.8}
 .grp .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
 .ghint{font-size:12px;color:var(--ink3)}
 .sets{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
-.sets li{display:grid;grid-template-columns:20px minmax(0,1fr) 18px minmax(0,1fr) 52px 40px;gap:4px;align-items:center;padding:4px 4px;border-radius:10px}
+.sets li{display:grid;grid-template-columns:20px minmax(0,1.35fr) 18px minmax(0,1fr) 52px 40px;gap:4px;align-items:center;padding:4px 4px;border-radius:10px}
 .sets li.shead{font-size:12px;color:var(--ink3);text-align:center;padding-block:0}.sets li.timed{grid-template-columns:20px minmax(0,1fr) minmax(0,1fr) 76px 40px}.sets li.timed .play{font-size:12px}.sets li.timed .live{font-size:17px}.sets li.timed .sdone{font-size:12px}.duration-editor{display:flex;align-items:center;justify-content:space-between;gap:8px}.duration-editor b{font-family:var(--font-num);font-size:22px}.mode-toggle{display:flex;gap:6px}.mode-toggle button{height:34px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);font-size:12px}.mode-toggle button[aria-pressed=true]{background:var(--accent-wash);border-color:var(--accent);color:var(--accent);font-weight:700}.mode-icon{flex:0 0 30px;width:30px;height:30px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--bg);color:var(--ink2);display:grid;place-items:center}.mode-icon svg{width:16px;height:16px;display:block}.mode-icon[aria-label^="시간"]{background:var(--accent-wash);border-color:#cbdaf7;color:var(--accent)}.grp-title-line{display:flex;align-items:center;gap:7px;min-width:0}.grp-title-line h3{min-width:0}.exinfo-btn{flex:0 0 19px;width:19px;height:19px;padding:0;border:1px solid #aab4c2;border-radius:50%;background:var(--surface);color:#7c8797;font-size:12px;font-weight:700;line-height:17px;text-align:center}.exinfo-btn[aria-expanded="true"]{background:var(--accent);border-color:var(--accent);color:#fff}.exercise-info{margin-top:7px;padding:8px 10px;border-radius:9px;background:var(--accent-wash);color:var(--ink2);font-size:12px;line-height:1.55}.exercise-info[hidden]{display:none}
 .sets .n{font-family:var(--font-num);font-weight:700;color:var(--ink3);font-size:18px;text-align:center}
 .sets input{height:40px;font-size:20px;text-align:center;padding-inline:4px}
@@ -331,7 +331,7 @@ body.hasbar .toast{bottom:calc(196px + env(safe-area-inset-bottom, 0px))}
 .toast button{border:0;background:transparent;color:inherit;font-weight:600;text-decoration:underline;padding:4px}
 .tip{position:fixed;left:0;top:0;z-index:90;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;line-height:1.4;padding:6px 9px;border-radius:7px;max-width:260px}
 @media (prefers-reduced-motion:reduce){.bf,.meter i{transition:none}}
-@media (max-width:360px){.rb-digits{font-size:34px}.sets li{grid-template-columns:18px minmax(0,1fr) 16px minmax(0,1fr) 46px 34px;gap:3px}.set-weight-lock{width:18px;min-width:18px;height:24px}}
+@media (max-width:360px){.rb-digits{font-size:34px}.sets li{grid-template-columns:16px minmax(0,1.45fr) 15px minmax(0,1fr) 42px 32px;gap:2px}.rswrap .rstp{width:17px}.rswrap input{font-size:14px}.set-weight-lock{width:18px;min-width:18px;height:24px}}
 
 
 /* ===== v1.49 — 돌쇠록스 시안 UI (한지·수묵). 예전 덧칠 규칙을 모두 걷어내고 한 겹으로 정리 ===== */
@@ -421,7 +421,7 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
 
 /* 세트 */
 .sets{margin-top:10px;gap:1px}
-.sets li{grid-template-columns:20px minmax(0,1fr) 18px minmax(0,1fr) 46px 42px;gap:6px;padding:3px 2px;border-radius:10px}
+.sets li{grid-template-columns:20px minmax(0,1.4fr) 18px minmax(0,1fr) 46px 42px;gap:4px;padding:3px 2px;border-radius:10px}
 .sets li.timed{grid-template-columns:20px minmax(0,1fr) minmax(0,1fr) 76px 42px}
 .sets li.shead{font-size:11.5px;color:var(--ink3)}
 .sets .n{font-family:var(--font-num);font-size:14px;font-weight:700;color:var(--ink3)}
@@ -478,7 +478,7 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
 .tabs button[aria-selected="true"]{background:transparent;color:var(--accent)}
 .tabs button[aria-selected="true"] .nav-glyph{stroke-width:2.3}
 .nav-glyph{width:26px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-@media (max-width:360px){.sets li{grid-template-columns:18px minmax(0,1fr) 16px minmax(0,1fr) 44px 38px;gap:4px}.ptitle{font-size:19px}.pnum{padding:6px 11px;font-size:14px}}
+@media (max-width:360px){.sets li{grid-template-columns:16px minmax(0,1.5fr) 15px minmax(0,1fr) 42px 36px;gap:2px}.ptitle{font-size:19px}.pnum{padding:6px 11px;font-size:14px}}
 
 /* ===== v1.50 — 붓글씨체, 붓 선, 떠다니는 책갈피 ===== */
 @font-face{font-family:'Dolsoe Brush';src:url(fonts/EastSeaDokdo-sub.woff) format('woff');font-weight:400;font-style:normal;font-display:swap}
@@ -532,6 +532,7 @@ body{word-break:keep-all}
 .ask-in p{margin:0 0 16px;font-size:16px;line-height:1.55;white-space:pre-line;word-break:keep-all;color:var(--ink)}
 .ask-in .row .btn{flex:1 1 0}
 body.typing .restbar,body.typing .workout-return{display:none}
+body.typing.kbd-open .tabs{display:none}
 .donecard .doneflag{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:13px;font-weight:700}
 .donebox{padding:0}
 .donebox summary{list-style:none;cursor:pointer;padding:14px 16px;font-family:var(--font-brush);font-size:20px;color:var(--ink);display:flex;justify-content:space-between;align-items:center}
@@ -553,8 +554,8 @@ body.typing{padding-bottom:46vh}
 .group-weight-line input{flex:0 0 64px;width:64px}
 @media (max-width:365px){.gw-stp{width:29px}.group-weight-line{gap:5px}.group-weight-line input{flex-basis:58px;width:58px}}
 .rswrap{display:flex;align-items:center;gap:2px;min-width:0}
-.rswrap input{min-width:0;flex:1;padding-inline:2px;text-align:center}
-.rswrap .rstp{width:21px;height:38px;border:1px solid var(--line2);background:var(--surface);border-radius:8px;font-size:15px;font-weight:700;color:var(--ink2);flex:0 0 auto;padding:0}
+.rswrap input{min-width:0;flex:1;padding-inline:0;text-align:center}
+.rswrap .rstp{width:20px;height:38px;border:1px solid var(--line2);background:var(--surface);border-radius:8px;font-size:15px;font-weight:700;color:var(--ink2);flex:0 0 auto;padding:0}
 .rswrap .rstp:disabled{opacity:.35}
 .lastline{font-size:12.5px;color:var(--ink2);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lastline b{color:var(--accent);font-weight:700}
@@ -1480,7 +1481,7 @@ body.typing{padding-bottom:46vh}
           else if (timing) { var left = s.targetSec ? Math.max(0, s.targetSec - (Date.now() - T.start) / 1000) : (Date.now() - T.start) / 1000; cell = '<span class="live" data-live="' + esc(s.id) + '">' + mmss(left) + '</span>'; }
           else cell = '<button type="button" class="play" data-play="' + esc(s.id) + '">' + (timed ? mmss(s.targetSec || 60) : '▶') + '</button>';
           var target = Math.max(5, +s.targetSec || 60);
-          var fields = timed ? '<input type="number" inputmode="numeric" min="0" max="60" step="1" data-time-min="' + esc(s.id) + '" value="' + Math.floor(target / 60) + '" aria-label="목표 분"><input type="number" inputmode="numeric" min="0" max="59" step="1" data-time-sec="' + esc(s.id) + '" value="' + (target % 60) + '" aria-label="목표 초">' : '<input type="number" inputmode="decimal" step="0.5" min="0" data-f="w" value="' + fw(s.w) + '" aria-label="무게(kg)"' + (dn ? ' disabled title="완료한 세트의 무게는 고정되오"' : '') + '><button type="button" class="set-weight-lock ' + (s.setWeightLocked ? 'is-locked' : 'is-unlocked') + '" data-set-weight-lock="' + esc(s.id) + '" aria-pressed="' + !!s.setWeightLocked + '"' + (dn ? ' disabled title="완료한 세트는 잠금 설정을 변경할 수 없소"' : '') + '>' + LOCK_GLYPH + '</button><span class="rswrap"><button type="button" class="rstp" data-rstep="-1" data-rsid="' + esc(s.id) + '"' + (dn ? ' disabled' : '') + ' aria-label="횟수 1 줄이기">−</button><input type="number" inputmode="numeric" step="1" min="0" data-f="r" value="' + (s.r || '') + '" placeholder="0" aria-label="횟수"><button type="button" class="rstp" data-rstep="1" data-rsid="' + esc(s.id) + '"' + (dn ? ' disabled' : '') + ' aria-label="횟수 1 늘리기">+</button></span>';
+          var fields = timed ? '<input type="number" inputmode="numeric" min="0" max="60" step="1" data-time-min="' + esc(s.id) + '" value="' + Math.floor(target / 60) + '" aria-label="목표 분"><input type="number" inputmode="numeric" min="0" max="59" step="1" data-time-sec="' + esc(s.id) + '" value="' + (target % 60) + '" aria-label="목표 초">' : '<span class="rswrap"><button type="button" class="rstp" data-wstep="-2.5" data-rsid="' + esc(s.id) + '"' + (dn ? ' disabled' : '') + ' aria-label="무게 2.5kg 줄이기">−</button><input type="number" inputmode="decimal" step="0.5" min="0" data-f="w" value="' + fw(s.w) + '" aria-label="무게(kg)"' + (dn ? ' disabled title="완료한 세트의 무게는 고정되오"' : '') + '><button type="button" class="rstp" data-wstep="2.5" data-rsid="' + esc(s.id) + '"' + (dn ? ' disabled' : '') + ' aria-label="무게 2.5kg 늘리기">+</button></span><button type="button" class="set-weight-lock ' + (s.setWeightLocked ? 'is-locked' : 'is-unlocked') + '" data-set-weight-lock="' + esc(s.id) + '" aria-pressed="' + !!s.setWeightLocked + '"' + (dn ? ' disabled title="완료한 세트는 잠금 설정을 변경할 수 없소"' : '') + '>' + LOCK_GLYPH + '</button><span class="rswrap"><button type="button" class="rstp" data-rstep="-1" data-rsid="' + esc(s.id) + '"' + (dn ? ' disabled' : '') + ' aria-label="횟수 1 줄이기">−</button><input type="number" inputmode="numeric" step="1" min="0" data-f="r" value="' + (s.r || '') + '" placeholder="0" aria-label="횟수"><button type="button" class="rstp" data-rstep="1" data-rsid="' + esc(s.id) + '"' + (dn ? ' disabled' : '') + ' aria-label="횟수 1 늘리기">+</button></span>';
           return '<li class="srow' + (timed ? ' timed' : '') + (dn ? ' done' : '') + (s.id === nextId ? ' next' : '') + '" data-set="' + esc(s.id) + '"><span class="n">' + (i + 1) + '</span>' + fields + cell + '<button type="button" class="ck" data-chk="' + esc(s.id) + '" aria-pressed="' + dn + '">✓</button>' + setMetaHtml(s, dn, timing) + '</li>';
         }).join('') + '</ul>' + restRowHtml(g, first) + '<div class="gfoot"><button type="button" class="mini" data-sadd="' + esc(g.key) + '">+ 세트 추가</button><button type="button" class="mini" data-sdel="' + esc(g.key) + '">− 마지막 세트 삭제</button></div></article>';
     }).join('');
@@ -1790,6 +1791,13 @@ body.typing{padding-bottom:46vh}
       var gwk = t.getAttribute('data-gw-key'), gwi = $('#todayList [data-group-weight="' + gwk.replace(/"/g, '\\"') + '"]');
       setExerciseGroupWeight(gwk, Math.max(0, Math.round(((+(gwi && gwi.value) || 0) + (+t.getAttribute('data-gw-step'))) * 10) / 10));
     }
+    else if (t.hasAttribute('data-wstep')) {
+      var wsid = t.getAttribute('data-rsid'), wst = findSet(wsid), wrow = t.closest('[data-set]'), winp = wrow && wrow.querySelector('input[data-f="w"]');
+      if (wst && !isDone(wst)) {
+        var wnew = Math.max(0, Math.round(((+(winp && winp.value) || +wst.w || 0) + (+t.getAttribute('data-wstep'))) * 10) / 10);
+        setField(wsid, 'w', wnew); if (winp) winp.value = fw(wnew);
+      }
+    }
     else if (t.hasAttribute('data-rstep')) {
       var rsid = t.getAttribute('data-rsid'), rdelta = +t.getAttribute('data-rstep'), rst0 = findSet(rsid);
       if (rst0 && !isDone(rst0)) mutate(selDate, function (dd) { dd.sets.forEach(function (x) { if (x.id === rsid) x.r = Math.max(0, (+x.r || 0) + rdelta); }); });
@@ -1838,6 +1846,15 @@ body.typing{padding-bottom:46vh}
       else if (rc.top < 54) window.scrollBy({ top: rc.top - 54, behavior: 'smooth' });
     }
     window.liftAboveKeyboard = liftAboveKeyboard;
+    // 키보드가 실제로 올라와 있을 때만 하단 탭바를 숨긴다(뒤로 가기로 키보드만 닫혀도 탭바가 돌아오게).
+    var baseH = window.innerHeight;
+    function syncKbd() {
+      var h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      if (h > baseH) baseH = h;
+      document.body.classList.toggle('kbd-open', h < baseH - 150);
+    }
+    window.addEventListener('resize', syncKbd);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', syncKbd);
     document.addEventListener('focusin', function (e) {
       var el = e.target; clearTimeout(tt);
       if (isField(el) && !el.closest('#tab-log') && !el.closest('.sheet')) {

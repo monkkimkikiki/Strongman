@@ -708,7 +708,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
       <div class="card form" id="aiSettingsCard">
         <h2>AI 코치 연결 (Gemini)</h2>
         <p class="note">Google Gemini 무료 API를 연결하면 질문 답변, 세트마다 바로 해 주는 한마디 코칭, 운동 총평을 받을 수 있소. 코치가 필요한 기록만 골라 조회하고, 그 내용만 Google로 전송되오. 이름이나 이메일은 보내지 않소.</p>
-        <div class="field"><label class="lbl" for="gemKey">Gemini API 키</label><input type="password" id="gemKey" class="ai-settings-key" placeholder="AIza..." autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+        <div class="field"><label class="lbl" for="gemKey">Gemini API 키</label><input type="password" id="gemKey" class="ai-settings-key" placeholder="AQ... 또는 AIza..." autocomplete="off" autocapitalize="off" spellcheck="false"></div>
         <div class="ai-settings-row"><button type="button" class="btn primary" id="gemSave">키 저장</button><button type="button" class="btn" id="gemDelete">삭제</button></div>
         <div class="row"><button type="button" class="btn" id="gemTest">연결 테스트</button><button type="button" class="btn" id="gemGetKey">무료 API 키 발급</button></div>
         <div class="field"><label class="lbl" for="gemModel">채팅·총평 모델</label><input type="text" id="gemModel" class="ai-settings-key" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
@@ -2274,6 +2274,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
   }
   window.onNativeGemini = function (id, type, payload) {
     var p = gPending[id]; if (!p) return;
+    if (type === 'models') { p.models = payload; return; }
     if (type === 'chunk') {
       var j; try { j = JSON.parse(payload); } catch (e) { return; }
       if (j.usageMetadata) p.meta = j.usageMetadata;
@@ -3083,6 +3084,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
     var key = $('#gemKey').value.trim();
     if (!key) { $('#gemStatus').textContent = 'API 키를 입력해 주시오.'; return; }
     if (!window.AndroidBridge || !window.AndroidBridge.saveGeminiApiKey) { $('#gemStatus').textContent = '설치된 앱에서만 키를 저장할 수 있소.'; return; }
+    if (!/^[A-Za-z0-9._~+\/=-]{20,300}$/.test(key)) { $('#gemStatus').textContent = '키 형식이 이상하오. 공백이나 한글 없이 AI Studio에 나온 키 전체를 붙여 넣으시오.'; return; }
     try { window.AndroidBridge.saveGeminiApiKey(key); renderGeminiSettings(); $('#gemStatus').textContent = 'API 키를 암호화해 이 기기에 저장했소.'; toast('Gemini API 키를 저장했소'); renderCoach(); }
     catch (e) { $('#gemStatus').textContent = String(e && e.message || '키 저장에 실패했소.'); }
   });
@@ -3095,10 +3097,40 @@ body.typing .restbar,body.typing .workout-return{display:none}
     geminiStream(model, { contents: [{ role: 'user', parts: [{ text: '하오체로 한 문장 인사만 하시오.' }] }], generationConfig: { maxOutputTokens: 256 } }, {
       onEnd: function (err, p) { done(label + ' ' + (err ? '실패 · ' + err : '성공') + (err ? '' : ' · ' + String(p.text).replace(/\s+/g, ' ').trim().slice(0, 40))); } });
   }
+  function geminiListModels(cb) {
+    var id = 'm_' + Date.now();
+    gPending[id] = { parts: [], text: '', meta: null, models: '', h: { onEnd: function (err, p) {
+      if (err) return cb(err);
+      var names = []; try { (JSON.parse(p.models).models || []).forEach(function (m) { if ((m.supportedGenerationMethods || []).indexOf('generateContent') >= 0) names.push(String(m.name).replace(/^models\//, '')); }); } catch (e) { return cb('모델 목록을 읽지 못했소.'); }
+      cb(null, names);
+    } } };
+    try { window.AndroidBridge.listGeminiModels(id); } catch (e) { delete gPending[id]; cb(String(e && e.message || '요청을 시작하지 못했소')); }
+  }
+  function pickGeminiModel(names, lite) {
+    var best = null, bestV = null;
+    names.forEach(function (n) {
+      var m = /^gemini-(\d+(?:\.\d+)*)-flash(-lite)?$/.exec(n); if (!m || !!m[2] !== lite) return;
+      var v = m[1].split('.').map(Number);
+      if (!bestV || (function () { for (var i = 0; i < Math.max(v.length, bestV.length); i++) { var a = v[i] || 0, b = bestV[i] || 0; if (a !== b) return a > b; } return false; })()) { best = n; bestV = v; }
+    });
+    if (!best && names.indexOf(lite ? 'gemini-flash-lite-latest' : 'gemini-flash-latest') >= 0) best = lite ? 'gemini-flash-lite-latest' : 'gemini-flash-latest';
+    return best;
+  }
   $('#gemTest').addEventListener('click', function () {
     if (!geminiReady()) { $('#gemStatus').textContent = '먼저 API 키를 저장해 주시오.'; return; }
-    $('#gemStatus').textContent = '연결 확인 중…';
-    gemTestOne(aiPrefs.model, '채팅 모델', function (a) { gemTestOne(aiPrefs.fast, '세트 코칭 모델', function (b) { $('#gemStatus').textContent = a + '\n' + b; renderGeminiSettings(); $('#gemStatus').textContent = a + '\n' + b; }); });
+    var st = $('#gemStatus'); st.textContent = '키와 모델 확인 중…';
+    geminiListModels(function (err, names) {
+      if (err) { st.textContent = '키 확인 실패 · ' + err; return; }
+      var note = [];
+      if (names.indexOf(aiPrefs.model) < 0) { var m = pickGeminiModel(names, false); if (m) { note.push('채팅 모델을 ' + m + '(으)로 바꿨소'); aiPrefs.model = m; } }
+      if (names.indexOf(aiPrefs.fast) < 0) { var f = pickGeminiModel(names, true) || pickGeminiModel(names, false); if (f) { note.push('세트 코칭 모델을 ' + f + '(으)로 바꿨소'); aiPrefs.fast = f; } }
+      saveAiPrefs();
+      st.textContent = '키 확인 성공 · 사용 가능한 모델 ' + names.length + '개' + (note.length ? '\n' + note.join('\n') : '') + '\n모델 응답 확인 중…';
+      gemTestOne(aiPrefs.model, '채팅 모델 ' + aiPrefs.model, function (a) { gemTestOne(aiPrefs.fast, '세트 코칭 모델 ' + aiPrefs.fast, function (b) {
+        var base = '키 확인 성공 · 사용 가능한 모델 ' + names.length + '개' + (note.length ? '\n' + note.join('\n') : '');
+        renderGeminiSettings(); $('#gemStatus').textContent = base + '\n' + a + '\n' + b;
+      }); });
+    });
   });
   function gemPrefsFromForm() {
     var okName = /^[A-Za-z0-9._-]{3,60}$/;

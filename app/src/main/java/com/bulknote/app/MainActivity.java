@@ -185,7 +185,7 @@ public class MainActivity extends Activity {
             return new String(c.doFinal(Base64.decode(dataText,Base64.NO_WRAP)),StandardCharsets.UTF_8);
         }
         @JavascriptInterface public void saveGeminiApiKey(String key) {
-            if(key==null||!key.trim().startsWith("AIza")||key.trim().length()<30)throw new IllegalArgumentException("Gemini API 키 형식을 확인해 주시오.");
+            if(key==null||!key.trim().matches("[A-Za-z0-9._~+/=-]{20,300}"))throw new IllegalArgumentException("Gemini API 키 형식을 확인해 주시오.");
             try {
                 Cipher c=Cipher.getInstance("AES/GCM/NoPadding"); c.init(Cipher.ENCRYPT_MODE,getOrCreateGeminiKey());
                 byte[] encrypted=c.doFinal(key.trim().getBytes(StandardCharsets.UTF_8));
@@ -215,17 +215,7 @@ public class MainActivity extends Activity {
                     conn.setRequestProperty("x-goog-api-key",key); conn.setRequestProperty("Content-Type","application/json; charset=utf-8");
                     conn.getOutputStream().write(requestJson.getBytes(StandardCharsets.UTF_8)); conn.getOutputStream().flush();
                     int code=conn.getResponseCode();
-                    if(code<200||code>=300){
-                        InputStream es=conn.getErrorStream(); ByteArrayOutputStream out=new ByteArrayOutputStream(); byte[] buf=new byte[4096]; int n;
-                        while(es!=null&&(n=es.read(buf))!=-1)out.write(buf,0,n);
-                        String detail="HTTP "+code;
-                        try{detail=new JSONObject(new String(out.toByteArray(),StandardCharsets.UTF_8)).getJSONObject("error").optString("message",detail);}catch(Exception ignored){}
-                        if(code==429)detail="무료 사용 한도에 도달했소. 잠시 뒤 다시 시도하시오.";
-                        else if(code==400&&detail.toLowerCase().contains("api key"))detail="API 키가 올바르지 않소.";
-                        else if(code==403)detail="이 키로는 사용할 수 없소(권한·지역 확인): "+detail;
-                        else if(code==404)detail="모델을 찾지 못했소. 설정에서 모델 이름을 확인하시오.";
-                        throw new Exception(detail);
-                    }
+                    if(code<200||code>=300) throw new Exception(geminiErrorText(code,conn.getErrorStream()));
                     BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream(),StandardCharsets.UTF_8));
                     String line;
                     while((line=br.readLine())!=null){
@@ -240,6 +230,40 @@ public class MainActivity extends Activity {
                     synchronized(geminiConns){geminiConns.remove(requestId);}
                     if(conn!=null)conn.disconnect();
                 }
+            });
+        }
+        private String geminiErrorText(int code, InputStream es) {
+            String detail="HTTP "+code;
+            try{
+                ByteArrayOutputStream out=new ByteArrayOutputStream(); byte[] buf=new byte[4096]; int n;
+                while(es!=null&&(n=es.read(buf))!=-1)out.write(buf,0,n);
+                detail=new JSONObject(new String(out.toByteArray(),StandardCharsets.UTF_8)).getJSONObject("error").optString("message",detail);
+            }catch(Exception ignored){}
+            if(code==429)return "무료 사용 한도에 도달했소. 잠시 뒤 다시 시도하시오.";
+            if(code==401)return "키가 인증되지 않았소(401): "+detail;
+            if(code==400&&detail.toLowerCase().contains("api key"))return "API 키가 올바르지 않소: "+detail;
+            if(code==403)return "이 키로는 사용할 수 없소(권한·지역 확인): "+detail;
+            if(code==404)return "모델을 찾지 못했소. 설정에서 모델 이름을 확인하시오.";
+            return detail;
+        }
+        /** 키로 쓸 수 있는 모델 목록 조회. 결과 JSON 은 onNativeGemini(id,"models",json) 으로 전달. */
+        @JavascriptInterface public void listGeminiModels(final String requestId) {
+            aiExecutor.execute(() -> {
+                HttpURLConnection conn=null;
+                try {
+                    String key=readGeminiKey(); if(key.isEmpty())throw new Exception("Gemini API 키가 설정되지 않았소.");
+                    URL url=new URL("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200");
+                    conn=(HttpURLConnection)url.openConnection(); conn.setRequestMethod("GET");
+                    conn.setConnectTimeout(12000); conn.setReadTimeout(20000);
+                    conn.setRequestProperty("x-goog-api-key",key);
+                    int code=conn.getResponseCode();
+                    if(code<200||code>=300) throw new Exception(geminiErrorText(code,conn.getErrorStream()));
+                    ByteArrayOutputStream out=new ByteArrayOutputStream(); byte[] buf=new byte[4096]; int n; InputStream is=conn.getInputStream();
+                    while((n=is.read(buf))!=-1)out.write(buf,0,n);
+                    notifyGemini(requestId,"models",new String(out.toByteArray(),StandardCharsets.UTF_8));
+                    notifyGemini(requestId,"done","");
+                } catch(Exception e){ notifyGemini(requestId,"error",e.getMessage()==null?"네트워크 요청 실패":e.getMessage()); }
+                finally{ if(conn!=null)conn.disconnect(); }
             });
         }
         @JavascriptInterface public void cancelGemini(final String requestId) {

@@ -63,6 +63,7 @@ public class MainActivity extends Activity {
         if (oldModelTemp.exists()) oldModelTemp.delete();
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 703);
+        RestAlarmReceiver.scheduleWeeklyReview(this);
         }
         pendingOpenWorkout = getIntent() != null && getIntent().getBooleanExtra("open_workout_next_set", false);
         web = new WebView(this);
@@ -453,6 +454,10 @@ public class MainActivity extends Activity {
             web.postDelayed(() -> {
                 web.evaluateJavascript("if (window.rearmRestAlarmAfterResume) window.rearmRestAlarmAfterResume(); if (window.restoreWorkoutPosition) window.restoreWorkoutPosition();", null);
                 openWorkoutFromNotification();
+                if (getIntent() != null && getIntent().getBooleanExtra("open_weekly_review", false)) {
+                    getIntent().removeExtra("open_weekly_review");
+                    web.evaluateJavascript("window.openWeeklyReview && window.openWeeklyReview()", null);
+                }
             }, 500);
         }
     }

@@ -20,6 +20,9 @@ public class RestAlarmReceiver extends BroadcastReceiver {
     public static final String STATUS_CHANNEL_ID = "rest_timer_status_v4";
     public static final String WORKOUT_CHANNEL_ID = "workout_session_status_v2";
     public static final String ALARM_CHANNEL_ID = "rest_timer_alarm_v6";
+    public static final String WEEKLY_CHANNEL_ID = "weekly_review_v1";
+    public static final String ACTION_WEEKLY_REVIEW = "com.bulknote.app.WEEKLY_REVIEW";
+    private static final int WEEKLY_NOTIFICATION_ID = 7301;
     public static final int WORKOUT_NOTIFICATION_ID = 4100;
     public static final int NOTIFICATION_ID = 4101;
 
@@ -55,6 +58,51 @@ public class RestAlarmReceiver extends BroadcastReceiver {
         alarm.setSound(alarmSound, attrs);
         alarm.enableVibration(false);
         nm.createNotificationChannel(alarm);
+
+        NotificationChannel weekly = new NotificationChannel(
+            WEEKLY_CHANNEL_ID, "주간 총평 알림", NotificationManager.IMPORTANCE_DEFAULT);
+        weekly.setDescription("일요일 밤에 한 주 운동 총평이 준비되면 알려줍니다.");
+        nm.createNotificationChannel(weekly);
+    }
+
+    /** 매주 일요일 22시에 주간 총평 알림을 띄우도록 예약한다. 앱을 열 때마다 다시 예약된다. */
+    public static void scheduleWeeklyReview(Context context) {
+        try {
+            AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            if (am == null) return;
+            Intent intent = new Intent(context, RestAlarmReceiver.class);
+            intent.setAction(ACTION_WEEKLY_REVIEW);
+            PendingIntent pi = PendingIntent.getBroadcast(context, 7302, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0));
+            java.util.Calendar c = java.util.Calendar.getInstance();
+            c.set(java.util.Calendar.HOUR_OF_DAY, 22); c.set(java.util.Calendar.MINUTE, 0);
+            c.set(java.util.Calendar.SECOND, 0); c.set(java.util.Calendar.MILLISECOND, 0);
+            int shift = (java.util.Calendar.SUNDAY - c.get(java.util.Calendar.DAY_OF_WEEK) + 7) % 7;
+            c.add(java.util.Calendar.DAY_OF_YEAR, shift);
+            if (c.getTimeInMillis() <= System.currentTimeMillis()) c.add(java.util.Calendar.DAY_OF_YEAR, 7);
+            am.setInexactRepeating(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), AlarmManager.INTERVAL_DAY * 7, pi);
+        } catch (Exception ignored) {}
+    }
+
+    private static void showWeeklyReview(Context context) {
+        ensureChannels(context);
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm == null) return;
+        Intent open = new Intent(context, MainActivity.class);
+        open.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        open.putExtra("open_weekly_review", true);
+        PendingIntent pi = PendingIntent.getActivity(context, 7303, open,
+            PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0));
+        Notification n = (Build.VERSION.SDK_INT >= 26
+            ? new Notification.Builder(context, WEEKLY_CHANNEL_ID)
+            : new Notification.Builder(context))
+            .setSmallIcon(android.R.drawable.ic_menu_my_calendar)
+            .setContentTitle("주간 총평이 준비되오")
+            .setContentText("이번 주 운동을 돌아보시오. 눌러서 확인하시오.")
+            .setContentIntent(pi)
+            .setAutoCancel(true)
+            .build();
+        nm.notify(WEEKLY_NOTIFICATION_ID, n);
     }
 
     private static PendingIntent contentIntent(Context context) {
@@ -137,6 +185,7 @@ public class RestAlarmReceiver extends BroadcastReceiver {
     }
 
     @Override public void onReceive(Context context, Intent intent) {
+        if (intent != null && ACTION_WEEKLY_REVIEW.equals(intent.getAction())) { showWeeklyReview(context); return; }
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
         boolean exerciseTimer = intent != null && intent.getBooleanExtra("exercise_timer", false);

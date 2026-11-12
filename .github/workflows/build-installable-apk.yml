@@ -38,8 +38,8 @@ jobs:
       - name: Publish APK release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: bulknote-v1.59
-          name: 일체개고 v1.59
+          tag_name: bulknote-v1.60
+          name: 일체개고 v1.60
           files: app/build/outputs/apk/debug/app-debug.apk
           fail_on_unmatched_files: true
           make_latest: true

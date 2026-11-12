@@ -1,5 +1,5 @@
 <!-- BulkNote 1.24: completed set weights are fixed -->
-<title>일체개고</title>
+<title>사나이클럽</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gugi&family=Nanum+Myeongjo:wght@400;700;800&family=Song+Myung&family=Oswald:wght@500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
 <style>
@@ -600,7 +600,7 @@ body.typing{padding-bottom:46vh}
 
 <div class="app">
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><filter id="inkRough" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.6" xChannelSelector="R" yChannelSelector="G"/></filter></defs></svg>
-  <header class="hero" role="img" aria-label="일체개고 · 오늘도, 한 번 더!"><span class="status" id="status"></span></header>
+  <header class="hero" role="img" aria-label="사나이클럽 · 오늘도, 한 번 더!"><span class="status" id="status"></span></header>
   <div class="stick">
     <div class="datebar">
       <button type="button" class="ib" id="prevDay" aria-label="전날">‹</button>
@@ -2406,7 +2406,7 @@ body.typing{padding-bottom:46vh}
   };
 
   var AI_SYSTEM = [
-    '너는 \'일체개고\' 앱의 개인 전담 텍스트 PT 코치다.',
+    '너는 \'사나이클럽\' 앱의 개인 전담 텍스트 PT 코치다.',
     '말투는 조선시대 머슴이 주인에게 아뢰듯 하오체(~하오, ~이오, ~하시오, ~했소)로 일관하되, 수치와 근거는 정확하고 현대적인 표현으로 말한다. 어려운 한자어와 과장된 사극 대사는 피한다.',
     '규칙:',
     '1. 도구로 조회한 기록(사실)과 코치의 해석·권장을 구분해 말한다. 예: "기록상 …이오" / "코치 생각으로는 …하시오".',
@@ -3502,7 +3502,7 @@ body.typing{padding-bottom:46vh}
     });
     totalVolume = Object.keys(exerciseMap).reduce(function (sum, k) { return sum + exerciseMap[k].volumeKg; }, 0);
     var report = {
-      app: '일체개고', exportVersion: 1, exportedAt: new Date().toISOString(),
+      app: '사나이클럽', exportVersion: 1, exportedAt: new Date().toISOString(),
       period: { type: period, startDate: start, endDate: end, selectedDate: selDate },
       summary: {
         recordedDays: days.length, workoutDays: workoutDays, totalCompletedSets: totalSets,
@@ -3516,7 +3516,7 @@ body.typing{padding-bottom:46vh}
       note: '운동량은 중량(kg) x 반복횟수의 합이며 체중운동·시간기반 운동은 포함되지 않을 수 있소. 기록되지 않은 값은 추정하지 마시오.'
     };
     var json = JSON.stringify(report, null, 2);
-    var fileName = '일체개고_' + period + '_' + start + '_' + end + '.json';
+    var fileName = '사나이클럽_' + period + '_' + start + '_' + end + '.json';
     var msg = $('#exportMsg');
     try {
       if (window.AndroidBridge && typeof window.AndroidBridge.saveTextFile === 'function') {

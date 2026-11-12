@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.ByteArrayOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -43,9 +45,12 @@ public class MainActivity extends Activity {
     private String pendingExportContent = "";
     private WebView web;
     private boolean pendingOpenWorkout;
-    private final ExecutorService aiExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService aiExecutor = Executors.newFixedThreadPool(3);
     private static final String AI_PREFS = "bulknote_ai_secure";
     private static final String AI_KEY_ALIAS = "BulkNoteGroqApiKeyV1";
+    private static final String GEMINI_PREFS = "bulknote_gemini_secure";
+    private static final String GEMINI_KEY_ALIAS = "BulkNoteGeminiApiKeyV1";
+    private final java.util.HashMap<String, HttpURLConnection> geminiConns = new java.util.HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +165,91 @@ public class MainActivity extends Activity {
             if(web==null)return;
             final String safeId=JSONObject.quote(id==null?"":id), safeMsg=JSONObject.quote(message==null?"":message);
             runOnUiThread(() -> {if(web!=null)web.evaluateJavascript("window.onNativeAiResult&&window.onNativeAiResult("+safeId+","+ok+","+safeMsg+")",null);});
+        }
+
+        // ---------- Gemini (API 키는 기기 Keystore에만 암호화 저장, APK/HTML에는 없음) ----------
+        private SecretKey getOrCreateGeminiKey() throws Exception {
+            KeyStore ks=KeyStore.getInstance("AndroidKeyStore"); ks.load(null);
+            if(ks.containsAlias(GEMINI_KEY_ALIAS)) return (SecretKey)ks.getKey(GEMINI_KEY_ALIAS,null);
+            KeyGenerator kg=KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES,"AndroidKeyStore");
+            kg.init(new KeyGenParameterSpec.Builder(GEMINI_KEY_ALIAS,KeyProperties.PURPOSE_ENCRYPT|KeyProperties.PURPOSE_DECRYPT)
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM).setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE).setRandomizedEncryptionRequired(true).build());
+            return kg.generateKey();
+        }
+        private String readGeminiKey() throws Exception {
+            SharedPreferences p=getSharedPreferences(GEMINI_PREFS,MODE_PRIVATE);
+            String ivText=p.getString("iv",null), dataText=p.getString("data",null);
+            if(ivText==null||dataText==null)return "";
+            Cipher c=Cipher.getInstance("AES/GCM/NoPadding");
+            c.init(Cipher.DECRYPT_MODE,getOrCreateGeminiKey(),new GCMParameterSpec(128,Base64.decode(ivText,Base64.NO_WRAP)));
+            return new String(c.doFinal(Base64.decode(dataText,Base64.NO_WRAP)),StandardCharsets.UTF_8);
+        }
+        @JavascriptInterface public void saveGeminiApiKey(String key) {
+            if(key==null||!key.trim().startsWith("AIza")||key.trim().length()<30)throw new IllegalArgumentException("Gemini API 키 형식을 확인해 주시오.");
+            try {
+                Cipher c=Cipher.getInstance("AES/GCM/NoPadding"); c.init(Cipher.ENCRYPT_MODE,getOrCreateGeminiKey());
+                byte[] encrypted=c.doFinal(key.trim().getBytes(StandardCharsets.UTF_8));
+                getSharedPreferences(GEMINI_PREFS,MODE_PRIVATE).edit()
+                    .putString("iv",Base64.encodeToString(c.getIV(),Base64.NO_WRAP))
+                    .putString("data",Base64.encodeToString(encrypted,Base64.NO_WRAP)).apply();
+            } catch(Exception e){throw new RuntimeException("암호화 저장 실패: "+e.getMessage());}
+        }
+        @JavascriptInterface public boolean hasGeminiApiKey() {
+            try{return !readGeminiKey().isEmpty();}catch(Exception e){return false;}
+        }
+        @JavascriptInterface public void deleteGeminiApiKey() {
+            getSharedPreferences(GEMINI_PREFS,MODE_PRIVATE).edit().clear().apply();
+            try{KeyStore ks=KeyStore.getInstance("AndroidKeyStore");ks.load(null);if(ks.containsAlias(GEMINI_KEY_ALIAS))ks.deleteEntry(GEMINI_KEY_ALIAS);}catch(Exception ignored){}
+        }
+        /** requestJson 은 Gemini generateContent 본문 그대로. 스트리밍 조각은 onNativeGemini(id,"chunk",json) 으로 전달. */
+        @JavascriptInterface public void askGemini(final String requestId,final String model,final String requestJson) {
+            aiExecutor.execute(() -> {
+                HttpURLConnection conn=null;
+                try {
+                    String key=readGeminiKey(); if(key.isEmpty())throw new Exception("Gemini API 키가 설정되지 않았소.");
+                    if(model==null||!model.matches("[A-Za-z0-9._-]{3,60}"))throw new Exception("모델 이름을 확인해 주시오.");
+                    URL url=new URL("https://generativelanguage.googleapis.com/v1beta/models/"+model+":streamGenerateContent?alt=sse");
+                    conn=(HttpURLConnection)url.openConnection(); conn.setRequestMethod("POST");
+                    synchronized(geminiConns){geminiConns.put(requestId,conn);}
+                    conn.setConnectTimeout(12000); conn.setReadTimeout(60000); conn.setDoOutput(true);
+                    conn.setRequestProperty("x-goog-api-key",key); conn.setRequestProperty("Content-Type","application/json; charset=utf-8");
+                    conn.getOutputStream().write(requestJson.getBytes(StandardCharsets.UTF_8)); conn.getOutputStream().flush();
+                    int code=conn.getResponseCode();
+                    if(code<200||code>=300){
+                        InputStream es=conn.getErrorStream(); ByteArrayOutputStream out=new ByteArrayOutputStream(); byte[] buf=new byte[4096]; int n;
+                        while(es!=null&&(n=es.read(buf))!=-1)out.write(buf,0,n);
+                        String detail="HTTP "+code;
+                        try{detail=new JSONObject(new String(out.toByteArray(),StandardCharsets.UTF_8)).getJSONObject("error").optString("message",detail);}catch(Exception ignored){}
+                        if(code==429)detail="무료 사용 한도에 도달했소. 잠시 뒤 다시 시도하시오.";
+                        else if(code==400&&detail.toLowerCase().contains("api key"))detail="API 키가 올바르지 않소.";
+                        else if(code==403)detail="이 키로는 사용할 수 없소(권한·지역 확인): "+detail;
+                        else if(code==404)detail="모델을 찾지 못했소. 설정에서 모델 이름을 확인하시오.";
+                        throw new Exception(detail);
+                    }
+                    BufferedReader br=new BufferedReader(new InputStreamReader(conn.getInputStream(),StandardCharsets.UTF_8));
+                    String line;
+                    while((line=br.readLine())!=null){
+                        if(line.startsWith("data:")){String d=line.substring(5).trim(); if(!d.isEmpty())notifyGemini(requestId,"chunk",d);}
+                    }
+                    notifyGemini(requestId,"done","");
+                } catch(Exception e){
+                    boolean cancelled;
+                    synchronized(geminiConns){cancelled=!geminiConns.containsKey(requestId);}
+                    notifyGemini(requestId,cancelled?"cancel":"error",e.getMessage()==null?"네트워크 요청 실패":e.getMessage());
+                } finally{
+                    synchronized(geminiConns){geminiConns.remove(requestId);}
+                    if(conn!=null)conn.disconnect();
+                }
+            });
+        }
+        @JavascriptInterface public void cancelGemini(final String requestId) {
+            HttpURLConnection c; synchronized(geminiConns){c=geminiConns.remove(requestId);}
+            if(c!=null){final HttpURLConnection cc=c; new Thread(() -> {try{cc.disconnect();}catch(Exception ignored){}}).start();}
+        }
+        private void notifyGemini(String id,String type,String payload){
+            if(web==null)return;
+            final String a=JSONObject.quote(id==null?"":id), b=JSONObject.quote(type), c=JSONObject.quote(payload==null?"":payload);
+            runOnUiThread(() -> {if(web!=null)web.evaluateJavascript("window.onNativeGemini&&window.onNativeGemini("+a+","+b+","+c+")",null);});
         }
 
         @JavascriptInterface public boolean hasExactAlarmAccess() {

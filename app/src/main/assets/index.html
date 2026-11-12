@@ -543,6 +543,17 @@ body.typing .restbar,body.typing .workout-return{display:none}
 .donelist b{display:block;margin-bottom:3px;word-break:keep-all}
 .donelist span{font-size:14px;color:var(--ink2);font-variant-numeric:tabular-nums}
 .donepick h2{margin:0 0 4px;font-size:18px}
+.ai-settings-key{font-family:monospace}
+#gemKey,#gemModel,#gemFast,#gemMax{width:100%;height:46px;border-radius:10px;border:1px solid var(--line);background:var(--bg);padding:0 12px;font-size:16px;box-sizing:border-box;color:var(--ink)}
+.gem-check{display:flex;gap:10px;align-items:flex-start;margin:12px 0 4px;font-size:14px;line-height:1.5;word-break:keep-all}
+.gem-check input{margin-top:4px;flex:none;width:18px;height:18px}
+#gemStatus{white-space:pre-line}
+.ai-note{margin:8px 0 2px;padding:9px 11px;border-radius:10px;background:var(--accent-wash);border:1px solid var(--ai-border);font-size:14px;line-height:1.6;word-break:keep-all}
+.ai-note b{margin-right:4px}
+.ai-src{margin-top:6px;font-size:12px;color:var(--ink3);line-height:1.5}
+.ai-wait{color:var(--ink3)}
+.ai-msg.err{border-left-color:var(--danger)}
+.ai-chat-form button[data-ai-action=stop]{background:var(--danger);color:#fff}
 </style>
 
 <div class="app">
@@ -634,13 +645,18 @@ body.typing .restbar,body.typing .workout-return{display:none}
 
     <section id="tab-set" class="tab" aria-label="설정" hidden>
       <div class="card form" id="aiSettingsCard">
-        <h2>AI 코치 연결</h2>
-        <p class="note">Groq 무료 API를 연결하면 운동 기록을 바탕으로 질문 답변과 운동 총평을 받을 수 있소. 운동 기록은 평소처럼 기기에 저장되고, AI 요청을 보낼 때 요약된 기록만 Groq로 전송되오.</p>
-        <div class="field"><label class="lbl" for="groqKey">Groq API 키</label><input type="password" id="groqKey" class="ai-settings-key" placeholder="gsk_..." autocomplete="off" autocapitalize="off" spellcheck="false"></div>
-        <div class="ai-settings-row"><button type="button" class="btn primary" id="groqSave">키 저장</button><button type="button" class="btn" id="groqDelete">삭제</button></div>
-        <div class="row"><button type="button" class="btn" id="groqTest">연결 테스트</button><button type="button" class="btn" id="groqGetKey">무료 API 키 발급</button></div>
-        <p class="note" id="groqStatus" aria-live="polite">API 키를 저장하면 AI 코치를 사용할 수 있소.</p>
-        <p class="note">키는 앱 내부의 Android Keystore로 암호화해 이 기기에만 저장하오. 무료 이용량과 모델 제한은 Groq 계정별로 달라질 수 있소.</p>
+        <h2>AI 코치 연결 (Gemini)</h2>
+        <p class="note">Google Gemini 무료 API를 연결하면 질문 답변, 세트마다 바로 해 주는 한마디 코칭, 운동 총평을 받을 수 있소. 코치가 필요한 기록만 골라 조회하고, 그 내용만 Google로 전송되오. 이름이나 이메일은 보내지 않소.</p>
+        <div class="field"><label class="lbl" for="gemKey">Gemini API 키</label><input type="password" id="gemKey" class="ai-settings-key" placeholder="AIza..." autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+        <div class="ai-settings-row"><button type="button" class="btn primary" id="gemSave">키 저장</button><button type="button" class="btn" id="gemDelete">삭제</button></div>
+        <div class="row"><button type="button" class="btn" id="gemTest">연결 테스트</button><button type="button" class="btn" id="gemGetKey">무료 API 키 발급</button></div>
+        <div class="field"><label class="lbl" for="gemModel">채팅·총평 모델</label><input type="text" id="gemModel" class="ai-settings-key" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+        <div class="field"><label class="lbl" for="gemFast">세트 코칭 모델(빠른 것)</label><input type="text" id="gemFast" class="ai-settings-key" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+        <label class="gem-check"><input type="checkbox" id="gemAuto"> 세트를 마치면 코치가 바로 한마디 하기 (운동 종료 시 총평 포함)</label>
+        <div class="field"><label class="lbl" for="gemMax">하루 요청 한도 (회)</label><input type="number" id="gemMax" inputmode="numeric" min="10" max="1000" step="10"></div>
+        <p class="note" id="gemStatus" aria-live="polite">API 키를 저장하면 AI 코치를 사용할 수 있소.</p>
+        <p class="note" id="gemUsage"></p>
+        <p class="note">키는 앱 내부의 Android Keystore로 암호화해 이 기기에만 저장하오. 한도를 넘으면 유료로 넘어가지 않고 요청이 멈추오. 무료 등급은 Google이 입력 내용을 서비스 개선에 쓸 수 있다고 알려져 있으니 약관을 확인하시오. 모델별 무료 한도는 Google AI Studio에서 볼 수 있소.</p>
       </div>
       <form class="card form" id="goalForm" novalidate>
         <h2>목표</h2>
@@ -1193,7 +1209,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
       workoutNav.active = false; workoutNav.exercise = null; saveWorkoutNav(); syncWorkoutReturn();
       stopWorkoutStatus(); setTimeout(stopWorkoutStatus, 600);
       coachUI.dayKey = dt; coachUI.day = true; renderCoach();
-      alarmFlash('운동 완료!');
+      alarmFlash('운동 완료!'); aiDaySummary(dt);
       toast('운동을 마쳤소. 수고했소! 다음 루틴을 고르거나 한 운동을 살펴보시오');
       if (tab !== 'log') setTab('log');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1415,6 +1431,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
     if (mutate(dt, function (dd) { dd.sets.forEach(function (x) { if (x.id === id) { x.done = true; x.s = sec || null; x.t = Date.now(); } }); })) {
       if (T.phase === 'set' && T.setId === id) cancelRestAlarm();
       startRest(restFor(st.ex), tipLabel(nextTip(dt)), normEx(st.ex), id);
+      aiSetCoach(id, dt);
       var now = findSet(id), warn = now ? setFeedback(now, dt).filter(function (f) { return f.tone === 'warn'; })[0] : null;
       if (warn) toast(warn.text.length > 70 ? warn.text.slice(0, 68) + '…' : warn.text);
       var doneGroup = groupsOf(getDay(dt)).filter(function (g) { return g.key === normEx(st.ex); })[0];
@@ -2155,42 +2172,271 @@ body.typing .restbar,body.typing .workout-return{display:none}
   }
 
   var coachUI = { dayKey: '', day: null, weekKey: '', week: null };
-  var aiState = { busy: false, messages: [] }, aiPending = {};
-  function aiContext() {
-    var dates = Object.keys(S.days).filter(function(d){ return !S.days[d].sample && d <= selDate; }).sort().slice(-7);
-    var rows = dates.map(function(ds) {
-      var d = S.days[ds], done = (d.sets || []).filter(isDone);
-      var by = {};
-      done.forEach(function(s){ var k=s.ex||'기타'; if(!by[k]) by[k]={sets:0,volume:0,details:[]}; by[k].sets++; by[k].volume+=(Number(s.w)||0)*(Number(s.r)||0); if(by[k].details.length<4) by[k].details.push((s.w||0)+'kg×'+(s.r||0)); });
-      return {date:ds, workout:(d.sets||[]).length?{completedSets:done.length, exercises:Object.keys(by).map(function(k){return {name:k,sets:by[k].sets,volume:Math.round(by[k].volume),examples:by[k].details};})}:null, weight:d.weight, meals:(d.meals||[]).map(function(m){return {name:m.name,kcal:m.kcal,protein:m.p};})};
-    });
-    return JSON.stringify({selectedDate:selDate, recentDays:rows});
+  /* ---------- Gemini AI 코치 (키는 앱 Keystore, 호출은 AndroidBridge.askGemini) ---------- */
+  var AIP_KEY = 'dolsoe_ai_prefs_v1', AIU_KEY = 'dolsoe_ai_usage_v1';
+  var aiPrefs = (function () {
+    var d = { model: 'gemini-3.6-flash', fast: 'gemini-3.5-flash-lite', auto: true, max: 150 };
+    try { var j = JSON.parse(localStorage.getItem(AIP_KEY)); if (j && typeof j === 'object') Object.keys(d).forEach(function (k) { if (j[k] != null) d[k] = j[k]; }); } catch (e) {}
+    return d;
+  })();
+  function saveAiPrefs() { try { localStorage.setItem(AIP_KEY, JSON.stringify(aiPrefs)); } catch (e) {} }
+  function aiUsage() {
+    var u = null; try { u = JSON.parse(localStorage.getItem(AIU_KEY)); } catch (e) {}
+    var t = today(); if (!u || u.day !== t) u = { day: t, n: 0, inTok: 0, outTok: 0 };
+    return u;
   }
+  function aiUsageSave(u) { try { localStorage.setItem(AIU_KEY, JSON.stringify(u)); } catch (e) {} }
+  function geminiReady() { return !!(window.AndroidBridge && window.AndroidBridge.askGemini && window.AndroidBridge.hasGeminiApiKey && window.AndroidBridge.hasGeminiApiKey()); }
+
+  var gPending = {};
+  function geminiStream(model, body, h) {
+    var id = 'g_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+    gPending[id] = { h: h, parts: [], text: '', meta: null, blocked: '', finish: '' };
+    try { window.AndroidBridge.askGemini(id, model, JSON.stringify(body)); }
+    catch (e) { delete gPending[id]; setTimeout(function () { h.onEnd(String(e && e.message || '요청을 시작하지 못했소'), { parts: [], text: '', meta: null }); }, 0); }
+    return id;
+  }
+  window.onNativeGemini = function (id, type, payload) {
+    var p = gPending[id]; if (!p) return;
+    if (type === 'chunk') {
+      var j; try { j = JSON.parse(payload); } catch (e) { return; }
+      if (j.usageMetadata) p.meta = j.usageMetadata;
+      if (j.promptFeedback && j.promptFeedback.blockReason) p.blocked = j.promptFeedback.blockReason;
+      var c = j.candidates && j.candidates[0];
+      if (c && c.finishReason) p.finish = c.finishReason;
+      if (c && c.content && c.content.parts) c.content.parts.forEach(function (pt) {
+        if (pt.thought) return;
+        p.parts.push(pt);
+        if (typeof pt.text === 'string') { p.text += pt.text; if (p.h.onText) p.h.onText(p.text); }
+      });
+      return;
+    }
+    delete gPending[id];
+    p.h.onEnd(type === 'done' ? null : (type === 'cancel' ? 'cancel' : String(payload || '네트워크 요청 실패')), p);
+  };
+
+  var AI_SYSTEM = [
+    '너는 \'돌쇠록스\' 앱의 개인 전담 텍스트 PT 코치다.',
+    '말투는 조선시대 머슴이 주인에게 아뢰듯 하오체(~하오, ~이오, ~하시오, ~했소)로 일관하되, 수치와 근거는 정확하고 현대적인 표현으로 말한다. 어려운 한자어와 과장된 사극 대사는 피한다.',
+    '규칙:',
+    '1. 도구로 조회한 기록(사실)과 코치의 해석·권장을 구분해 말한다. 예: "기록상 …이오" / "코치 생각으로는 …하시오".',
+    '2. 조회되지 않았거나 없는 기록은 지어내지 말고 "기록을 찾지 못했소"라고 말한다. 중량·횟수·시간·칼로리 수치를 임의로 만들지 않는다.',
+    '3. 기록이 필요한 질문에는 먼저 도구를 호출해 확인한다. 필요한 기록만 조회한다.',
+    '4. 운동 순서·누적 피로·루틴이 다르면 단순 비교가 어렵다고 알린다.',
+    '5. 세트 수행 시간(초)만으로 자세·가동범위·근자극을 단정하지 않는다. 영상이나 센서가 없으므로 자세를 확인했다고 말하지 않는다.',
+    '6. 이전 기록과 비교할 때는 기준이 된 날짜를 밝힌다.',
+    '7. 의료 진단이나 치료를 말하지 않는다. 통증이나 부상은 전문가 상담을 권한다.',
+    '8. 목표(칼로리·단백질)가 필요하면 get_user_goals 로 확인하고, 없으면 임의로 만들지 않는다.',
+    '9. 간결하게 핵심부터 말하고, 다음 행동을 한두 가지 제안한다. 마크다운 기호(**, #, 표)는 쓰지 않는다.'
+  ].join('\n');
+
+  var AI_TOOLS = [
+    { name: 'get_current_workout_state', description: '화면에서 선택한 날짜의 운동 상태(루틴, 운동 순서, 세트별 kg·횟수·완료 여부)와 타이머 상태를 조회한다.', parameters: { type: 'object', properties: {} } },
+    { name: 'get_exercise_history', description: '특정 운동의 과거 완료 세트 기록을 최근 순으로 조회한다. 각 기록에 날짜, 그날 운동 순서, 루틴, 세트별 kg·횟수·수행 초가 들어 있다.', parameters: { type: 'object', properties: { exercise: { type: 'string', description: '운동 이름. 예: 바벨 벤치프레스' }, days: { type: 'integer', description: '조회 기간(일). 기본 90' } }, required: ['exercise'] } },
+    { name: 'get_weekly_training_volume', description: '최근 몇 주 동안 부위별 완료 세트 수와 볼륨(kg×횟수 합), 운동한 날 수를 조회한다.', parameters: { type: 'object', properties: { weeks: { type: 'integer', description: '주 수. 기본 4' } } } },
+    { name: 'get_daily_nutrition', description: '특정 날짜의 식단 기록(음식, kcal, 단백질 g)과 합계를 조회한다.', parameters: { type: 'object', properties: { date: { type: 'string', description: 'YYYY-MM-DD. 생략하면 선택한 날짜' } } } },
+    { name: 'get_nutrition_history', description: '최근 며칠 동안 날짜별 식단 합계(kcal, 단백질)를 조회한다.', parameters: { type: 'object', properties: { days: { type: 'integer', description: '일 수. 기본 7' } } } },
+    { name: 'get_recent_bodyweight', description: '최근 체중 기록을 조회한다.', parameters: { type: 'object', properties: { days: { type: 'integer', description: '일 수. 기본 30' } } } },
+    { name: 'get_user_goals', description: '사용자가 설정한 목표(칼로리, 단백질, 부위별 주간 세트, 기본 휴식)를 조회한다.', parameters: { type: 'object', properties: {} } }
+  ];
+  function aiClamp(v, lo, hi, def) { v = Math.round(Number(v)); return isFinite(v) ? Math.max(lo, Math.min(hi, v)) : def; }
+  function aiRealDays() { return Object.keys(S.days).filter(function (k) { return !S.days[k].sample; }).sort(); }
+  function aiSetRow(s) { return s.mode === 'time' ? { target_sec: s.targetSec || null, actual_sec: s.s || null, done: isDone(s) } : { kg: s.w, reps: s.r, seconds: s.s || null, done: isDone(s) }; }
+  function runAiTool(name, a, sources) {
+    function src(x) { if (sources.indexOf(x) < 0) sources.push(x); }
+    var out;
+    try {
+      if (name === 'get_current_workout_state') {
+        var d = getDay(selDate); src(selDate === today() ? '오늘 운동 상태' : fmtShort(selDate) + ' 운동 상태');
+        out = { source: '앱 운동 기록', date: selDate, is_today: selDate === today(), routine: d.routine || null, workout_ended: !!d.workoutEndedAt, timer_phase: T.phase,
+          exercises: groupsOf(d).map(function (g, i) { return { order: i + 1, name: g.sets[0].ex, muscle: g.sets[0].m || null, sets: g.sets.map(function (s, n) { var r = aiSetRow(s); r.n = n + 1; return r; }) }; }) };
+        if (!d.sets.length) out.note = '이 날짜에는 운동 기록이 없소.';
+      } else if (name === 'get_exercise_history') {
+        var k = normEx(a.exercise || ''), days = aiClamp(a.days, 1, 365, 90), cut = addDays(today(), -days), res = [];
+        if (!k) return { error: '운동 이름이 필요하오.' };
+        src((a.exercise || '') + ' 기록(최근 ' + days + '일)');
+        aiRealDays().reverse().forEach(function (ds) {
+          if (ds < cut || res.length >= 8) return;
+          var dd = S.days[ds], gs = groupsOf(dd), idx = -1;
+          for (var i = 0; i < gs.length; i++) { var kk = normEx(gs[i].sets[0].ex); if (kk === k) { idx = i; break; } }
+          if (idx < 0) for (var j = 0; j < gs.length; j++) { var k2 = normEx(gs[j].sets[0].ex); if (k2.indexOf(k) >= 0 || k.indexOf(k2) >= 0) { idx = j; break; } }
+          if (idx < 0) return;
+          var done = gs[idx].sets.filter(isDone); if (!done.length) return;
+          res.push({ date: ds, exercise: gs[idx].sets[0].ex, routine: dd.routine || null, exercise_order: idx + 1, of_exercises: gs.length, sets: done.map(aiSetRow),
+            total_reps: done.reduce(function (x, s) { return x + (Number(s.r) || 0); }, 0), volume_kg: Math.round(done.reduce(function (x, s) { return x + (s.mode === 'time' ? 0 : (Number(s.w) || 0) * (Number(s.r) || 0)); }, 0)) });
+        });
+        out = { source: '앱 운동 기록', unit: { weight: 'kg', time: '초' }, found_sessions: res.length, sessions: res };
+        if (!res.length) out.note = '기록을 찾지 못했소.';
+      } else if (name === 'get_weekly_training_volume') {
+        var weeks = aiClamp(a.weeks, 1, 12, 4), list = []; src('주간 부위별 볼륨(최근 ' + weeks + '주)');
+        for (var w = 0; w < weeks; w++) {
+          var ws0 = addDays(weekStart(today()), -7 * w), by = {}, trainDays = 0;
+          for (var x = 0; x < 7; x++) {
+            var dk = addDays(ws0, x), dd2 = S.days[dk]; if (!dd2 || dd2.sample) continue;
+            var dn = dd2.sets.filter(isDone); if (dn.length) trainDays++;
+            dn.forEach(function (s) { var m = s.m || '기타'; if (!by[m]) by[m] = { sets: 0, volume_kg: 0 }; by[m].sets++; by[m].volume_kg += s.mode === 'time' ? 0 : (Number(s.w) || 0) * (Number(s.r) || 0); });
+          }
+          Object.keys(by).forEach(function (m) { by[m].volume_kg = Math.round(by[m].volume_kg); });
+          list.push({ week_start: ws0, training_days: trainDays, by_muscle: by });
+        }
+        out = { source: '앱 운동 기록', weeks: list };
+      } else if (name === 'get_daily_nutrition') {
+        var dt = /^\d{4}-\d{2}-\d{2}$/.test(a.date || '') ? a.date : selDate, dm = getDay(dt); src((dt === today() ? '오늘' : fmtShort(dt)) + ' 식단');
+        var kc = 0, pr = 0; dm.meals.forEach(function (m) { kc += Number(m.kcal) || 0; pr += Number(m.p) || 0; });
+        out = { source: '앱 식단 기록', date: dt, meals: dm.meals.map(function (m) { return { name: m.name, kcal: m.kcal, protein_g: m.p }; }), total: { kcal: Math.round(kc), protein_g: Math.round(pr * 10) / 10 }, goals: { kcal: S.settings.kcal, protein_g: S.settings.protein } };
+        if (!dm.meals.length) out.note = '이 날짜에는 식단 기록이 없소.';
+      } else if (name === 'get_nutrition_history') {
+        var nd = aiClamp(a.days, 1, 60, 7), rows = [], missing = 0; src('최근 ' + nd + '일 식단 합계');
+        for (var q = 0; q < nd; q++) {
+          var dk2 = addDays(today(), -q), d3 = S.days[dk2];
+          if (!d3 || d3.sample || !d3.meals.length) { missing++; continue; }
+          var k3 = 0, p3 = 0; d3.meals.forEach(function (m) { k3 += Number(m.kcal) || 0; p3 += Number(m.p) || 0; });
+          rows.push({ date: dk2, kcal: Math.round(k3), protein_g: Math.round(p3 * 10) / 10, workout_day: d3.sets.some(isDone) });
+        }
+        out = { source: '앱 식단 기록', days_requested: nd, days_without_record: missing, rows: rows, goals: { kcal: S.settings.kcal, protein_g: S.settings.protein } };
+      } else if (name === 'get_recent_bodyweight') {
+        var bd = aiClamp(a.days, 1, 365, 30), cutb = addDays(today(), -bd); src('최근 체중');
+        var ws2 = aiRealDays().filter(function (k) { return k >= cutb && S.days[k].weight != null; }).map(function (k) { return { date: k, kg: S.days[k].weight }; });
+        out = { source: '앱 체중 기록', unit: 'kg', rows: ws2 }; if (!ws2.length) out.note = '체중 기록을 찾지 못했소.';
+      } else if (name === 'get_user_goals') {
+        src('내 목표 설정');
+        out = { source: '앱 설정', kcal_per_day: S.settings.kcal, protein_g_per_day: S.settings.protein, weekly_sets_per_muscle: S.settings.weeklySets, default_rest_sec: S.settings.rest };
+      } else out = { error: '알 수 없는 도구: ' + name };
+    } catch (e) { out = { error: String(e && e.message || e) }; }
+    return out;
+  }
+
+  // 도구 호출 루프: 모델이 functionCall 을 내면 앱 기록을 조회해 돌려주고 다시 묻는다(최대 5회).
+  function geminiRun(cfg) {
+    var sources = [], round = 0, ref = { id: null };
+    function once() {
+      if (++round > 5) return cfg.onDone('조회가 너무 길어졌소. 질문을 줄여 다시 물어보시오.');
+      var u = aiUsage();
+      if (u.n >= aiPrefs.max) return cfg.onDone('오늘 AI 요청 한도(' + aiPrefs.max + '회)에 도달했소. 설정에서 한도를 바꿀 수 있소.');
+      u.n++; aiUsageSave(u);
+      var body = { systemInstruction: { parts: [{ text: AI_SYSTEM }] }, contents: cfg.contents, generationConfig: { temperature: 0.5, maxOutputTokens: cfg.maxTokens || 2048 } };
+      if (cfg.tools !== false) body.tools = [{ functionDeclarations: AI_TOOLS }];
+      ref.id = geminiStream(cfg.model, body, {
+        onText: function (t) { if (cfg.onText) cfg.onText(t); },
+        onEnd: function (err, p) {
+          var uu = aiUsage(); if (p && p.meta) { uu.inTok += p.meta.promptTokenCount || 0; uu.outTok += (p.meta.candidatesTokenCount || 0) + (p.meta.thoughtsTokenCount || 0); aiUsageSave(uu); }
+          if (err) return cfg.onDone(err);
+          var calls = p.parts.filter(function (x) { return x.functionCall; });
+          if (calls.length) {
+            cfg.contents.push({ role: 'model', parts: p.parts });
+            cfg.contents.push({ role: 'user', parts: calls.map(function (x) { return { functionResponse: { name: x.functionCall.name, response: runAiTool(x.functionCall.name, x.functionCall.args || {}, sources) } }; }) });
+            if (cfg.onStatus) cfg.onStatus('기록을 살펴보는 중이오…');
+            return once();
+          }
+          if (!String(p.text).trim()) return cfg.onDone('AI 응답이 비어 있소' + (p.blocked ? ' (차단: ' + p.blocked + ')' : p.finish ? ' (' + p.finish + ')' : '') + '.');
+          cfg.onDone(null, p.text, sources);
+        }
+      });
+    }
+    once();
+    return { cancel: function () { if (ref.id) { try { window.AndroidBridge.cancelGemini(ref.id); } catch (e) {} } } };
+  }
+  function aiContextLine() {
+    var d = getDay(today()), done = d.sets.filter(isDone).length;
+    var live = d.sets.length && !d.workoutEndedAt;
+    return '[맥락] 오늘은 ' + today() + ', 화면에서 선택한 날짜는 ' + selDate + '. ' + (live ? '운동 진행 중(' + (d.routine || '루틴 없음') + ', 완료 ' + done + '/' + d.sets.length + '세트).' : d.workoutEndedAt ? '오늘 운동은 이미 종료했음.' : '지금은 운동 중이 아님(식단·기록 상담).');
+  }
+
+  var aiState = { busy: false, messages: [], run: null }, aiNotes = {}, aiLastAuto = 0;
+  function aiMsgHtml() {
+    return aiState.messages.slice(-10).map(function (m) {
+      var body = m.text ? esc(dolsoeFeedbackText(m.text)) : (m.streaming ? '<span class="ai-wait">' + esc(m.status || '생각하는 중…') + '</span>' : '');
+      var extra = '';
+      if (m.streaming && m.text && m.status) extra += '<div class="ai-src">' + esc(m.status) + '</div>';
+      if (m.sources && m.sources.length) extra += '<div class="ai-src">근거 기록 · ' + esc(m.sources.join(' · ')) + '</div>';
+      if (m.retry) extra += '<div><button type="button" class="mini" data-ai-action="retry">다시 시도</button></div>';
+      return '<div class="ai-msg ' + m.role + (m.error ? ' err' : '') + '">' + body + extra + '</div>';
+    }).join('');
+  }
+  function aiPaint() {
+    var box = $('#aiMessages'); if (!box) return;
+    var near = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+    box.innerHTML = aiMsgHtml(); if (near) box.scrollTop = box.scrollHeight;
+  }
+  var aiPaintQ = false;
+  function aiPaintSoon() { if (aiPaintQ) return; aiPaintQ = true; requestAnimationFrame(function () { aiPaintQ = false; aiPaint(); }); }
   function renderAiCoach() {
-    var messages=aiState.messages.slice(-8).map(function(m){return '<div class="ai-msg '+m.role+'">'+esc(m.text)+'</div>';}).join('');
-    return '<div class="ai-coach"><div class="ai-head"><span class="ai-title">AI 트레이닝 코치</span><span class="ai-status">'+(aiState.busy?'답변 생성 중…':(window.AndroidBridge&&window.AndroidBridge.hasGroqApiKey&&window.AndroidBridge.hasGroqApiKey()?'Groq 연결됨':'키 설정 필요'))+'</span></div>'+
-      '<div class="ai-actions"><button type="button" class="mini" data-ai-action="summary">오늘 운동 AI 총평</button><button type="button" class="mini" data-ai-action="set">방금 한 세트 분석</button></div>'+
-      '<div class="ai-messages" id="aiMessages">'+messages+'</div>'+
-      '<form class="ai-chat-form" id="aiChatForm"><input id="aiQuestion" type="text" maxlength="500" placeholder="운동이나 식단에 대해 질문하기" autocomplete="off"><button type="submit" '+(aiState.busy?'disabled':'')+'>보내기</button></form>'+
+    var u = aiUsage(), ready = geminiReady(), d = getDay(today()), live = d.sets.length && !d.workoutEndedAt;
+    var status = aiState.busy ? '답변 생성 중…' : (ready ? 'Gemini · 오늘 ' + u.n + '/' + aiPrefs.max + '회' : '키 설정 필요');
+    var ctx = live ? '운동 중 · ' + (d.routine || '오늘 운동') + ' ' + d.sets.filter(isDone).length + '/' + d.sets.length + '세트' : '식단·기록 상담';
+    return '<div class="ai-coach"><div class="ai-head"><span class="ai-title">AI 트레이닝 코치</span><span class="ai-status">' + esc(status) + '</span></div>' +
+      '<p class="note" style="margin:-2px 0 8px">지금은 ' + esc(ctx) + ' 모드이오. 질문하면 코치가 앱 기록을 직접 조회해 답하오.</p>' +
+      '<div class="ai-actions"><button type="button" class="mini" data-ai-action="summary">오늘 운동 AI 총평</button><button type="button" class="mini" data-ai-action="set">방금 한 세트 분석</button><button type="button" class="mini" data-ai-action="diet">오늘 식단 점검</button></div>' +
+      '<div class="ai-messages" id="aiMessages">' + aiMsgHtml() + '</div>' +
+      '<form class="ai-chat-form" id="aiChatForm"><input id="aiQuestion" type="text" maxlength="500" placeholder="운동이나 식단에 대해 질문하기" autocomplete="off">' + (aiState.busy ? '<button type="button" data-ai-action="stop">중단</button>' : '<button type="submit">보내기</button>') + '</form>' +
       '<p class="note" style="margin-top:7px">AI 응답에는 인터넷 연결이 필요하오. 기록 입력과 기존 자동 피드백은 오프라인에서도 계속 작동하오.</p></div>';
   }
+  function aiFail(text) { aiState.messages.push({ role: 'assistant', text: text, error: true }); renderCoach(); }
   function aiSend(question) {
-    question=String(question||'').trim(); if(!question||aiState.busy)return;
-    if(!window.AndroidBridge||!window.AndroidBridge.askGroq){aiState.messages.push({role:'assistant',text:'설치된 앱에서만 AI 연결을 사용할 수 있소.'});renderCoach();return;}
-    if(!window.AndroidBridge.hasGroqApiKey()){aiState.messages.push({role:'assistant',text:'먼저 설정 탭에서 Groq API 키를 저장해 주시오.'});renderCoach();return;}
-    aiState.messages.push({role:'user',text:question}); aiState.busy=true; renderCoach();
-    var id='ai_'+Date.now()+'_'+Math.floor(Math.random()*100000);
-    var history=aiState.messages.slice(-7).map(function(m){return (m.role==='user'?'사용자: ':'코치: ')+m.text;}).join('\n');
-    aiPending[id]=true;
-    try { window.AndroidBridge.askGroq(id,question,aiContext()+'\n\n응답 말투 지침: 돌쇠록스의 코치답게 조선 시대 머슴의 구수하고 담백한 말투를 쓰시오. 문장 끝은 하오체/하소서체(예: 좋소, 유지하시오, 해보시오)로 하되 돌쇠가 주인에게 아뢰는 듯한 자연스러운 조선식 말투(예: 하오, 하시오, 했소, 좋소, 알겠소)를 일관되게 쓰시오. 과장된 사극 대사나 어려운 한자어는 피하시오. 운동 수치와 근거는 정확하고 현대적인 표현으로 유지하시오.\n\n최근 대화:\n'+history); }
-    catch(e){ delete aiPending[id]; aiState.busy=false; aiState.messages.push({role:'assistant',text:'AI 요청을 시작하지 못했소. 앱을 다시 실행해 주시오.'}); renderCoach(); }
-  }
-  window.onNativeAiResult=function(id,ok,message){
-    if(!aiPending[id])return; delete aiPending[id]; aiState.busy=false;
-    aiState.messages.push({role:'assistant',text:dolsoeFeedbackText(String(message|| (ok?'답변이 비어 있소.':'요청에 실패했소.')))});
+    question = String(question || '').trim(); if (!question || aiState.busy) return;
+    if (!window.AndroidBridge || !window.AndroidBridge.askGemini) return aiFail('설치된 앱에서만 AI 연결을 사용할 수 있소.');
+    if (!geminiReady()) return aiFail('먼저 설정 탭에서 Gemini API 키를 저장해 주시오.');
+    aiState.messages.push({ role: 'user', text: question });
+    var msg = { role: 'assistant', text: '', streaming: true, status: '' };
+    aiState.messages.push(msg); aiState.busy = true;
+    var hist = aiState.messages.slice(0, -2).filter(function (m) { return m.text && !m.error; }).slice(-8).map(function (m) { return { role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] }; });
+    hist.push({ role: 'user', parts: [{ text: aiContextLine() + '\n\n' + question }] });
     renderCoach();
-    var box=$('#aiMessages'); if(box){box.scrollTop=box.scrollHeight; var last=box.lastElementChild; if(last)last.scrollIntoView({block:'nearest',behavior:'smooth'});}
-  };
+    aiState.run = geminiRun({
+      model: aiPrefs.model, contents: hist, maxTokens: 2048,
+      onText: function (t) { msg.text = t; msg.status = ''; aiPaintSoon(); },
+      onStatus: function (s) { msg.status = s; aiPaintSoon(); },
+      onDone: function (err, text, sources) {
+        aiState.busy = false; aiState.run = null; msg.streaming = false; msg.status = '';
+        if (err === 'cancel') { msg.text = msg.text || '(중단했소)'; }
+        else if (err) { msg.error = true; msg.retry = true; msg.text = '요청에 실패했소: ' + err; aiState.lastQuestion = question; }
+        else { msg.text = text; msg.sources = sources; }
+        renderCoach(); var box = $('#aiMessages'); if (box) box.scrollTop = box.scrollHeight;
+      }
+    });
+  }
+  function aiRetry() {
+    var last = aiState.messages[aiState.messages.length - 1];
+    if (!last || !last.retry) return;
+    var q = aiState.lastQuestion; aiState.messages.splice(aiState.messages.length - 2, 2); // 실패한 질문·답변 제거
+    if (q) aiSend(q);
+  }
+  function aiNoteHtml(key, title) {
+    var n = aiNotes[key]; if (!n) return '';
+    return '<div class="ai-note"><b>' + esc(title) + '</b> ' + (n.state === 'loading' ? '<span class="ai-wait">코치가 기록을 살펴보는 중이오…</span>' : n.state === 'err' ? '<span class="ai-src">받지 못했소 · ' + esc(n.text) + '</span>' : esc(dolsoeFeedbackText(n.text))) + (n.sources && n.sources.length ? '<div class="ai-src">근거 기록 · ' + esc(n.sources.join(' · ')) + '</div>' : '') + '</div>';
+  }
+  // 실시간 피드백: 세트를 마칠 때마다 빠른 모델이 한 문장으로 조언한다(쿨다운·일일 한도 적용).
+  function aiAutoOk() { return !!(aiPrefs.auto && geminiReady() && aiUsage().n < aiPrefs.max); }
+  function aiSetCoach(id, dt) {
+    if (!aiAutoOk() || Date.now() - aiLastAuto < 35000) return;
+    var st = findSet(id); if (!st) return;
+    var gg = groupsOf(getDay(dt)), order = 0, n = 0;
+    gg.forEach(function (g, i) { var ix = g.sets.indexOf(st); if (ix >= 0) { order = i + 1; n = ix + 1; } });
+    aiLastAuto = Date.now(); var key = 'set:' + id; aiNotes[key] = { state: 'loading', text: '' }; renderCoach();
+    var prompt = aiContextLine() + '\n방금 완료한 세트: ' + st.ex + ' ' + n + '세트째(오늘 ' + order + '번째 운동), ' + (st.mode === 'time' ? '목표 ' + (st.targetSec || 0) + '초, 실제 ' + (st.s || 0) + '초' : st.w + 'kg × ' + st.r + '회' + (st.s ? ', 수행 ' + st.s + '초' : '')) + '.\n같은 운동의 지난 기록과 오늘 앞선 세트를 필요하면 도구로 확인하고, 다음 세트에서 할 일을 한 문장(70자 이내)으로만 말하시오. 인사말·목록·마크다운 금지.';
+    geminiRun({ model: aiPrefs.fast, contents: [{ role: 'user', parts: [{ text: prompt }] }], maxTokens: 1024,
+      onDone: function (err, text, sources) {
+        if (err) aiNotes[key] = { state: 'err', text: err === 'cancel' ? '중단됨' : String(err).slice(0, 80) };
+        else {
+          var line = String(text).replace(/\s+/g, ' ').trim(); if (line.length > 110) line = line.slice(0, 108) + '…';
+          aiNotes[key] = { state: 'ok', text: line, sources: sources };
+          if (T.phase === 'rest' && T.setId === id) { T.tip = dolsoeFeedbackText(line); saveT(); }
+        }
+        renderCoach();
+      } });
+  }
+  function aiDaySummary(dt, force) {
+    if (!force && !aiAutoOk()) return;
+    if (!geminiReady()) { toast('설정 탭에서 Gemini API 키를 먼저 저장해 주시오'); return; }
+    var key = 'day:' + dt; if (aiNotes[key] && aiNotes[key].state === 'loading') return;
+    aiNotes[key] = { state: 'loading', text: '' }; renderCoach();
+    var prompt = aiContextLine() + '\n' + dt + ' 운동을 총평하시오. 도구로 그날 기록과 각 운동의 지난 기록을 확인한 뒤, 잘한 점 2가지, 고칠 점 2가지, 다음 운동 목표 1가지를 줄바꿈으로 구분해 짧게 말하시오. 기록에 없는 것은 말하지 마시오.';
+    geminiRun({ model: aiPrefs.model, contents: [{ role: 'user', parts: [{ text: prompt }] }], maxTokens: 2048,
+      onDone: function (err, text, sources) {
+        aiNotes[key] = err ? { state: 'err', text: err === 'cancel' ? '중단됨' : String(err).slice(0, 80) } : { state: 'ok', text: String(text).trim(), sources: sources };
+        renderCoach();
+      } });
+  }
   function dolsoeFeedbackText(value) {
     var msg = String(value == null ? '' : value);
     var rules = [
@@ -2226,7 +2472,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
       var nt = nextTip(selDate);
       if (last && Date.now() - last.t < 45 * 60000) {
         var gg = groupsOf(d).filter(function (x) { return x.key === normEx(last.ex); })[0];
-        h += '<div class="cb"><div class="cbh">방금 끝낸 세트 · ' + esc(last.ex) + ' ' + ((gg ? gg.sets.indexOf(last) : 0) + 1) + '세트' + (last.s ? ' · ' + last.s + '초' : '') + '</div>' + fbHtml(setFeedback(last, selDate)) + '</div>';
+        h += '<div class="cb"><div class="cbh">방금 끝낸 세트 · ' + esc(last.ex) + ' ' + ((gg ? gg.sets.indexOf(last) : 0) + 1) + '세트' + (last.s ? ' · ' + last.s + '초' : '') + '</div>' + aiNoteHtml('set:' + last.id, 'AI 코치') + fbHtml(setFeedback(last, selDate)) + '</div>';
       }
       if (nt) {
         h += '<div class="cb"><div class="cbh">' + (nt.first ? '시작 전 체크' : '다음 세트') + ' · ' + esc(nt.ex) + ' ' + (nt.idx + 1) + '/' + nt.total + '세트 · 휴식 ' + nt.rest + '초</div>' +
@@ -2237,7 +2483,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
       '<button type="button" class="mini" data-coach="week" aria-expanded="' + weekOpen + '">' + (sunday ? '일요일 주간 총평' : '주간 총평') + '</button></div>';
     if (dayOpen) {
       var dr = dayReview(selDate);
-      h += '<div class="cb"><div class="cbh">' + (isToday ? '오늘' : fmtShort(selDate)) + ' 운동 총평' + (dr && !allDone ? ' (진행 중)' : '') + '</div>' + (dr ? fbHtml(dr.items) : '<p class="note" style="margin:0">완료한 세트가 생기면 총평을 볼 수 있소.</p>') + '</div>';
+      h += '<div class="cb"><div class="cbh">' + (isToday ? '오늘' : fmtShort(selDate)) + ' 운동 총평' + (dr && !allDone ? ' (진행 중)' : '') + '</div>' + (dr ? fbHtml(dr.items) : '<p class="note" style="margin:0">완료한 세트가 생기면 총평을 볼 수 있소.</p>') + (dr ? aiNoteHtml('day:' + selDate, 'AI 총평') + '<div style="margin-top:8px"><button type="button" class="mini" data-ai-action="daysum">AI 총평 ' + (aiNotes['day:' + selDate] ? '다시 ' : '') + '받기</button></div>' : '') + '</div>';
     }
     if (weekOpen) {
       var wr = weekReview(ws);
@@ -2286,6 +2532,10 @@ body.typing .restbar,body.typing .workout-return{display:none}
     var ai=e.target.closest('[data-ai-action]');
     if(ai){
       var kind=ai.getAttribute('data-ai-action'), d=getDay(selDate);
+      if(kind==='stop'){ if(aiState.run) aiState.run.cancel(); return; }
+      if(kind==='retry'){ aiRetry(); return; }
+      if(kind==='daysum'){ aiDaySummary(selDate, true); return; }
+      if(kind==='diet'){ aiSend('선택한 날짜 식단을 기록 기준으로 점검하고, 목표 대비 부족한 영양과 칼로리를 크게 늘리지 않고 채울 방법을 알려줘.'); return; }
       if(kind==='summary') aiSend('선택한 날짜의 운동 기록을 분석해 총평해줘. 잘한 점 2개, 개선점 2개, 다음 운동에서 실행할 구체적인 목표를 알려줘.');
       else {
         var last=null; (d.sets||[]).forEach(function(s){if(isDone(s)&&(!last||s.t>last.t))last=s;});
@@ -2599,9 +2849,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
   }
   function renderSettings() {
     fillSettings(); renderStoreNote();
-    var keyStatus=$('#groqStatus');
-    if(keyStatus) keyStatus.textContent=(window.AndroidBridge&&window.AndroidBridge.hasGroqApiKey&&window.AndroidBridge.hasGroqApiKey())?'API 키가 이 기기에 안전하게 저장되어 있소.':'API 키를 저장하면 AI 코치를 사용할 수 있소.';
-    $('#groqKey').value='';
+    renderGeminiSettings();
     $('#bkShare').hidden = !(window.AndroidBridge && window.AndroidBridge.share);
     $('#appCard').hidden = !IS_APP;
     if (IS_APP) $('#appNote').textContent = '설치된 버전: 빌드 #' + BUILD + '. 새 버전이 나오면 아래 버튼으로 받아 설치하시오. 같은 앱 위에 덮어 설치되고 기록과 설정은 그대로 유지되오. (GitHub 로그인이 필요할 수 있소)';
@@ -2618,28 +2866,43 @@ body.typing .restbar,body.typing .workout-return{display:none}
     });
   });
   $('#goalForm').addEventListener('submit', function (e) { e.preventDefault(); });
-  $('#groqSave').addEventListener('click',function(){
-    var key=$('#groqKey').value.trim();
-    if(!key){$('#groqStatus').textContent='API 키를 입력해 주시오.';return;}
-    if(!window.AndroidBridge||!window.AndroidBridge.saveGroqApiKey){$('#groqStatus').textContent='설치된 앱에서만 키를 저장할 수 있소.';return;}
-    try{window.AndroidBridge.saveGroqApiKey(key);$('#groqKey').value='';$('#groqStatus').textContent='API 키를 암호화해 이 기기에 저장했소.';toast('Groq API 키 저장 완료');}catch(e){$('#groqStatus').textContent='저장 실패: '+e.message;}
+  function renderGeminiSettings() {
+    var st = $('#gemStatus'); if (!st) return;
+    var ok = !!(window.AndroidBridge && window.AndroidBridge.hasGeminiApiKey && window.AndroidBridge.hasGeminiApiKey());
+    st.textContent = ok ? 'API 키가 이 기기에 안전하게 저장되어 있소.' : (IS_APP ? 'API 키를 저장하면 AI 코치를 사용할 수 있소.' : '설치된 앱에서만 AI 코치를 쓸 수 있소.');
+    $('#gemKey').value = ''; $('#gemModel').value = aiPrefs.model; $('#gemFast').value = aiPrefs.fast; $('#gemAuto').checked = !!aiPrefs.auto; $('#gemMax').value = aiPrefs.max;
+    var u = aiUsage(); $('#gemUsage').textContent = '오늘 요청 ' + u.n + '회 / 한도 ' + aiPrefs.max + '회 · 입력 ' + nf(u.inTok) + ' · 출력 ' + nf(u.outTok) + ' 토큰';
+  }
+  $('#gemSave').addEventListener('click', function () {
+    var key = $('#gemKey').value.trim();
+    if (!key) { $('#gemStatus').textContent = 'API 키를 입력해 주시오.'; return; }
+    if (!window.AndroidBridge || !window.AndroidBridge.saveGeminiApiKey) { $('#gemStatus').textContent = '설치된 앱에서만 키를 저장할 수 있소.'; return; }
+    try { window.AndroidBridge.saveGeminiApiKey(key); renderGeminiSettings(); $('#gemStatus').textContent = 'API 키를 암호화해 이 기기에 저장했소.'; toast('Gemini API 키를 저장했소'); renderCoach(); }
+    catch (e) { $('#gemStatus').textContent = String(e && e.message || '키 저장에 실패했소.'); }
   });
-  $('#groqDelete').addEventListener('click',function(){
-    if(window.AndroidBridge&&window.AndroidBridge.deleteGroqApiKey)window.AndroidBridge.deleteGroqApiKey();
-    $('#groqKey').value='';$('#groqStatus').textContent='저장된 API 키를 삭제했소.';toast('API 키 삭제 완료');
+  $('#gemDelete').addEventListener('click', function () {
+    if (window.AndroidBridge && window.AndroidBridge.deleteGeminiApiKey) window.AndroidBridge.deleteGeminiApiKey();
+    renderGeminiSettings(); $('#gemStatus').textContent = '저장된 API 키를 삭제했소.'; toast('API 키를 삭제했소'); renderCoach();
   });
-  $('#groqGetKey').addEventListener('click',function(){openExternal('https://console.groq.com/keys');});
-  $('#groqTest').addEventListener('click',function(){
-    if(!window.AndroidBridge||!window.AndroidBridge.hasGroqApiKey||!window.AndroidBridge.hasGroqApiKey()){ $('#groqStatus').textContent='먼저 API 키를 저장해 주시오.';return;}
-    $('#groqStatus').textContent='연결 확인 중…';
-    var id='test_'+Date.now(); aiPending[id]='test';
-    window.AndroidBridge.askGroq(id,'한 문장으로 한국어 인사와 연결 상태만 알려줘.','테스트 요청이오.');
+  $('#gemGetKey').addEventListener('click', function () { openExternal('https://aistudio.google.com/apikey'); });
+  function gemTestOne(model, label, done) {
+    geminiStream(model, { contents: [{ role: 'user', parts: [{ text: '하오체로 한 문장 인사만 하시오.' }] }], generationConfig: { maxOutputTokens: 256 } }, {
+      onEnd: function (err, p) { done(label + ' ' + (err ? '실패 · ' + err : '성공') + (err ? '' : ' · ' + String(p.text).replace(/\s+/g, ' ').trim().slice(0, 40))); } });
+  }
+  $('#gemTest').addEventListener('click', function () {
+    if (!geminiReady()) { $('#gemStatus').textContent = '먼저 API 키를 저장해 주시오.'; return; }
+    $('#gemStatus').textContent = '연결 확인 중…';
+    gemTestOne(aiPrefs.model, '채팅 모델', function (a) { gemTestOne(aiPrefs.fast, '세트 코칭 모델', function (b) { $('#gemStatus').textContent = a + '\n' + b; renderGeminiSettings(); $('#gemStatus').textContent = a + '\n' + b; }); });
   });
-  var priorAiResult=window.onNativeAiResult;
-  window.onNativeAiResult=function(id,ok,message){
-    if(aiPending[id]==='test'){delete aiPending[id];$('#groqStatus').textContent=ok?'연결 성공! Groq AI 코치를 사용할 수 있소.':'연결 실패: '+message;return;}
-    if(priorAiResult)priorAiResult(id,ok,message);
-  };
+  function gemPrefsFromForm() {
+    var okName = /^[A-Za-z0-9._-]{3,60}$/;
+    var m = $('#gemModel').value.trim(), f = $('#gemFast').value.trim();
+    if (okName.test(m)) aiPrefs.model = m; if (okName.test(f)) aiPrefs.fast = f;
+    aiPrefs.auto = $('#gemAuto').checked;
+    var mx = Math.round(Number($('#gemMax').value)); if (isFinite(mx)) aiPrefs.max = Math.max(10, Math.min(1000, mx));
+    saveAiPrefs(); renderGeminiSettings();
+  }
+  ['gemModel', 'gemFast', 'gemAuto', 'gemMax'].forEach(function (id) { $('#' + id).addEventListener('change', gemPrefsFromForm); });
   $('#calcProt').addEventListener('click', function () {
     var w = latestWeight(); if (w == null) return;
     S.settings.protein = Math.round(w * 1.8); persistSettings(); fillSettings(); toast('단백질 목표를 ' + S.settings.protein + 'g으로 정했소');

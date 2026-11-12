@@ -51,6 +51,7 @@ public class MainActivity extends Activity {
     private static final String GEMINI_PREFS = "bulknote_gemini_secure";
     private static final String GEMINI_KEY_ALIAS = "BulkNoteGeminiApiKeyV1";
     private final java.util.HashMap<String, HttpURLConnection> geminiConns = new java.util.HashMap<>();
+    private final java.util.HashSet<String> geminiCancelled = new java.util.HashSet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -211,7 +212,8 @@ public class MainActivity extends Activity {
                     URL url=new URL("https://generativelanguage.googleapis.com/v1beta/models/"+model+":streamGenerateContent?alt=sse");
                     conn=(HttpURLConnection)url.openConnection(); conn.setRequestMethod("POST");
                     synchronized(geminiConns){geminiConns.put(requestId,conn);}
-                    conn.setConnectTimeout(12000); conn.setReadTimeout(60000); conn.setDoOutput(true);
+                    conn.setConnectTimeout(15000); conn.setReadTimeout(120000); conn.setDoOutput(true);
+                    conn.setRequestProperty("Accept-Encoding","identity"); conn.setRequestProperty("Accept","text/event-stream");
                     conn.setRequestProperty("x-goog-api-key",key); conn.setRequestProperty("Content-Type","application/json; charset=utf-8");
                     conn.getOutputStream().write(requestJson.getBytes(StandardCharsets.UTF_8)); conn.getOutputStream().flush();
                     int code=conn.getResponseCode();
@@ -224,8 +226,11 @@ public class MainActivity extends Activity {
                     notifyGemini(requestId,"done","");
                 } catch(Exception e){
                     boolean cancelled;
-                    synchronized(geminiConns){cancelled=!geminiConns.containsKey(requestId);}
-                    notifyGemini(requestId,cancelled?"cancel":"error",e.getMessage()==null?"네트워크 요청 실패":e.getMessage());
+                    synchronized(geminiConns){cancelled=geminiCancelled.remove(requestId);}
+                    String em=e.getMessage();
+                    if(e instanceof java.net.SocketTimeoutException)em="구글 응답이 너무 늦소(시간 초과). 모델을 더 빠른 것으로 바꾸거나 다시 시도하시오.";
+                    else if(e instanceof java.net.UnknownHostException||e instanceof java.net.ConnectException)em="인터넷 연결을 확인하시오.";
+                    notifyGemini(requestId,cancelled?"cancel":"error",em==null?"네트워크 요청 실패":em);
                 } finally{
                     synchronized(geminiConns){geminiConns.remove(requestId);}
                     if(conn!=null)conn.disconnect();
@@ -251,6 +256,7 @@ public class MainActivity extends Activity {
             if(code==400&&detail.toLowerCase().contains("api key"))return "API 키가 올바르지 않소: "+detail;
             if(code==403)return "이 키로는 사용할 수 없소(권한·지역 확인): "+detail;
             if(code==404)return "모델을 찾지 못했소. 설정에서 모델 이름을 확인하시오.";
+            if(code==503||code==500)return "구글 서버가 바쁘오("+code+"). 잠시 뒤 다시 시도하거나 다른 모델을 고르시오. "+detail;
             return detail;
         }
         /** 키로 쓸 수 있는 모델 목록 조회. 결과 JSON 은 onNativeGemini(id,"models",json) 으로 전달. */
@@ -274,7 +280,7 @@ public class MainActivity extends Activity {
             });
         }
         @JavascriptInterface public void cancelGemini(final String requestId) {
-            HttpURLConnection c; synchronized(geminiConns){c=geminiConns.remove(requestId);}
+            HttpURLConnection c; synchronized(geminiConns){c=geminiConns.remove(requestId); if(c!=null)geminiCancelled.add(requestId);}
             if(c!=null){final HttpURLConnection cc=c; new Thread(() -> {try{cc.disconnect();}catch(Exception ignored){}}).start();}
         }
         private void notifyGemini(String id,String type,String payload){

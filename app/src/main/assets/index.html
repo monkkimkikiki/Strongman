@@ -2264,12 +2264,21 @@ body.typing .restbar,body.typing .workout-return{display:none}
   function aiUsageSave(u) { try { localStorage.setItem(AIU_KEY, JSON.stringify(u)); } catch (e) {} }
   function geminiReady() { return !!(window.AndroidBridge && window.AndroidBridge.askGemini && window.AndroidBridge.hasGeminiApiKey && window.AndroidBridge.hasGeminiApiKey()); }
 
-  var gPending = {}, gQ = [], gTickets = {}, gActive = false, gLastStart = 0, gTimer = null, G_GAP = 2000;
+  var gPending = {}, gQ = [], gTickets = {}, gActive = false, gLastStart = 0, gTimer = null, G_GAP = 1200;
   // 무료 등급은 분당 요청 수가 적어서, 요청을 한 줄로 세워 간격을 두고 보내고 429이면 구글이 알려준 시간만큼 기다렸다 다시 보낸다.
+  // 생각(thinking)이 길면 첫 글자까지 수십 초 걸리므로 생각 깊이를 낮춘다. 모델이 거부하면 설정을 빼고 다시 보낸다.
+  function gApplyThinking(item) {
+    var gc = item.body.generationConfig; if (!gc || gc.thinkingConfig || item.h.noThink) return;
+    var lite = /lite/.test(item.model), old = /(^|-)(1\.5|2\.0)(-|$)/.test(item.model);
+    if (old) return;
+    gc.thinkingConfig = /gemini-2\.5/.test(item.model) ? { thinkingBudget: lite ? 0 : 256 } : { thinkingLevel: lite || item.h.fast ? 'minimal' : 'low' };
+    item.thinkingSet = true;
+  }
   function geminiBusy() { return gActive || gQ.length > 0; }
   function geminiStream(model, body, h) {
     var ticket = 'g_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
     var item = { ticket: ticket, model: model, body: body, h: h, tries: 0, cancelled: false, rid: null };
+    gApplyThinking(item);
     gTickets[ticket] = item; gQ.push(item); gPump();
     return ticket;
   }
@@ -2286,6 +2295,7 @@ body.typing .restbar,body.typing .workout-return{display:none}
       onText: item.h.onText,
       onEnd: function (err, p) {
         gActive = false;
+        if (err && item.thinkingSet && /thinking|thought/i.test(err) && item.body.generationConfig) { delete item.body.generationConfig.thinkingConfig; item.thinkingSet = false; gQ.unshift(item); gPump(); return; }
         var m = err && /429/.test(err) && !/한도 0/.test(err) && !item.h.noRetry && !item.cancelled && item.tries < 2;
         if (m) {
           var sec = (/\[(\d+)초 뒤 재시도\]/.exec(err) || [0, 15])[1] * 1 + 1; sec = Math.min(Math.max(sec, 6), 30); item.tries++;

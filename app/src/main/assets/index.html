@@ -729,6 +729,7 @@ body.typing{padding-bottom:46vh}
         <div class="row"><button type="button" class="btn" id="gemTest">연결 테스트</button><button type="button" class="btn" id="gemGetKey">무료 API 키 발급</button></div>
         <div class="field"><label class="lbl" for="gemModel">채팅·총평 모델</label><input type="text" id="gemModel" class="ai-settings-key" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
         <div class="field"><label class="lbl" for="gemFast">세트 코칭 모델(빠른 것)</label><input type="text" id="gemFast" class="ai-settings-key" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+        <label class="gem-check"><input type="checkbox" id="gemChatFast"> 채팅은 빠른 모델로 답하기 (주간 총평은 위의 채팅·총평 모델 사용)</label>
         <label class="gem-check"><input type="checkbox" id="gemAuto"> 세트를 마치면 코치가 바로 한마디 하기 (운동 종료 시 총평 포함)</label>
         <div class="field"><label class="lbl" for="gemMax">하루 요청 한도 (회)</label><input type="number" id="gemMax" inputmode="numeric" min="10" max="1000" step="10"></div>
         <p class="note" id="gemStatus" aria-live="polite">API 키를 저장하면 AI 코치를 사용할 수 있소.</p>
@@ -2338,7 +2339,7 @@ body.typing{padding-bottom:46vh}
   /* ---------- Gemini AI 코치 (키는 앱 Keystore, 호출은 AndroidBridge.askGemini) ---------- */
   var AIP_KEY = 'dolsoe_ai_prefs_v1', AIU_KEY = 'dolsoe_ai_usage_v1';
   var aiPrefs = (function () {
-    var d = { model: 'gemini-3.6-flash', fast: 'gemini-3.5-flash-lite', auto: true, max: 150 };
+    var d = { model: 'gemini-3.6-flash', fast: 'gemini-3.5-flash-lite', auto: true, max: 150, chatFast: true };
     try { var j = JSON.parse(localStorage.getItem(AIP_KEY)); if (j && typeof j === 'object') Object.keys(d).forEach(function (k) { if (j[k] != null) d[k] = j[k]; }); } catch (e) {}
     return d;
   })();
@@ -2358,7 +2359,7 @@ body.typing{padding-bottom:46vh}
     var gc = item.body.generationConfig; if (!gc || gc.thinkingConfig || item.h.noThink) return;
     var lite = /lite/.test(item.model), old = /(^|-)(1\.5|2\.0)(-|$)/.test(item.model);
     if (old) return;
-    gc.thinkingConfig = /gemini-2\.5/.test(item.model) ? { thinkingBudget: lite ? 0 : 256 } : { thinkingLevel: lite || item.h.fast ? 'minimal' : 'low' };
+    gc.thinkingConfig = /gemini-2\.5/.test(item.model) ? { thinkingBudget: lite || item.h.think === 'minimal' ? 0 : 256 } : { thinkingLevel: item.h.think || (lite || item.h.fast ? 'minimal' : 'low') };
     item.thinkingSet = true;
   }
   function geminiBusy() { return gActive || gQ.length > 0; }
@@ -2375,7 +2376,7 @@ body.typing{padding-bottom:46vh}
     while (gQ.length && gQ[0].cancelled) gFinish(gQ.shift(), 'cancel');
     if (!gQ.length) return;
     var wait = gLastStart + G_GAP - Date.now();
-    if (wait > 0) { if (!gTimer) gTimer = setTimeout(function () { gTimer = null; gPump(); }, wait); return; }
+    if (wait > 0 && !gQ[0].h.noGap) { if (!gTimer) gTimer = setTimeout(function () { gTimer = null; gPump(); }, wait); return; }
     var item = gQ.shift(); gActive = true; gLastStart = Date.now();
     var rid = item.ticket + '_' + item.tries; item.rid = rid;
     gPending[rid] = { parts: [], text: '', meta: null, blocked: '', finish: '', h: {
@@ -2428,7 +2429,7 @@ body.typing{padding-bottom:46vh}
     '규칙:',
     '1. 도구로 조회한 기록(사실)과 코치의 해석·권장을 구분해 말한다. 예: "기록상 …이오" / "코치 생각으로는 …하시오".',
     '2. 조회되지 않았거나 없는 기록은 지어내지 말고 "기록을 찾지 못했소"라고 말한다. 중량·횟수·시간·칼로리 수치를 임의로 만들지 않는다.',
-    '3. 기록이 필요한 질문에는 먼저 도구를 호출해 확인한다. 필요한 기록만 조회한다.',
+    '3. 질문 앞에 붙은 [기록 요약]에 있는 기록은 그대로 근거로 쓴다. 요약에 없는 더 오래된 기록이나 다른 운동·날짜가 꼭 필요할 때만 도구를 호출하고, 필요한 기록만 조회한다.',
     '4. 운동 순서·누적 피로·루틴이 다르면 단순 비교가 어렵다고 알린다.',
     '5. 세트 수행 시간(초)만으로 자세·가동범위·근자극을 단정하지 않는다. 영상이나 센서가 없으므로 자세를 확인했다고 말하지 않는다.',
     '6. 이전 기록과 비교할 때는 기준이 된 날짜를 밝힌다.',
@@ -2543,7 +2544,7 @@ body.typing{padding-bottom:46vh}
 
   // 도구 호출 루프: 모델이 functionCall 을 내면 앱 기록을 조회해 돌려주고 다시 묻는다(최대 5회).
   function geminiRun(cfg) {
-    var sources = [], round = 0, ref = { id: null };
+    var sources = (cfg.sources || []).slice(), round = 0, ref = { id: null };
     function once() {
       if (++round > 5) return cfg.onDone('조회가 너무 길어졌소. 질문을 줄여 다시 물어보시오.');
       var u = aiUsage();
@@ -2552,6 +2553,7 @@ body.typing{padding-bottom:46vh}
       var body = { systemInstruction: { parts: [{ text: AI_SYSTEM }] }, contents: cfg.contents, generationConfig: { temperature: 0.5, maxOutputTokens: cfg.maxTokens || 2048 } };
       if (cfg.tools !== false) body.tools = [{ functionDeclarations: AI_TOOLS }];
       ref.id = geminiStream(cfg.model, body, {
+        think: cfg.think, noGap: round > 1,
         onText: function (t) { if (cfg.onText) cfg.onText(t); },
         onWait: function (m) { if (cfg.onStatus) cfg.onStatus(m); },
         onEnd: function (err, p) {
@@ -2571,6 +2573,28 @@ body.typing{padding-bottom:46vh}
     }
     once();
     return { cancel: function () { if (ref.id) geminiCancel(ref.id); } };
+  }
+  // 질문마다 도구를 불러 오가면 답이 몇 배 느려지므로, 자주 필요한 기록은 질문에 미리 붙여 보낸다.
+  function aiSnapshot() {
+    var tmp = [], o = {};
+    function run(n, a) { try { return runAiTool(n, a || {}, tmp); } catch (e) { return null; } }
+    var d = getDay(selDate);
+    if (d.sets.length) {
+      o.selected_day_workout = run('get_current_workout_state');
+      var seen = {}, hist = [];
+      groupsOf(d).slice(0, 4).forEach(function (g) {
+        var nm = g.sets[0].ex, k = normEx(nm); if (seen[k]) return; seen[k] = 1;
+        var h = run('get_exercise_history', { exercise: nm, days: 60 });
+        if (h && h.sessions) hist.push({ exercise: nm, recent_sessions: h.sessions.filter(function (x) { return x.date !== selDate; }).slice(0, 2) });
+      });
+      if (hist.length) o.recent_history_of_today_exercises = hist;
+    }
+    o.weekly_volume_2_weeks = (run('get_weekly_training_volume', { weeks: 2 }) || {}).weeks;
+    o.nutrition_selected_day = run('get_daily_nutrition', { date: selDate });
+    o.nutrition_last_3_days = (run('get_nutrition_history', { days: 3 }) || {}).rows;
+    o.bodyweight_last_14_days = (run('get_recent_bodyweight', { days: 14 }) || {}).rows;
+    o.goals = run('get_user_goals');
+    return { json: JSON.stringify(o), sources: ['앱 기록 요약'] };
   }
   function aiContextLine() {
     var d = getDay(today()), done = d.sets.filter(isDone).length;
@@ -2698,11 +2722,13 @@ body.typing{padding-bottom:46vh}
     aiState.messages.push({ role: 'user', text: question });
     var msg = { role: 'assistant', text: '', streaming: true, status: '' };
     aiState.messages.push(msg); aiState.busy = true;
-    var hist = aiState.messages.slice(0, -2).filter(function (m) { return m.text && !m.error; }).slice(-8).map(function (m) { return { role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] }; });
-    hist.push({ role: 'user', parts: [{ text: aiContextLine() + '\n\n' + question }] });
+    var hist = aiState.messages.slice(0, -2).filter(function (m) { return m.text && !m.error; }).slice(-6).map(function (m) { return { role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] }; });
+    var snap = aiSnapshot();
+    hist.push({ role: 'user', parts: [{ text: aiContextLine() + '\n[기록 요약] ' + snap.json + '\n\n질문: ' + question }] });
+    msg.status = '코치가 생각하는 중이오…';
     renderCoach();
     aiState.run = geminiRun({
-      model: aiPrefs.model, contents: hist, maxTokens: 2048,
+      model: aiPrefs.chatFast ? aiPrefs.fast : aiPrefs.model, contents: hist, maxTokens: 1400, think: 'minimal', sources: snap.sources,
       onText: function (t) { msg.text = t; msg.status = ''; aiPaintSoon(); },
       onStatus: function (s) { msg.status = s; aiPaintSoon(); },
       onDone: function (err, text, sources) {
@@ -3293,7 +3319,7 @@ body.typing{padding-bottom:46vh}
     var st = $('#gemStatus'); if (!st) return;
     var ok = !!(window.AndroidBridge && window.AndroidBridge.hasGeminiApiKey && window.AndroidBridge.hasGeminiApiKey());
     st.textContent = ok ? 'API 키가 이 기기에 안전하게 저장되어 있소.' : (IS_APP ? 'API 키를 저장하면 AI 코치를 사용할 수 있소.' : '설치된 앱에서만 AI 코치를 쓸 수 있소.');
-    $('#gemKey').value = ''; $('#gemModel').value = aiPrefs.model; $('#gemFast').value = aiPrefs.fast; $('#gemAuto').checked = !!aiPrefs.auto; $('#gemMax').value = aiPrefs.max;
+    $('#gemKey').value = ''; $('#gemModel').value = aiPrefs.model; $('#gemFast').value = aiPrefs.fast; $('#gemAuto').checked = !!aiPrefs.auto; $('#gemChatFast').checked = !!aiPrefs.chatFast; $('#gemMax').value = aiPrefs.max;
     var u = aiUsage(); $('#gemUsage').textContent = '오늘 요청 ' + u.n + '회 / 한도 ' + aiPrefs.max + '회 · 입력 ' + nf(u.inTok) + ' · 출력 ' + nf(u.outTok) + ' 토큰';
   }
   $('#gemSave').addEventListener('click', function () {
@@ -3373,11 +3399,11 @@ body.typing{padding-bottom:46vh}
     var okName = /^[A-Za-z0-9._-]{3,60}$/;
     var m = $('#gemModel').value.trim(), f = $('#gemFast').value.trim();
     if (okName.test(m)) aiPrefs.model = m; if (okName.test(f)) aiPrefs.fast = f;
-    aiPrefs.auto = $('#gemAuto').checked;
+    aiPrefs.auto = $('#gemAuto').checked; aiPrefs.chatFast = $('#gemChatFast').checked;
     var mx = Math.round(Number($('#gemMax').value)); if (isFinite(mx)) aiPrefs.max = Math.max(10, Math.min(1000, mx));
     saveAiPrefs(); renderGeminiSettings();
   }
-  ['gemModel', 'gemFast', 'gemAuto', 'gemMax'].forEach(function (id) { $('#' + id).addEventListener('change', gemPrefsFromForm); });
+  ['gemModel', 'gemFast', 'gemAuto', 'gemChatFast', 'gemMax'].forEach(function (id) { $('#' + id).addEventListener('change', gemPrefsFromForm); });
   $('#calcProt').addEventListener('click', function () {
     var w = latestWeight(); if (w == null) return;
     S.settings.protein = Math.round(w * 1.8); persistSettings(); fillSettings(); toast('단백질 목표를 ' + S.settings.protein + 'g으로 정했소');

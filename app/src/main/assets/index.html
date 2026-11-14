@@ -139,7 +139,14 @@ textarea{width:100%;min-height:92px;border-radius:10px;border:1px solid var(--li
 .fb .info .ic{color:var(--ink3)}
 .coach-btns{display:flex;gap:8px;margin:10px 0 2px;flex-wrap:wrap}
 .coach-btns .mini[aria-expanded="true"]{background:var(--accent-wash);border-color:var(--accent);color:var(--accent)}
-.rb-tip{flex:1 0 100%;font-size:12px;line-height:1.4;color:var(--ink2);border-top:1px solid var(--line);padding-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rb-tip{flex:1 0 100%;font-size:12px;line-height:1.45;color:var(--ink2);border-top:1px solid var(--line);padding-top:6px;display:flex;align-items:flex-start;gap:6px}
+.rb-tip[hidden]{display:none}
+.rb-tip-txt{flex:1;min-width:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line}
+.rb-tip.open .rb-tip-txt{display:block;-webkit-line-clamp:unset;max-height:34vh;overflow-y:auto}
+.rb-tip-tgl{flex:0 0 auto;width:30px;height:28px;margin-top:-4px;border:1px solid var(--line2);background:var(--surface);border-radius:9px;color:var(--ink2);display:grid;place-items:center;padding:0}
+.rb-tip-tgl[hidden]{display:none}
+.rb-tip-tgl svg{transition:transform .15s}
+.rb-tip.open .rb-tip-tgl svg{transform:rotate(180deg)}
 
 
 /* AI coach · warm silver with teal and amber accents */
@@ -466,7 +473,7 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
 .restbar .rb{background:var(--surface);border:1px solid var(--line2);border-radius:14px;box-shadow:0 6px 20px rgba(54,35,19,.16)}
 .rb-digits.run{color:var(--accent)}
 .workout-return{background:var(--accent);box-shadow:0 4px 14px rgba(54,35,19,.25)}
-.workout-return svg{width:30px;height:22px;color:var(--accent-ink)}
+.workout-return svg{width:40px;height:29px;color:var(--accent-ink)}
 .toast{background:var(--ink);color:var(--bg)}
 .plist{background:var(--surface);border-color:var(--line)}
 .brow .bf,.bf{background:var(--accent)}
@@ -557,7 +564,7 @@ body.typing{padding-bottom:46vh}
 .rswrap input{min-width:0;flex:1;padding-inline:0;text-align:center}
 .rswrap .rstp{width:20px;height:38px;border:1px solid var(--line2);background:var(--surface);border-radius:8px;font-size:15px;font-weight:700;color:var(--ink2);flex:0 0 auto;padding:0}
 .rswrap .rstp:disabled{opacity:.35}
-.lastline{font-size:12.5px;color:var(--ink2);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lastline{font-size:12.5px;line-height:1.45;color:var(--ink2);margin-top:4px}
 .lastline b{color:var(--accent);font-weight:700}
 .rb-rir{display:flex;gap:5px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);margin-top:6px}
 .rb-rir button{min-height:34px;padding:0 10px;border-radius:999px;border:1px solid var(--line2);background:var(--surface);font-size:13.5px;font-weight:700;color:var(--ink)}
@@ -802,12 +809,12 @@ body.typing{padding-bottom:46vh}
       <button type="button" class="rbb" id="rbPlus" aria-label="15초 늘리기">+15</button>
       <button type="button" class="rbb primary" id="rbSkip">건너뛰기</button>
     </div>
-    <div class="rb-tip" id="rbTip" hidden></div>
+    <div class="rb-tip" id="rbTip" hidden><span class="rb-tip-txt" id="rbTipTxt"></span><button type="button" class="rb-tip-tgl" id="rbTipTgl" aria-expanded="false" aria-label="설명 펼치기" hidden><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M4 7.5 L10 13.5 L16 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     <div class="rb-rir" id="rbRir" hidden></div>
   </div>
 </div>
 <div class="askmodal" id="askModal" role="dialog" aria-modal="true" aria-labelledby="askMsg" hidden><div class="ask-in"><p id="askMsg"></p><div class="row"><button type="button" class="btn" data-ask="no">취소</button><button type="button" class="btn primary" data-ask="yes" id="askYes">그리하오</button></div></div></div>
-<button type="button" class="workout-return" id="workoutReturn" aria-label="현재 운동 위치로 이동" title="현재 운동으로 이동" hidden><svg class="stone-dumbbell" viewBox="0 0 64 44" aria-hidden="true"><path d="M5 10 Q8 5 14 7 L19 11 Q22 14 21 20 L20 31 Q17 38 10 35 L5 31 Q2 27 3 20Z M43 11 Q46 6 53 7 L59 12 Q62 17 60 25 L57 33 Q52 39 46 35 L42 31 Q40 25 41 19Z" fill="#282720"/><path d="M17 19 Q28 15 47 19 L47 26 Q31 23 17 28Z" fill="#282720"/><path d="M7 13 Q10 10 15 12 M7 29 L12 32 M48 11 L55 13 M48 32 L54 30 M22 19 L28 18 M36 26 L43 25" fill="none" stroke="#fffefa" stroke-width="1.5" stroke-linecap="round"/><path d="M8 5l2-2m42 3 3-2M1 34l3 2m55-1 3-2" stroke="#282720" stroke-width="2" stroke-linecap="round"/><path d="M29 17l4-1m-7 12 5-1" stroke="#fffefa" stroke-width="1" stroke-linecap="round"/></svg></button>
+<button type="button" class="workout-return" id="workoutReturn" aria-label="현재 운동 위치로 이동" title="현재 운동으로 이동" hidden><svg class="brush-dumbbell" viewBox="0 0 64 44" aria-hidden="true"><defs><filter id="bdRough" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter></defs><g filter="url(#bdRough)" fill="currentColor"><path d="M4 24.6 Q16 21.2 33 21.6 T60 20.4 L60.5 23.4 Q45 25.6 33 25.2 T4.5 27.2 Z"/><path d="M12.5 6.5 Q17.6 3.8 20.4 8.2 L21.4 35.5 Q18 41.2 12.6 37.6 Q10.4 22 12.5 6.5 Z"/><path d="M23.4 12 Q26.6 10 28.2 13.6 L28.4 30.4 Q25.6 33.8 23.2 31.2 Q22.2 21.6 23.4 12 Z"/><path d="M43.6 8.4 Q47 5 51.4 7 Q54 22.4 51.8 36.8 Q47.4 40.6 43.8 35.2 Q42.4 22 43.6 8.4 Z"/><path d="M35.8 13.6 Q38.4 11.2 40.8 13.8 Q41.8 22 40.6 30.6 Q38 33.4 35.8 30.2 Q35 22 35.8 13.6 Z"/><circle cx="57.5" cy="9" r="1.7"/><circle cx="53.5" cy="4.6" r="0.9"/><circle cx="6.5" cy="36" r="1.1"/></g><g stroke="#4D3A2E" stroke-width="0.8" stroke-linecap="round" opacity=".55" fill="none"><path d="M15 9 L14.6 33"/><path d="M17.8 11 L17.4 36"/><path d="M47.6 11 L47.2 34"/><path d="M50 12 L49.8 33"/><path d="M26 15 L25.8 29"/><path d="M38.2 16 L38 28"/></g></svg></button>
 
 <div class="bmfloat" id="bmFloat" role="navigation" aria-label="책갈피" hidden></div>
 
@@ -1190,7 +1197,19 @@ body.typing{padding-bottom:46vh}
     mutate(dt, function (dd) { dd.sets.forEach(function (x) { if (x.id === id) x.rir = x.rir === v ? null : v; }); });
     rbRirMemo = ''; renderRbRir();
   });
-  function showTip(txt) { var el = $('#rbTip'), v = txt || ''; if (el.textContent !== v) el.textContent = v; el.hidden = !v; }
+  var rbTipOpen = false;
+  function rbTipFit() {
+    var el = $('#rbTip'), tx = $('#rbTipTxt'), tg = $('#rbTipTgl'); if (el.hidden) return;
+    var over = tx.scrollHeight > tx.clientHeight + 2;
+    tg.hidden = !(over || rbTipOpen);
+    el.classList.toggle('open', rbTipOpen); tg.setAttribute('aria-expanded', rbTipOpen ? 'true' : 'false'); tg.setAttribute('aria-label', rbTipOpen ? '설명 접기' : '설명 펼치기');
+  }
+  function showTip(txt) {
+    var el = $('#rbTip'), tx = $('#rbTipTxt'), v = txt || '';
+    if (tx.textContent !== v) { tx.textContent = v; el.hidden = !v; if (v) requestAnimationFrame(rbTipFit); }
+    if (!v) { rbTipOpen = false; el.classList.remove('open'); el.hidden = true; }
+  }
+  $('#rbTipTgl').addEventListener('click', function (e) { e.stopPropagation(); rbTipOpen = !rbTipOpen; rbTipFit(); });
   function tick() {
     var now = Date.now(), bar = $('#restbar'), vis = T.phase !== 'idle';
     syncWorkoutReturn(); renderRbRir();
@@ -2763,7 +2782,7 @@ body.typing{padding-bottom:46vh}
       onDone: function (err, text, sources) {
         if (err) aiNotes[key] = { state: 'err', text: err === 'cancel' ? '중단됨' : String(err).slice(0, 80) };
         else {
-          var line = String(text).replace(/\s+/g, ' ').trim(); if (line.length > 110) line = line.slice(0, 108) + '…';
+          var line = String(text).replace(/\s+/g, ' ').trim(); if (line.length > 360) line = line.slice(0, 358) + '…';
           aiNotes[key] = { state: 'ok', text: line, sources: sources };
           if (T.phase === 'rest' && T.setId === id) { T.tip = dolsoeFeedbackText(line); saveT(); }
         }

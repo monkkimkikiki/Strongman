@@ -502,7 +502,7 @@ h2{font-size:23px;line-height:1.2;margin-bottom:10px}
 .fin-tx b{font-size:23px;line-height:1.15}
 .startrow .tx b{font-size:22px}
 .rt header h3,.ehead h3{font-size:23px}
-.grp{scroll-margin-top:76px}
+.grp{scroll-margin-top:calc(var(--stickH,62px) + 52px)}
 
 /* 붓으로 그은 선 */
 .grp.card{border-bottom:0;background:var(--brush-mid) center bottom/100% 10px no-repeat;padding-bottom:24px}
@@ -512,16 +512,15 @@ h2{font-size:23px;line-height:1.2;margin-bottom:10px}
 .meter i{background:var(--brush-dark) left center/100% 100% no-repeat;border-radius:0}
 .finbar{border:0;background:var(--surface2)}
 
-/* 화면 오른쪽을 따라다니는 책갈피 */
-.bmfloat{position:fixed;right:0;top:calc(env(safe-area-inset-top,0px) + 236px);z-index:30;display:flex;flex-direction:column;align-items:flex-end;gap:10px;max-height:calc(100vh - 340px);overflow-y:auto;overflow-x:hidden;pointer-events:none;scrollbar-width:none}
-.bmfloat::-webkit-scrollbar{display:none}
-.bmfloat[hidden]{display:none}
-.bmfloat .bm{pointer-events:auto;position:relative;flex:none;writing-mode:vertical-rl;text-orientation:mixed;width:26px;padding:19px 3px 17px 3px;border:0;background:#3B2B20;color:#F6EBD8;font-family:var(--font-brush);font-size:19px;line-height:1;letter-spacing:.04em;white-space:nowrap;clip-path:polygon(0 0,100% 0,100% calc(100% - 1px),50% calc(100% - 9px),0 calc(100% - 1px));cursor:pointer;-webkit-tap-highlight-color:transparent}
-.bmfloat .bm::before{content:"";position:absolute;top:5px;left:50%;width:8px;height:8px;margin-left:-4px;background:#A3402F;border-radius:1px}
-.bmfloat .bm:active{background:#5A4233}
-.bmfloat .bm span{display:block}
-body.hasbm main{padding-right:14px}
-@media (prefers-reduced-motion:no-preference){.bmfloat .bm{animation:bmin .25s ease-out}@keyframes bmin{from{transform:translateX(26px)}to{transform:none}}}
+/* 책갈피: 총 세트 카드 밑에 놓이고, 내려도 날짜 줄 아래에 붙어 따라오는 가로 띠 */
+.bmbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--stickH,62px));z-index:4;display:flex;align-items:center;gap:7px;margin:0 -16px 8px;padding:6px 16px 8px;background:var(--bg);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-bottom:1px solid transparent}
+.bmbar::-webkit-scrollbar{display:none}
+.bmbar[hidden]{display:none}
+.bmbar.stuck{border-bottom-color:var(--line2)}
+.bmbar .bmlbl{flex:none;font-size:12px;color:var(--ink3);letter-spacing:.02em}
+.bmbar .bm{flex:none;position:relative;height:34px;min-width:44px;padding:0 13px 0 22px;border:0;border-radius:6px;background:#3B2B20;color:#F6EBD8;font-family:var(--font-brush);font-size:17px;line-height:1;letter-spacing:.03em;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bmbar .bm::before{content:"";position:absolute;left:9px;top:50%;width:7px;height:7px;margin-top:-3.5px;background:#A3402F;border-radius:1px}
+.bmbar .bm:active{background:#5A4233}
 /* v1.51: 버튼·라벨 글자는 한 줄로 */
 .btn,.chip,.mini,.rbb,.mchip,.qchip,.ib,.tabs [role=tab],.wk,.pill,.star-btn,.lbl,label.lbl,.finbar button,.fin-tx b,.fin-tx span,.startrow .tx b,.startrow .tx span,.pitem .pn{white-space:nowrap}
 .btn,.chip,.mini{overflow:hidden;text-overflow:ellipsis}
@@ -624,6 +623,7 @@ body.typing{padding-bottom:46vh}
     <section id="tab-log" class="tab" aria-label="운동">
       <div id="logNotice"></div>
       <div id="woHead"></div>
+      <nav class="bmbar" id="bmFloat" aria-label="책갈피" hidden></nav>
       <div id="todayList" class="tab"></div>
       <div id="woFoot"></div>
       <div class="card" id="coachCard"></div>
@@ -816,7 +816,7 @@ body.typing{padding-bottom:46vh}
 <div class="askmodal" id="askModal" role="dialog" aria-modal="true" aria-labelledby="askMsg" hidden><div class="ask-in"><p id="askMsg"></p><div class="row"><button type="button" class="btn" data-ask="no">취소</button><button type="button" class="btn primary" data-ask="yes" id="askYes">그리하오</button></div></div></div>
 <button type="button" class="workout-return" id="workoutReturn" aria-label="현재 운동 위치로 이동" title="현재 운동으로 이동" hidden><svg class="brush-dumbbell" viewBox="0 0 64 44" aria-hidden="true"><defs><filter id="bdRough" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/></filter></defs><g filter="url(#bdRough)" fill="currentColor"><path d="M4 24.6 Q16 21.2 33 21.6 T60 20.4 L60.5 23.4 Q45 25.6 33 25.2 T4.5 27.2 Z"/><path d="M12.5 6.5 Q17.6 3.8 20.4 8.2 L21.4 35.5 Q18 41.2 12.6 37.6 Q10.4 22 12.5 6.5 Z"/><path d="M23.4 12 Q26.6 10 28.2 13.6 L28.4 30.4 Q25.6 33.8 23.2 31.2 Q22.2 21.6 23.4 12 Z"/><path d="M43.6 8.4 Q47 5 51.4 7 Q54 22.4 51.8 36.8 Q47.4 40.6 43.8 35.2 Q42.4 22 43.6 8.4 Z"/><path d="M35.8 13.6 Q38.4 11.2 40.8 13.8 Q41.8 22 40.6 30.6 Q38 33.4 35.8 30.2 Q35 22 35.8 13.6 Z"/><circle cx="57.5" cy="9" r="1.7"/><circle cx="53.5" cy="4.6" r="0.9"/><circle cx="6.5" cy="36" r="1.1"/></g><g stroke="#4D3A2E" stroke-width="0.8" stroke-linecap="round" opacity=".55" fill="none"><path d="M15 9 L14.6 33"/><path d="M17.8 11 L17.4 36"/><path d="M47.6 11 L47.2 34"/><path d="M50 12 L49.8 33"/><path d="M26 15 L25.8 29"/><path d="M38.2 16 L38 28"/></g></svg></button>
 
-<div class="bmfloat" id="bmFloat" role="navigation" aria-label="책갈피" hidden></div>
+
 
 <nav class="tabs" aria-label="화면 전환">
   <div class="tabs-in" role="tablist">
@@ -1465,16 +1465,22 @@ body.typing{padding-bottom:46vh}
     var box = $('#bmFloat'); if (!box) return;
     var html = (bookmarks || []).map(function (key) {
       var m = gs.filter(function (g) { return g.key === key; })[0]; if (!m) return '';
-      var full = m.sets[0].ex, short = full.replace(/\s+/g, ''); if (short.length > 6) short = short.slice(0, 6) + '…';
+      var full = m.sets[0].ex, short = full.replace(/\s+/g, ''); if (short.length > 7) short = short.slice(0, 7) + '…';
       return '<button type="button" class="bm" data-bookmark-jump="' + esc(key) + '" title="' + esc(full) + '" aria-label="책갈피: ' + esc(full) + '(으)로 이동"><span>' + esc(short) + '</span></button>';
     }).join('');
-    box.innerHTML = html; syncBmFloat();
+    box.innerHTML = html ? '<span class="bmlbl">책갈피</span>' + html : ''; syncBmFloat();
   }
   function syncBmFloat() {
     var box = $('#bmFloat'); if (!box) return;
-    var show = !!box.children.length && tab === 'log';
-    box.hidden = !show; document.body.classList.toggle('hasbm', show);
+    box.hidden = !(box.querySelector('.bm') && tab === 'log');
+    syncStickH();
   }
+  function syncStickH() {
+    var st = document.querySelector('.stick'); if (!st) return;
+    var h = Math.round(st.getBoundingClientRect().height);
+    if (h > 0) document.documentElement.style.setProperty('--stickH', h + 'px');
+  }
+  window.addEventListener('resize', syncStickH);
   function setMetaHtml(s, dn, timing) {
     var bits = [];
     if (s.st) bits.push('시작 ' + hms(s.st));
@@ -3761,7 +3767,7 @@ body.typing{padding-bottom:46vh}
   }
   $('.tabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) setTab(b.getAttribute('data-tab')); });
   $('#weekStrip').addEventListener('click', function (e) { var b = e.target.closest('[data-wk]'); if (b) setDate(b.getAttribute('data-wk')); });
-  (function () { var st = $('.stick'); function f() { st.classList.toggle('stuck', st.getBoundingClientRect().top <= 1); } window.addEventListener('scroll', f, { passive: true }); f(); })();
+  (function () { var st = $('.stick'); var bb = $('#bmFloat'); function f() { st.classList.toggle('stuck', st.getBoundingClientRect().top <= 1); if (bb) bb.classList.toggle('stuck', !bb.hidden && bb.getBoundingClientRect().top <= st.getBoundingClientRect().bottom + 1); } window.addEventListener('scroll', f, { passive: true }); f(); })();
   $('#prevDay').addEventListener('click', function () { setDate(addDays(selDate, -1)); });
   $('#nextDay').addEventListener('click', function () { setDate(addDays(selDate, 1)); });
   $('#todayBtn').addEventListener('click', function () { setDate(today()); });

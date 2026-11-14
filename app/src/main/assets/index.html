@@ -1256,7 +1256,15 @@ body.typing{padding-bottom:46vh}
     }
   });
   if (T.phase === 'rest') scheduleRestAlarm();
-  setInterval(tick, 250);
+  /* 배터리·발열 절감: 화면이 가려졌거나 타이머가 없으면 갱신 간격을 늘리고, 숨은 상태의 유휴 때는 건너뛰오 */
+  function tickLoop() {
+    var idle = T.phase === 'idle', hid = document.hidden;
+    if (!(idle && hid)) { try { tick(); } catch (e) {} }
+    if (wl && T.phase === 'set' && !T.targetSec && Date.now() - (T.start || 0) > 2 * 3600 * 1000) lockOff();
+    setTimeout(tickLoop, hid ? 1000 : (idle ? 800 : 250));
+  }
+  tickLoop();
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) tick(); });
 
   /* ---------- workout tab ---------- */
   function lastSession(ex, before) {

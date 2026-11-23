@@ -401,7 +401,7 @@ input[type=text],input[type=number],input[type=password],textarea{background:var
 .weekstrip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-bottom:1px solid var(--line2);margin-bottom:6px}
 .wk{border:0;background:transparent;padding:7px 1px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink2);border-radius:10px 10px 0 0;min-width:0;position:relative}
 .wk b{font-size:15px;font-weight:800;color:var(--ink)}
-.wk span{font-size:10.5px;line-height:1.2;height:2.4em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;text-align:center;color:var(--ink2)}
+.wk span{font-size:10.5px;line-height:1.2;height:2.4em;width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis;white-space:normal;word-break:break-all;overflow-wrap:anywhere;text-align:center;color:var(--ink2)}
 .wk.today b::after{content:"";display:block;width:4px;height:4px;border-radius:50%;background:var(--accent);margin:1px auto 0}
 .wk.on{background:var(--accent-wash)}
 .wk.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--accent)}
@@ -3846,7 +3846,7 @@ body.typing{padding-bottom:46vh}
     for (var i = 0; i < 7; i++) {
       var ds = addDays(ws, i), dd = S.days[ds], has = !!(dd && dd.sets && dd.sets.length);
       var nm = has ? String(dd.routine || '운동') : '–';
-      var label = esc(nm).replace(/\s*\(/, '<br>(');
+      var label = esc(nm);
       h += '<button type="button" class="wk' + (ds === selDate ? ' on' : '') + (ds === t ? ' today' : '') + (has ? ' has' : '') + '" data-wk="' + ds + '" aria-label="' + esc(fmtShort(ds) + ' ' + DOW[parse(ds).getDay()] + '요일 ' + (has ? nm : '기록 없음')) + '"' + (ds === selDate ? ' aria-current="date"' : '') + '><b>' + DOW[parse(ds).getDay()] + '</b><span>' + label + '</span></button>';
     }
     el.innerHTML = h;

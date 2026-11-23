@@ -340,7 +340,7 @@ svg.chart{display:block;max-width:100%}
 .nut small{font-size:11.5px;color:var(--ink3)}
 .nutnote{display:block;margin-top:8px;font-size:11.5px;color:var(--ink3);line-height:1.5}
 .nut.hi b{color:var(--accent)}
-.mex{display:block;font-size:11.5px;color:var(--ink3)}
+.mex{display:block;font-size:11.5px;color:var(--ink3);white-space:normal;overflow-wrap:anywhere}
 
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surface);border-top:1px solid var(--line);
   padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom, 0px));
@@ -711,7 +711,7 @@ body.typing{padding-bottom:46vh}
             <div class="field"><label class="lbl" for="mChol">콜레스테롤 (mg)</label><input type="number" id="mChol" inputmode="numeric" min="0"></div>
           </div>
         </details>
-        <p class="estnote">음식을 고르면 1인분 평균값으로 칼로리와 영양소가 자동 계산되오. 아래쪽 ‘식약처 영양성분 DB’ 음식은 식품의약품안전처 공공데이터(2025-04 기준)를 100g(ml)당 값에서 분량에 맞춰 환산한 것이오. 브랜드나 조리법에 따라 달라서 대략치이오. 직접 고쳐도 되오. 직접 입력한 음식은 ‘내 음식’으로 저장돼 다음부터 검색에 나오. 별(☆)을 눌러 즐겨찾기에 넣으면 이름 칸을 누를 때 먼저 보이오.</p>
+        <p class="estnote">음식을 고르면 1인분 평균값으로 칼로리와 영양소가 자동 계산되오. 브랜드나 조리법에 따라 달라서 대략치이오. 직접 고쳐도 되오. 직접 입력한 음식은 ‘내 음식’으로 저장돼 다음부터 검색에 나오. 별(☆)을 눌러 즐겨찾기에 넣으면 이름 칸을 누를 때 먼저 보이오.</p>
         <div class="msg" id="mealMsg" role="alert"></div>
         <button type="submit" class="btn primary">추가</button>
       </form>
@@ -3202,7 +3202,7 @@ body.typing{padding-bottom:46vh}
     if (!rows.length) { hideSug(); return; }
     var dbHead = false;
     $('#mSug').innerHTML = (head ? '<li class="shead">' + head + '</li>' : '') + rows.map(function (r) {
-      var h = ''; if (r.d != null && !dbHead) { dbHead = true; h = '<li class="shead">식약처 영양성분 DB</li>'; }
+      var h = ''; if (r.d != null && !dbHead) { dbHead = true; h = '<li class="shead">음식 DB</li>'; }
       return h + sugRow(r);
     }).join('');
     $('#mSug').hidden = false; $('#mName').setAttribute('aria-expanded', 'true');
@@ -3271,19 +3271,22 @@ body.typing{padding-bottom:46vh}
     } else {
       $('#mealList').innerHTML = '<div class="card"><ul class="meals">' + d.meals.map(function (m) {
         var fv = favFoodIdx(m.name) >= 0;
-        return '<li><span class="nm">' + esc(m.name) + mealSrcHtml(m) + '</span><span class="kv"><b>' + nf(m.kcal) + '</b>kcal<br>' + fw(m.p) + 'g 단백질' + mealMacroText(m) + '</span>' + starBtn(fv, 'data-mfav', m.id, fv ? '즐겨찾기 해제' : '즐겨찾기 추가').replace(esc(m.id) + ' 즐겨', esc(m.name) + ' 즐겨') + '<button type="button" class="mdel" data-del-meal="' + esc(m.id) + '" aria-label="' + esc(m.name) + ' 식사 삭제">삭제</button></li>';
+        return '<li><span class="nm">' + esc(m.name) + mealSrcHtml(m) + mealExHtml(m) + '</span><span class="kv"><b>' + nf(m.kcal) + '</b>kcal<br>' + fw(m.p) + 'g 단백질' + mealMacroText(m) + '</span>' + starBtn(fv, 'data-mfav', m.id, fv ? '즐겨찾기 해제' : '즐겨찾기 추가').replace(esc(m.id) + ' 즐겨', esc(m.name) + ' 즐겨') + '<button type="button" class="mdel" data-del-meal="' + esc(m.id) + '" aria-label="' + esc(m.name) + ' 식사 삭제">삭제</button></li>';
       }).join('') + '</ul></div>';
     }
     renderDietWeek(); renderPrice();
   }
   function mealSrcHtml(m) {
-    var t = m.src === 'fooddb' ? '식약처 영양성분 DB(100g당 값을 분량에 맞춰 환산)' + (m.unit ? ' · ' + m.unit + ' 단위 × ' + fw(m.qty || 1) : '') : m.src === 'builtin' ? '내장 평균값(추정)' + (m.unit ? ' · ' + m.unit + ' 단위 × ' + fw(m.qty || 1) : '') : m.src === 'price' ? '가격 비교 항목 · 직접 입력' : m.src === 'manual' ? '직접 입력' : '';
+    var t = m.src === 'fooddb' ? '' : m.src === 'builtin' ? '평균값(추정)' : m.src === 'price' ? '가격 비교 항목 · 직접 입력' : m.src === 'manual' ? '직접 입력' : '';
     return t ? '<small class="msrc">출처: ' + esc(t) + '</small>' : '';
   }
   function mealMacroText(m) {
     var b = []; if (m.c != null && m.c !== '') b.push('탄 ' + fw(m.c) + 'g'); if (m.f != null && m.f !== '') b.push('지 ' + fw(m.f) + 'g');
+    return b.length ? '<br>' + b.join(' · ') : '';
+  }
+  function mealExHtml(m) {
     var x = []; if (m.sg != null && m.sg !== '') x.push('당 ' + fw(m.sg) + 'g'); if (m.fb != null && m.fb !== '') x.push('섬유 ' + fw(m.fb) + 'g'); if (m.na != null && m.na !== '') x.push('나트륨 ' + nf(m.na) + 'mg');
-    return (b.length ? '<br>' + b.join(' · ') : '') + (x.length ? '<span class="mex">' + x.join(' · ') + '</span>' : '');
+    return x.length ? '<span class="mex">' + x.join(' · ') + '</span>' : '';
   }
   function dayNut(d) {
     var t = { n: d.meals.length };
@@ -3299,7 +3302,7 @@ body.typing{padding-bottom:46vh}
       if (c < t.n) partial = true;
       cells += '<div class="nut' + (k === 'na' && t.na > 2000 ? ' hi' : '') + '"><span class="k">' + o[1] + '</span><b>' + nf(t[k]) + '</b><small>' + o[2] + (c < t.n ? ' · ' + c + '/' + t.n + '끼' : '') + '</small></div>';
     });
-    if (!cells) return '<div class="mmacro"><small>식사에 탄수화물·지방·당류·나트륨 등을 적으면 하루 합계가 여기 나오오. 음식 이름 칸에서 ‘식약처 영양성분 DB’ 음식을 고르면 자동으로 채워지오.</small></div>';
+    if (!cells) return '<div class="mmacro"><small>식사에 탄수화물·지방·당류·나트륨 등을 적으면 하루 합계가 여기 나오오. 음식 이름 칸에서 음식을 고르면 자동으로 채워지오.</small></div>';
     return '<div class="nutgrid">' + cells + '</div><small class="nutnote">' + (partial ? '‘3/4끼’처럼 적힌 항목은 값을 적은 식사만 합친 값이오. ' : '') + (t.n_na ? '나트륨은 세계보건기구가 하루 2,000mg 미만을 권고하오. ' : '') + '음식 영양값은 대략치이오.</small>';
   }
   function dayMacros(d) {

@@ -378,6 +378,7 @@ button,input,textarea{font-family:inherit}
 .chip.primary,.rbb.primary,.mchip[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 input[type=text],input[type=number],input[type=password],textarea{background:var(--surface);border-color:var(--line2)}
 .tag{background:transparent;border:1px solid var(--line2);color:var(--ink2);border-radius:999px;padding:0 9px}
+.tag.ytlink{cursor:pointer;color:var(--accent);border-color:var(--accent);font-family:inherit;line-height:1.5}
 .notice{background:var(--accent-wash);color:var(--accent);border-radius:12px}
 .x:hover{background:var(--surface2)}
 
@@ -1532,7 +1533,7 @@ body.typing{padding-bottom:46vh}
       var lk = libFind(first.ex), groupWeight = first.groupWeight == null ? editableWeightSet.w : first.groupWeight, weightLocked = !!first.weightLocked;
       var weightHtml = timed ? '' : '<div class="group-weight-line"><label>전체 무게</label><button type="button" class="gw-stp" data-gw-step="-2.5" data-gw-key="' + esc(g.key) + '" aria-label="무게 2.5kg 줄이기">−</button><input type="number" inputmode="decimal" step="0.5" min="0" data-group-weight="' + esc(g.key) + '" value="' + fw(groupWeight) + '" aria-label="' + esc(first.ex) + ' 전체 세트 무게(kg)"><button type="button" class="gw-stp" data-gw-step="2.5" data-gw-key="' + esc(g.key) + '" aria-label="무게 2.5kg 늘리기">+</button><button type="button" class="weight-lock-mini ' + (weightLocked ? 'is-locked' : 'is-unlocked') + '" data-weight-lock="' + esc(g.key) + '" aria-pressed="' + weightLocked + '">' + LOCK_GLYPH + '</button></div>';
       var modeIcon = timed ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6h12M6 18h12M8 6v3m8-3v3M8 15v3m8-3v3M12 9v6"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9v6m-3-4v2m18-2v2m-3-4v6M6 12h12"/></svg>';
-      return '<article class="card grp" data-exercise="' + esc(g.key) + '"><header><div class="tt"><div class="grp-title-line"><h3>' + esc(first.ex) + '</h3><button type="button" class="exinfo-btn" data-exinfo aria-expanded="false" aria-label="이전 운동 기록 보기">!</button></div><div class="meta"><span class="tag">' + esc(first.m) + '</span>' + (lk ? '<span class="tag">' + esc(lk.eq) + '</span>' : '') + (timed ? '<span class="tag">시간 운동 · 세트당 ' + mmss(first.targetSec || 60) + '</span>' : '') + '</div>' + weightHtml + lastLine + '<div class="exercise-info" hidden>' + esc(lastInfo) + '</div></div>' +
+      return '<article class="card grp" data-exercise="' + esc(g.key) + '"><header><div class="tt"><div class="grp-title-line"><h3>' + esc(first.ex) + '</h3><button type="button" class="exinfo-btn" data-exinfo aria-expanded="false" aria-label="이전 운동 기록 보기">!</button></div><div class="meta"><span class="tag">' + esc(first.m) + '</span>' + (lk ? '<span class="tag">' + esc(lk.eq) + '</span>' : '') + '<button type="button" class="tag ytlink" data-exyt="' + esc(first.ex) + '" aria-label="' + esc(first.ex) + ' 자세 영상 찾아보기(유튜브)">▶ 영상</button>' + (timed ? '<span class="tag">시간 운동 · 세트당 ' + mmss(first.targetSec || 60) + '</span>' : '') + '</div>' + weightHtml + lastLine + '<div class="exercise-info" hidden>' + esc(lastInfo) + '</div></div>' +
         '<button type="button" class="bookmark-toggle ' + (bookmarked ? 'is-marked' : '') + '" data-bookmark-toggle="' + esc(g.key) + '" aria-pressed="' + bookmarked + '" aria-label="' + (bookmarked ? '책갈피 해제' : '이 종목 책갈피') + '" title="' + (bookmarked ? '책갈피 해제' : '책갈피에 표시') + '">' + (bookmarked ? '◆' : '◇') + '</button><button type="button" class="mode-icon" data-exmode="' + esc(g.key) + '" aria-label="' + (timed ? '횟수 운동으로 전환' : '시간 운동으로 전환') + '" title="' + (timed ? '횟수 운동으로 전환' : '시간 운동으로 전환') + '">' + modeIcon + '</button><button type="button" class="x" data-exswap="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 다른 운동으로 바꾸기">⇄</button><button type="button" class="x" data-exdel="' + esc(g.key) + '" aria-label="' + esc(first.ex) + ' 종목 삭제">×</button></header>' +
         '<ul class="sets"><li class="shead">' + (timed ? '<span></span><span>분</span><span>초</span><span>타이머</span><span></span>' : '<span></span><span>kg</span><span></span><span>횟수</span><span>시간</span><span></span>') + '</li>' +
         g.sets.map(function (s, i) {
@@ -1865,6 +1866,7 @@ body.typing{padding-bottom:46vh}
     else if (t.hasAttribute('data-sadd')) addSetTo(t.getAttribute('data-sadd'));
     else if (t.hasAttribute('data-sdel')) delLastSet(t.getAttribute('data-sdel'));
     else if (t.hasAttribute('data-exdel')) delExercise(t.getAttribute('data-exdel'));
+    else if (t.hasAttribute('data-exyt')) openExternal('https://www.youtube.com/results?search_query=' + encodeURIComponent(t.getAttribute('data-exyt') + ' 운동 자세 방법'));
     else if (t.hasAttribute('data-exmode')) toggleWorkoutExerciseMode(t.getAttribute('data-exmode'));
     else if (t.hasAttribute('data-exswap')) openPicker('swap-workout', t.getAttribute('data-exswap'));
     else if (t.hasAttribute('data-rst')) changeRest(t.getAttribute('data-key'), t.getAttribute('data-rst'));
@@ -3875,9 +3877,17 @@ body.typing{padding-bottom:46vh}
     renderAll(); window.scrollTo(0, 0);
   }
   $('.tabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) setTab(b.getAttribute('data-tab')); });
-  /* 뒤로가기(안드로이드): 열린 창 → 입력칸 → 다른 탭 → (홈이면) 끌지 묻는다. 3초 이상 길게 누르면 묻지 않고 꺼진다(MainActivity). */
+  /* 뒤로가기(안드로이드): 열린 창 → 입력칸 → 다른 탭 → (홈이면) 끌지 묻고, 2초 뒤 뒤로가기를 한 번 더 누르면 꺼진다. */
+  var exitArmedAt = 0;
+  function exitNow() { try { if (window.AndroidBridge && AndroidBridge.exitApp) AndroidBridge.exitApp(); } catch (e) {} }
   window.__nativeBack = function () {
-    var ask = $('#askModal'); if (ask && !ask.hidden) { askClose(false); return true; }
+    var ask = $('#askModal');
+    if (ask && !ask.hidden) {
+      if ($('#askMsg').textContent.indexOf('앱을 끌까요') === 0) {   // 종료 확인창에서 뒤로가기를 한 번 더 누르면 종료. 2초 동안은 연타해도 무시.
+        if (Date.now() >= exitArmedAt) exitNow(); return true;
+      }
+      askClose(false); return true;
+    }
     var order = ['picker', 'workoutTimeAdd', 'routineSwap', 'routinePreview', 'calSheet', 'editor'];
     for (var i = 0; i < order.length; i++) {
       var sh = document.getElementById(order[i]);
@@ -3886,7 +3896,8 @@ body.typing{padding-bottom:46vh}
     var sg = $('#mSug'); if (sg && !sg.hidden) { hideSug(); return true; }
     var ae = document.activeElement; if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) { ae.blur(); return true; }
     if (tab !== 'log') { setTab('log'); return true; }
-    askConfirm('앱을 끌까요?\n(뒤로가기를 3초 넘게 누르면 묻지 않고 바로 꺼지오)', '끄겠소', function () { try { if (window.AndroidBridge && AndroidBridge.exitApp) AndroidBridge.exitApp(); } catch (e) {} });
+    exitArmedAt = Date.now() + 2000;
+    askConfirm('앱을 끌까요?\n뒤로가기를 한 번 더 누르면 꺼지오.', '끄겠소', exitNow);
     return true;
   };
   $('#weekStrip').addEventListener('click', function (e) { var b = e.target.closest('[data-wk]'); if (b) setDate(b.getAttribute('data-wk')); });

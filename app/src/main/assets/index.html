@@ -326,6 +326,21 @@ svg.chart{display:block;max-width:100%}
 .sug small{color:var(--ink2);font-size:12px;text-align:right;font-variant-numeric:tabular-nums;flex:none}
 .qtyUnit{font-size:14px;color:var(--ink2)}
 .estnote{margin:0;font-size:12px;color:var(--ink3)}
+.qtyg{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--ink2)}
+.qtyg input{width:96px;min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font-size:16px;font-family:var(--font-num)}
+.qtyg em{font-style:normal}
+.moren{margin:2px 0 10px;border:1px solid var(--line);border-radius:12px;padding:0 12px;background:var(--surface2)}
+.moren summary{cursor:pointer;min-height:42px;display:flex;align-items:center;font-size:13.5px;color:var(--ink2)}
+.moren[open] summary{border-bottom:1px solid var(--line);margin-bottom:10px}
+.moren .grid2{padding-bottom:4px}
+.nutgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.nut{min-width:0}
+.nut .k{display:block;font-size:12px;color:var(--ink3)}
+.nut b{font-family:var(--font-num);font-size:19px;font-weight:700;margin-right:2px}
+.nut small{font-size:11.5px;color:var(--ink3)}
+.nutnote{display:block;margin-top:8px;font-size:11.5px;color:var(--ink3);line-height:1.5}
+.nut.hi b{color:var(--accent)}
+.mex{display:block;font-size:11.5px;color:var(--ink3)}
 
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--surface);border-top:1px solid var(--line);
   padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom, 0px));
@@ -677,6 +692,7 @@ body.typing{padding-bottom:46vh}
         <div class="field" id="qtyRow" hidden>
           <span class="lbl">양</span>
           <div class="stp"><button type="button" data-qty="-1" aria-label="양 줄이기">−</button><b id="qtyVal" aria-live="polite">1</b><button type="button" data-qty="1" aria-label="양 늘리기">+</button><span class="qtyUnit" id="qtyUnit"></span></div>
+          <label class="qtyg" id="qtyGWrap" hidden><span>그램(ml) 직접 입력</span><input type="number" id="qtyG" inputmode="decimal" min="1" step="any" aria-label="먹은 양을 그램이나 밀리리터로 직접 입력"><em id="qtyGU">g</em></label>
         </div>
         <div class="grid2">
           <div class="field"><label class="lbl" for="mKcal">칼로리 (kcal)</label><input type="number" id="mKcal" inputmode="numeric" min="0" placeholder="0"></div>
@@ -686,7 +702,16 @@ body.typing{padding-bottom:46vh}
           <div class="field"><label class="lbl" for="mCarb">탄수화물 (g, 선택)</label><input type="number" id="mCarb" inputmode="decimal" min="0" placeholder="모르면 비워 두시오"></div>
           <div class="field"><label class="lbl" for="mFat">지방 (g, 선택)</label><input type="number" id="mFat" inputmode="decimal" min="0" placeholder="모르면 비워 두시오"></div>
         </div>
-        <p class="estnote">음식을 고르면 1인분 평균값으로 칼로리와 단백질이 자동 계산되오. 브랜드나 조리법에 따라 달라서 대략치이오. 직접 고쳐도 되오. 직접 입력한 음식은 ‘내 음식’으로 저장돼 다음부터 검색에 나오. 별(☆)을 눌러 즐겨찾기에 넣으면 이름 칸을 누를 때 먼저 보이오.</p>
+        <details class="moren" id="moreNut"><summary>영양소 더 보기·적기 (당류·식이섬유·나트륨 등)</summary>
+          <div class="grid2">
+            <div class="field"><label class="lbl" for="mSugar">당류 (g)</label><input type="number" id="mSugar" inputmode="decimal" min="0"></div>
+            <div class="field"><label class="lbl" for="mFiber">식이섬유 (g)</label><input type="number" id="mFiber" inputmode="decimal" min="0"></div>
+            <div class="field"><label class="lbl" for="mNa">나트륨 (mg)</label><input type="number" id="mNa" inputmode="numeric" min="0"></div>
+            <div class="field"><label class="lbl" for="mSat">포화지방 (g)</label><input type="number" id="mSat" inputmode="decimal" min="0"></div>
+            <div class="field"><label class="lbl" for="mChol">콜레스테롤 (mg)</label><input type="number" id="mChol" inputmode="numeric" min="0"></div>
+          </div>
+        </details>
+        <p class="estnote">음식을 고르면 1인분 평균값으로 칼로리와 영양소가 자동 계산되오. 아래쪽 ‘식약처 영양성분 DB’ 음식은 식품의약품안전처 공공데이터(2025-04 기준)를 100g(ml)당 값에서 분량에 맞춰 환산한 것이오. 브랜드나 조리법에 따라 달라서 대략치이오. 직접 고쳐도 되오. 직접 입력한 음식은 ‘내 음식’으로 저장돼 다음부터 검색에 나오. 별(☆)을 눌러 즐겨찾기에 넣으면 이름 칸을 누를 때 먼저 보이오.</p>
         <div class="msg" id="mealMsg" role="alert"></div>
         <button type="submit" class="btn primary">추가</button>
       </form>
@@ -911,6 +936,7 @@ body.typing{padding-bottom:46vh}
 <div class="alarm-flash" id="alarmFlash" role="alert" hidden></div>
 <div class="tip" id="tip" hidden></div>
 
+<script src="fooddb.js"></script>
 <script>
 (function () {
   'use strict';
@@ -2533,8 +2559,11 @@ body.typing{padding-bottom:46vh}
         var dt = /^\d{4}-\d{2}-\d{2}$/.test(a.date || '') ? a.date : selDate, dm = getDay(dt); src((dt === today() ? '오늘' : fmtShort(dt)) + ' 식단');
         var kc = 0, pr = 0; dm.meals.forEach(function (m) { kc += Number(m.kcal) || 0; pr += Number(m.p) || 0; });
         var mac = dayMacros(dm);
-        out = { source: '앱 식단 기록', date: dt, meals: dm.meals.map(function (m) { var r = { name: m.name, kcal: m.kcal, protein_g: m.p, data_source: m.src === 'builtin' ? '앱 내장 평균값(추정)' : m.src === 'price' ? '사용자 입력 가격 항목' : m.src === 'manual' ? '사용자 직접 입력' : '출처 미기록' }; if (m.c != null) r.carbs_g = m.c; if (m.f != null) r.fat_g = m.f; return r; }), total: { kcal: Math.round(kc), protein_g: Math.round(pr * 10) / 10 }, goals: { kcal: S.settings.kcal, protein_g: S.settings.protein } };
+        out = { source: '앱 식단 기록', date: dt, meals: dm.meals.map(function (m) { var r = { name: m.name, kcal: m.kcal, protein_g: m.p, data_source: m.src === 'builtin' ? '앱 내장 평균값(추정)' : m.src === 'price' ? '사용자 입력 가격 항목' : m.src === 'manual' ? '사용자 직접 입력' : '출처 미기록' }; if (m.c != null) r.carbs_g = m.c; if (m.f != null) r.fat_g = m.f; if (m.sg != null) r.sugar_g = m.sg; if (m.fb != null) r.fiber_g = m.fb; if (m.na != null) r.sodium_mg = m.na; if (m.sf != null) r.saturated_fat_g = m.sf; if (m.ch != null) r.cholesterol_mg = m.ch; if (m.src === 'fooddb') r.data_source = '식약처 영양성분 DB(분량 환산)'; return r; }), total: { kcal: Math.round(kc), protein_g: Math.round(pr * 10) / 10 }, goals: { kcal: S.settings.kcal, protein_g: S.settings.protein } };
         if (mac.nc || mac.nf) out.total_macros_entered_only = { carbs_g: Math.round(mac.c), fat_g: Math.round(mac.f), meals_with_carbs: mac.nc, meals_with_fat: mac.nf, meals_total: mac.n, note: '탄수화물·지방은 입력한 식사만 합친 값이오.' };
+        var dn = dayNut(dm), ext = {};
+        [['sg', 'sugar_g'], ['fb', 'fiber_g'], ['na', 'sodium_mg'], ['sf', 'saturated_fat_g'], ['ch', 'cholesterol_mg']].forEach(function (o) { if (dn['n_' + o[0]]) ext[o[1]] = Math.round(dn[o[0]] * 10) / 10; });
+        if (Object.keys(ext).length) { ext.note = '값을 입력한 식사만 합친 값이오.'; out.total_other_nutrients_entered_only = ext; }
         if (!dm.meals.length) out.note = '이 날짜에는 식단 기록이 없소.';
       } else if (name === 'get_nutrition_history') {
         var nd = aiClamp(a.days, 1, 60, 7), rows = [], missing = 0; src('최근 ' + nd + '일 식단 합계');
@@ -3021,27 +3050,27 @@ body.typing{padding-bottom:46vh}
   $('#nextWeek').addEventListener('click', function () { setDate(addDays(selDate, 7)); });
 
   /* ---------- food estimates (대략치, 1단위 기준) ---------- */
-  /* [이름, 단위, kcal, 단백질g, 검색 별칭] */
+  /* [이름, 단위, kcal, 단백질g, 검색 별칭, [탄수화물g, 지방g, 당류g, 식이섬유g, 나트륨mg]] — 모두 대략치 */
   var FOODS = [
-    ['밥', '공기', 310, 5.5, '흰밥 쌀밥 햇반'], ['현미밥', '공기', 310, 6.5, ''], ['잡곡밥', '공기', 320, 7, ''],
-    ['고구마 (중간 크기)', '개', 190, 2.5, '군고구마 삶은고구마'], ['감자 (중간 크기)', '개', 110, 2.5, '삶은감자'],
-    ['오트밀', '40g', 150, 5, '귀리'], ['식빵', '장', 95, 3, '토스트 빵'], ['바나나', '개', 95, 1, ''], ['사과', '개', 100, 0.5, ''],
-    ['닭가슴살', '100g', 125, 24, '닭 가슴살 치킨'], ['닭다리살 (껍질 제거)', '100g', 190, 22, '닭다리'],
-    ['소고기 안심', '100g', 200, 27, '소고기 한우 우둔'], ['소고기 등심', '100g', 280, 23, '한우 스테이크'],
-    ['삼겹살', '100g', 350, 17, '돼지고기'], ['돼지 목살', '100g', 260, 19, '돼지고기'], ['돼지 안심', '100g', 160, 22, '돼지고기'],
-    ['삶은 계란', '개', 75, 6.5, '달걀 계란 구운계란 맥반석'], ['계란후라이', '개', 95, 6, '달걀 계란프라이'], ['계란흰자', '개', 17, 3.6, '달걀흰자'],
-    ['참치캔 (150g)', '캔', 250, 30, '참치'], ['연어', '100g', 210, 22, '연어구이'], ['고등어구이', '토막', 190, 17, '고등어'],
-    ['두부 (반 모)', '인분', 120, 12, '부침두부'], ['프로틴 쉐이크', '스쿱', 120, 24, '프로틴 단백질 보충제 웨이'],
-    ['우유', '200ml', 130, 6.5, ''], ['저지방 우유', '200ml', 100, 6.5, ''], ['그릭요거트', '100g', 100, 9, '요거트'],
-    ['슬라이스 치즈', '장', 60, 3.5, '치즈'], ['단백질바', '개', 200, 15, '프로틴바'], ['땅콩버터', '큰술', 95, 4, '피넛버터'],
-    ['아몬드', '25g', 145, 5.5, '견과류'], ['두유', '팩', 100, 7, ''],
-    ['김치찌개', '인분', 280, 17, ''], ['된장찌개', '인분', 150, 11, ''], ['순두부찌개', '인분', 230, 15, ''],
-    ['제육볶음', '인분', 450, 26, '돼지불고기'], ['불고기', '인분', 320, 24, '소불고기'], ['비빔밥', '그릇', 600, 20, ''],
-    ['김밥', '줄', 400, 12, ''], ['삼각김밥', '개', 190, 5, '주먹밥'], ['김치볶음밥', '접시', 650, 16, '볶음밥'],
-    ['국밥', '그릇', 700, 32, '돼지국밥 순대국밥'], ['냉면', '그릇', 530, 18, '물냉면 비빔냉면'], ['칼국수', '그릇', 550, 18, ''],
-    ['짜장면', '그릇', 780, 20, '짜장'], ['짬뽕', '그릇', 680, 30, ''], ['라면', '봉지', 500, 10, '신라면'], ['컵라면', '개', 400, 8, ''],
-    ['떡볶이', '인분', 450, 10, ''], ['후라이드치킨', '조각', 270, 17, '치킨 닭튀김'], ['피자', '조각', 280, 12, ''],
-    ['햄버거', '개', 500, 25, '버거'], ['닭가슴살 샐러드', '팩', 260, 26, '샐러드'], ['카페라떼', '잔', 180, 9, '라떼'], ['아메리카노', '잔', 10, 0.5, '커피']
+    ['밥', '공기', 310, 5.5, '흰밥 쌀밥 햇반', [68,0.6,0,0.6,3]], ['현미밥', '공기', 310, 6.5, '', [65,2.3,0.5,3,5]], ['잡곡밥', '공기', 320, 7, '', [66,1.5,0.5,3,5]],
+    ['고구마 (중간 크기)', '개', 190, 2.5, '군고구마 삶은고구마', [44,0.3,12,4,20]], ['감자 (중간 크기)', '개', 110, 2.5, '삶은감자', [25,0.2,2,2.5,10]],
+    ['오트밀', '40g', 150, 5, '귀리', [27,3,0.5,4,2]], ['식빵', '장', 95, 3, '토스트 빵', [17,1.3,2,0.8,170]], ['바나나', '개', 95, 1, '', [24,0.3,13,2.5,1]], ['사과', '개', 100, 0.5, '', [25,0.2,20,3.5,2]],
+    ['닭가슴살', '100g', 125, 24, '닭 가슴살 치킨', [0,3,0,0,60]], ['닭다리살 (껍질 제거)', '100g', 190, 22, '닭다리', [0,11,0,0,80]],
+    ['소고기 안심', '100g', 200, 27, '소고기 한우 우둔', [0,10,0,0,55]], ['소고기 등심', '100g', 280, 23, '한우 스테이크', [0,20,0,0,55]],
+    ['삼겹살', '100g', 350, 17, '돼지고기', [0,31,0,0,55]], ['돼지 목살', '100g', 260, 19, '돼지고기', [0,20,0,0,55]], ['돼지 안심', '100g', 160, 22, '돼지고기', [0,7.5,0,0,55]],
+    ['삶은 계란', '개', 75, 6.5, '달걀 계란 구운계란 맥반석', [0.4,5,0.2,0,65]], ['계란후라이', '개', 95, 6, '달걀 계란프라이', [0.5,7.5,0.2,0,100]], ['계란흰자', '개', 17, 3.6, '달걀흰자', [0.3,0,0,0,55]],
+    ['참치캔 (150g)', '캔', 250, 30, '참치', [0,14,0,0,450]], ['연어', '100g', 210, 22, '연어구이', [0,13,0,0,60]], ['고등어구이', '토막', 190, 17, '고등어', [0,13,0,0,220]],
+    ['두부 (반 모)', '인분', 120, 12, '부침두부', [3,7,0.5,1,20]], ['프로틴 쉐이크', '스쿱', 120, 24, '프로틴 단백질 보충제 웨이', [3,1.5,1.5,0.5,150]],
+    ['우유', '200ml', 130, 6.5, '', [9.5,7,9.5,0,100]], ['저지방 우유', '200ml', 100, 6.5, '', [9.5,3.5,9.5,0,100]], ['그릭요거트', '100g', 100, 9, '요거트', [4,5,4,0,40]],
+    ['슬라이스 치즈', '장', 60, 3.5, '치즈', [1,4.5,0.5,0,220]], ['단백질바', '개', 200, 15, '프로틴바', [20,7,6,5,150]], ['땅콩버터', '큰술', 95, 4, '피넛버터', [3.5,8,1.5,1,70]],
+    ['아몬드', '25g', 145, 5.5, '견과류', [5,12,1,3,0]], ['두유', '팩', 100, 7, '', [8,4.5,5,0,100]],
+    ['김치찌개', '인분', 280, 17, '', [12,17,3,3,1400]], ['된장찌개', '인분', 150, 11, '', [9,7,2,3,1300]], ['순두부찌개', '인분', 230, 15, '', [8,15,2,2,1200]],
+    ['제육볶음', '인분', 450, 26, '돼지불고기', [22,28,10,2,1100]], ['불고기', '인분', 320, 24, '소불고기', [15,18,10,1,900]], ['비빔밥', '그릇', 600, 20, '', [95,14,10,6,1100]],
+    ['김밥', '줄', 400, 12, '', [65,10,5,3,1000]], ['삼각김밥', '개', 190, 5, '주먹밥', [38,2.5,2,1,450]], ['김치볶음밥', '접시', 650, 16, '볶음밥', [100,20,4,4,1500]],
+    ['국밥', '그릇', 700, 32, '돼지국밥 순대국밥', [85,25,3,2,1800]], ['냉면', '그릇', 530, 18, '물냉면 비빔냉면', [100,5,8,4,1800]], ['칼국수', '그릇', 550, 18, '', [98,9,4,4,1900]],
+    ['짜장면', '그릇', 780, 20, '짜장', [125,22,12,5,1700]], ['짬뽕', '그릇', 680, 30, '', [95,20,8,6,2200]], ['라면', '봉지', 500, 10, '신라면', [80,16,4,3,1800]], ['컵라면', '개', 400, 8, '', [58,15,3,2,1700]],
+    ['떡볶이', '인분', 450, 10, '', [90,6,15,3,1000]], ['후라이드치킨', '조각', 270, 17, '치킨 닭튀김', [11,17,0,0,500]], ['피자', '조각', 280, 12, '', [32,11,4,2,600]],
+    ['햄버거', '개', 500, 25, '버거', [42,24,7,2,900]], ['닭가슴살 샐러드', '팩', 260, 26, '샐러드', [12,11,6,4,700]], ['카페라떼', '잔', 180, 9, '라떼', [15,9,14,0,120]], ['아메리카노', '잔', 10, 0.5, '커피', [2,0,0,0,5]]
   ];
   var selFood = null, foodQty = 1;
   function fq(q) { return String(Math.round(q * 10) / 10); }
@@ -3052,14 +3081,61 @@ body.typing{padding-bottom:46vh}
   function foodUnitHint(f, q) {
     return /^(\d+(?:\.\d+)?)(g|ml)$/.test(f[1]) ? '× ' + f[1] + ' = ' + foodAmount(f, q) : f[1];
   }
-  function applyFood() {
+  /* 영양소 확장: 탄수화물(c)·지방(f)·당류(sg)·식이섬유(fb)·나트륨(na, mg)·포화지방(sf)·콜레스테롤(ch, mg) */
+  var NUTK = ['c', 'f', 'sg', 'fb', 'na', 'sf', 'ch'];
+  var NUTIN = { c: 'mCarb', f: 'mFat', sg: 'mSugar', fb: 'mFiber', na: 'mNa', sf: 'mSat', ch: 'mChol' };
+  function foodNut(f) {
+    var x = f[5]; if (!x) return {};
+    return Array.isArray(x) ? { c: x[0], f: x[1], sg: x[2], fb: x[3], na: x[4] } : x;
+  }
+  function applyFood(skipG) {
     var f = selFood; if (!f) return;
     $('#mKcal').value = Math.round(f[2] * foodQty);
     $('#mProt').value = Math.round(f[3] * foodQty * 10) / 10;
+    var n = foodNut(f), any = false;
+    NUTK.forEach(function (k) {
+      var v = n[k], el = $('#' + NUTIN[k]);
+      if (v == null) { el.value = ''; return; }
+      el.value = (k === 'na' || k === 'ch') ? Math.round(v * foodQty) : Math.round(v * foodQty * 10) / 10;
+      if (k !== 'c' && k !== 'f') any = true;
+    });
+    if (any) $('#moreNut').open = true;
     $('#qtyVal').textContent = fq(foodQty);
     $('#qtyUnit').textContent = foodUnitHint(f, foodQty);
+    var gm = /^(\d+(?:\.\d+)?)(g|ml)$/.exec(f[1]), gw = $('#qtyGWrap');
+    gw.hidden = !gm;
+    if (gm) { $('#qtyGU').textContent = gm[2]; if (skipG !== true) $('#qtyG').value = Math.round(parseFloat(gm[1]) * foodQty * 10) / 10; }
   }
   function clearFood() { selFood = null; foodQty = 1; $('#qtyRow').hidden = true; }
+  function clearNutInputs() { NUTK.forEach(function (k) { $('#' + NUTIN[k]).value = ''; }); $('#moreNut').open = false; }
+  $('#qtyG').addEventListener('input', function () {
+    var f = selFood, m = f && /^(\d+(?:\.\d+)?)(g|ml)$/.exec(f[1]), g = parseFloat(this.value);
+    if (!m || !(g > 0)) return;
+    foodQty = Math.min(50, Math.max(0.02, g / parseFloat(m[1]))); applyFood(true);
+  });
+  /* 식약처 영양성분 DB (assets/fooddb.js) */
+  var FDB = window.FOODDB && window.FOODDB.rows ? window.FOODDB : null, fdbIdx = null;
+  function fdbSearch(q, limit) {
+    if (!FDB) return [];
+    var toks = q.toLowerCase().split(/\s+/).filter(Boolean); if (!toks.length) return [];
+    if (!fdbIdx) fdbIdx = FDB.rows.map(function (r) { return (r[0] + (r[1] >= 0 ? FDB.vendors[r[1]] : '')).replace(/\s+/g, '').toLowerCase(); });
+    var joined = toks.join(''), out = [];
+    for (var i = 0; i < fdbIdx.length; i++) {
+      var ix = fdbIdx[i], ok = true, pos = 0;
+      for (var t = 0; t < toks.length; t++) { var p = ix.indexOf(toks[t]); if (p < 0) { ok = false; break; } if (t === 0) pos = p; }
+      if (!ok) continue;
+      var r = FDB.rows[i], nm = r[0].replace(/\s+/g, '').toLowerCase();
+      out.push([nm === joined ? 0 : pos === 0 ? 1 : nm.indexOf(toks[0]) >= 0 ? 2 : 3, r[1] < 0 ? 0 : 1, nm.length, i]);
+    }
+    out.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]; });
+    return out.slice(0, limit).map(function (x) { return x[3]; });
+  }
+  function fdbFood(i) {
+    var r = FDB.rows[i], W = r[3] || 100, k = W / 100, vend = r[1] >= 0 ? FDB.vendors[r[1]] : '';
+    var sc = function (v) { return v == null ? null : Math.round(v * k * 10) / 10; }, sw = function (v) { return v == null ? null : Math.round(v * k); };
+    return [r[0] + (vend ? ' (' + vend + ')' : ''), W + (r[2] ? 'ml' : 'g'), Math.round(r[4] * k), sc(r[5]) || 0, '',
+      { c: sc(r[6]), f: sc(r[7]), sg: sc(r[8]), fb: sc(r[9]), na: sw(r[10]), sf: sc(r[11]), ch: sw(r[12]) }, 'db'];
+  }
   /* favorites */
   function favList(k) { var st = S.settings; if (!Array.isArray(st[k])) st[k] = []; return st[k]; }
   function isFavEx(n) { var k = normEx(n); return favList('favEx').some(function (x) { return normEx(x) === k; }); }
@@ -3090,6 +3166,10 @@ body.typing{padding-bottom:46vh}
     return isNew;
   }
   function sugRow(r) {
+    if (r.d != null) {
+      var df = fdbFood(r.d);
+      return '<li role="option"><button type="button" class="sgo" data-fdb="' + r.d + '"><span>' + esc(df[0]) + '</span><small>' + esc(df[1]) + ' · ' + df[2] + 'kcal · 단백질 ' + df[3] + 'g</small></button></li>';
+    }
     if (r.c || r.m) {
       var c = r.c || r.m, mine = !!r.m, on = favFoodIdx(c.n) >= 0;
       return '<li role="option"><button type="button" class="sgo" ' + (mine ? 'data-mine' : 'data-cfav') + '="' + esc(c.n) + '"><span>' + esc(c.n) + '</span><small>' + (mine ? '내 음식 · ' : '') + c.k + 'kcal · 단백질 ' + c.p + 'g</small></button>' +
@@ -3117,9 +3197,14 @@ body.typing{padding-bottom:46vh}
       FOODS.forEach(function (f, i) { if (seen[normEx(f[0])]) return; var r = rk(f[0], f[4]); if (r >= 0) hits.push({ r: { b: i }, rank: r, fav: favFoodIdx(f[0]) >= 0 ? 0 : 1, i: i }); });
       hits.sort(function (x, y) { return x.rank - y.rank || x.fav - y.fav || x.i - y.i; });
       rows = hits.slice(0, 7).map(function (h) { return h.r; });
+      fdbSearch($('#mName').value.trim(), 8).forEach(function (i) { rows.push({ d: i }); });
     }
     if (!rows.length) { hideSug(); return; }
-    $('#mSug').innerHTML = (head ? '<li class="shead">' + head + '</li>' : '') + rows.map(sugRow).join('');
+    var dbHead = false;
+    $('#mSug').innerHTML = (head ? '<li class="shead">' + head + '</li>' : '') + rows.map(function (r) {
+      var h = ''; if (r.d != null && !dbHead) { dbHead = true; h = '<li class="shead">식약처 영양성분 DB</li>'; }
+      return h + sugRow(r);
+    }).join('');
     $('#mSug').hidden = false; $('#mName').setAttribute('aria-expanded', 'true');
   }
   $('#mName').addEventListener('input', function () { if (selFood && this.value !== selFood[0]) clearFood(); showSug(); });
@@ -3147,6 +3232,8 @@ body.typing{padding-bottom:46vh}
       if (f) { clearFood(); $('#mName').value = f.n; $('#mKcal').value = f.k; $('#mProt').value = f.p; hideSug(); }
       return;
     }
+    var fdb = e.target.closest('[data-fdb]');
+    if (fdb) { selFood = fdbFood(+fdb.getAttribute('data-fdb')); foodQty = 1; $('#mName').value = selFood[0]; $('#qtyRow').hidden = false; hideSug(); applyFood(); return; }
     var b = e.target.closest('[data-food]'); if (!b) return;
     selFood = FOODS[+b.getAttribute('data-food')]; foodQty = 1;
     $('#mName').value = selFood[0]; $('#qtyRow').hidden = false; hideSug(); applyFood();
@@ -3172,7 +3259,7 @@ body.typing{padding-bottom:46vh}
     };
     var mc = dayMacros(d);
     $('#dietSummary').innerHTML = row('칼로리', kcal, 'kcal', G.kcal) + row('단백질', prot, 'g', G.protein) +
-      (d.meals.length ? '<div class="mmacro">' + (mc.nc || mc.nf ? '탄수화물 ' + nf(mc.c) + 'g · 지방 ' + nf(mc.f) + 'g <small>(' + (mc.nc === mc.n && mc.nf === mc.n ? '모든 식사 기준' : '탄수화물·지방을 적은 식사만 합친 값이오') + ')</small>' : '<small>식사에 탄수화물·지방을 적으면 합계가 여기 나오오.</small>') + '</div>' : '');
+      nutGridHtml(d);
     var seen = {}; quick = [];
     Object.keys(S.days).sort().reverse().forEach(function (dt) {
       S.days[dt].meals.slice().reverse().forEach(function (m) { var k = normEx(m.name); if (!seen[k] && quick.length < 8) { seen[k] = 1; quick.push(m); } });
@@ -3190,12 +3277,30 @@ body.typing{padding-bottom:46vh}
     renderDietWeek(); renderPrice();
   }
   function mealSrcHtml(m) {
-    var t = m.src === 'builtin' ? '내장 평균값(추정)' + (m.unit ? ' · ' + m.unit + ' 단위 × ' + fw(m.qty || 1) : '') : m.src === 'price' ? '가격 비교 항목 · 직접 입력' : m.src === 'manual' ? '직접 입력' : '';
+    var t = m.src === 'fooddb' ? '식약처 영양성분 DB(100g당 값을 분량에 맞춰 환산)' + (m.unit ? ' · ' + m.unit + ' 단위 × ' + fw(m.qty || 1) : '') : m.src === 'builtin' ? '내장 평균값(추정)' + (m.unit ? ' · ' + m.unit + ' 단위 × ' + fw(m.qty || 1) : '') : m.src === 'price' ? '가격 비교 항목 · 직접 입력' : m.src === 'manual' ? '직접 입력' : '';
     return t ? '<small class="msrc">출처: ' + esc(t) + '</small>' : '';
   }
   function mealMacroText(m) {
     var b = []; if (m.c != null && m.c !== '') b.push('탄 ' + fw(m.c) + 'g'); if (m.f != null && m.f !== '') b.push('지 ' + fw(m.f) + 'g');
-    return b.length ? '<br>' + b.join(' · ') : '';
+    var x = []; if (m.sg != null && m.sg !== '') x.push('당 ' + fw(m.sg) + 'g'); if (m.fb != null && m.fb !== '') x.push('섬유 ' + fw(m.fb) + 'g'); if (m.na != null && m.na !== '') x.push('나트륨 ' + nf(m.na) + 'mg');
+    return (b.length ? '<br>' + b.join(' · ') : '') + (x.length ? '<span class="mex">' + x.join(' · ') + '</span>' : '');
+  }
+  function dayNut(d) {
+    var t = { n: d.meals.length };
+    NUTK.forEach(function (k) { t[k] = 0; t['n_' + k] = 0; });
+    d.meals.forEach(function (m) { NUTK.forEach(function (k) { if (m[k] != null && m[k] !== '' && isFinite(+m[k])) { t[k] += +m[k]; t['n_' + k]++; } }); });
+    return t;
+  }
+  function nutGridHtml(d) {
+    if (!d.meals.length) return '';
+    var t = dayNut(d), L = [['c', '탄수화물', 'g'], ['f', '지방', 'g'], ['sg', '당류', 'g'], ['fb', '식이섬유', 'g'], ['na', '나트륨', 'mg'], ['sf', '포화지방', 'g'], ['ch', '콜레스테롤', 'mg']], partial = false, cells = '';
+    L.forEach(function (o) {
+      var k = o[0], c = t['n_' + k]; if (!c) return;
+      if (c < t.n) partial = true;
+      cells += '<div class="nut' + (k === 'na' && t.na > 2000 ? ' hi' : '') + '"><span class="k">' + o[1] + '</span><b>' + nf(t[k]) + '</b><small>' + o[2] + (c < t.n ? ' · ' + c + '/' + t.n + '끼' : '') + '</small></div>';
+    });
+    if (!cells) return '<div class="mmacro"><small>식사에 탄수화물·지방·당류·나트륨 등을 적으면 하루 합계가 여기 나오오. 음식 이름 칸에서 ‘식약처 영양성분 DB’ 음식을 고르면 자동으로 채워지오.</small></div>';
+    return '<div class="nutgrid">' + cells + '</div><small class="nutnote">' + (partial ? '‘3/4끼’처럼 적힌 항목은 값을 적은 식사만 합친 값이오. ' : '') + (t.n_na ? '나트륨은 세계보건기구가 하루 2,000mg 미만을 권고하오. ' : '') + '음식 영양값은 대략치이오.</small>';
   }
   function dayMacros(d) {
     var c = 0, f = 0, nc = 0, nf2 = 0;
@@ -3291,7 +3396,8 @@ body.typing{padding-bottom:46vh}
       withUndo(x.name + ' 1회 추가했소', selDate, function (d) { d.meals.push({ id: uid(), name: x.name + (x.sv ? ' ' + x.sv : ' 1회'), kcal: x.k, p: x.p, c: x.c, f: x.f, src: 'price', t: Date.now() }); });
     }
   });
-  function addMeal(m) { var meal = { id: uid(), name: m.name, kcal: m.kcal, p: m.p, t: Date.now() }; if (m.c != null) meal.c = m.c; if (m.f != null) meal.f = m.f; if (m.src) meal.src = m.src; if (m.unit) { meal.unit = m.unit; meal.qty = m.qty; } return mutate(selDate, function (d) { d.meals.push(meal); }); }
+  function readExtras() { var x = {}; NUTK.forEach(function (k) { var v = parseFloat($('#' + NUTIN[k]).value); if (!isNaN(v) && v >= 0) x[k] = v; }); return x; }
+  function addMeal(m) { var meal = { id: uid(), name: m.name, kcal: m.kcal, p: m.p, t: Date.now() }; if (m.c != null) meal.c = m.c; if (m.f != null) meal.f = m.f; if (m.src) meal.src = m.src; if (m.unit) { meal.unit = m.unit; meal.qty = m.qty; } if (m.x) NUTK.forEach(function (k) { if (k !== 'c' && k !== 'f' && m.x[k] != null) meal[k] = m.x[k]; }); return mutate(selDate, function (d) { d.meals.push(meal); }); }
   $('#mealForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var name = $('#mName').value.trim(), kcal = parseFloat($('#mKcal').value), p = parseFloat($('#mProt').value), msg = $('#mealMsg');
@@ -3302,9 +3408,9 @@ body.typing{padding-bottom:46vh}
     if (isNaN(mc) || mc < 0) mc = null; if (isNaN(mf) || mf < 0) mf = null;
     msg.textContent = '';
     var label = selFood ? selFood[0] + ' ' + foodAmount(selFood, foodQty) : name;
-    if (addMeal({ name: label, kcal: kcal, p: p, c: mc, f: mf, src: selFood ? 'builtin' : 'manual', unit: selFood ? selFood[1] : '', qty: foodQty })) { var saved = !selFood && rememberFood(name, kcal, p); $('#mName').value = ''; $('#mKcal').value = ''; $('#mProt').value = ''; $('#mCarb').value = ''; $('#mFat').value = ''; clearFood(); hideSug(); toast(label + ' 추가했소' + (saved ? ' · 내 음식 목록에 저장됨' : '')); }
+    if (addMeal({ name: label, kcal: kcal, p: p, c: mc, f: mf, src: selFood ? (selFood[6] === 'db' ? 'fooddb' : 'builtin') : 'manual', unit: selFood ? selFood[1] : '', qty: foodQty, x: readExtras() })) { var saved = !selFood && rememberFood(name, kcal, p); $('#mName').value = ''; $('#mKcal').value = ''; $('#mProt').value = ''; clearNutInputs(); clearFood(); hideSug(); toast(label + ' 추가했소' + (saved ? ' · 내 음식 목록에 저장됨' : '')); }
   });
-  $('#quick').addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (!b) return; var m = quick[+b.getAttribute('data-q')]; if (!m) return; withUndo(m.name + ' 추가했소', selDate, function (d) { var nm = { id: uid(), name: m.name, kcal: m.kcal, p: m.p, t: Date.now() }; ['c', 'f', 'src', 'unit', 'qty'].forEach(function (k) { if (m[k] != null && m[k] !== '') nm[k] = m[k]; }); d.meals.push(nm); }); });
+  $('#quick').addEventListener('click', function (e) { var b = e.target.closest('[data-q]'); if (!b) return; var m = quick[+b.getAttribute('data-q')]; if (!m) return; withUndo(m.name + ' 추가했소', selDate, function (d) { var nm = { id: uid(), name: m.name, kcal: m.kcal, p: m.p, t: Date.now() }; ['c', 'f', 'sg', 'fb', 'na', 'sf', 'ch', 'src', 'unit', 'qty'].forEach(function (k) { if (m[k] != null && m[k] !== '') nm[k] = m[k]; }); d.meals.push(nm); }); });
   $('#mealList').addEventListener('click', function (e) {
     var sf = e.target.closest('[data-mfav]');
     if (sf) {

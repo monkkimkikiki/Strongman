@@ -433,6 +433,14 @@ public class MainActivity extends Activity {
         }).start();
     }
 
+    /** 뒤로가기: 앱이 꺼지지 않게 한다. 열린 창 닫기 → 홈 탭으로 이동 순으로 화면(JS)이 처리한다. */
+    @Override public void onBackPressed() {
+        if (web == null) { moveTaskToBack(true); return; }
+        web.evaluateJavascript("(function(){try{return window.__nativeBack?window.__nativeBack():null}catch(e){return null}})()", value -> {
+            // 화면이 아직 준비되지 않았거나 오류일 때만 앱을 종료하지 않고 뒤로 보낸다(백그라운드 이동).
+            if (value == null || "null".equals(value)) moveTaskToBack(true);
+        });
+    }
     @Override protected void onPause() { super.onPause(); if (web != null) web.onPause(); }
     @Override protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);

@@ -3875,6 +3875,21 @@ body.typing{padding-bottom:46vh}
     renderAll(); window.scrollTo(0, 0);
   }
   $('.tabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) setTab(b.getAttribute('data-tab')); });
+  /* 뒤로가기(안드로이드): 열린 창 → 입력칸 → 다른 탭 → (홈이면) 그대로 머문다. 앱은 꺼지지 않는다. */
+  var backWarnAt = 0;
+  window.__nativeBack = function () {
+    var ask = $('#askModal'); if (ask && !ask.hidden) { askClose(false); return true; }
+    var order = ['picker', 'workoutTimeAdd', 'routineSwap', 'routinePreview', 'calSheet', 'editor'];
+    for (var i = 0; i < order.length; i++) {
+      var sh = document.getElementById(order[i]);
+      if (sh && !sh.hidden) { var cb = sh.querySelector('.sheet-top button'); if (cb) cb.click(); else sheetClose(sh); return true; }
+    }
+    var sg = $('#mSug'); if (sg && !sg.hidden) { hideSug(); return true; }
+    var ae = document.activeElement; if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) { ae.blur(); return true; }
+    if (tab !== 'log') { setTab('log'); return true; }
+    var now = Date.now(); if (now - backWarnAt > 2500) { backWarnAt = now; toast('홈 화면이오. 앱을 나가려면 홈 버튼을 누르시오'); }
+    return true;
+  };
   $('#weekStrip').addEventListener('click', function (e) { var b = e.target.closest('[data-wk]'); if (b) setDate(b.getAttribute('data-wk')); });
   (function () { var st = $('.stick'); var bb = $('#bmFloat'); function f() { st.classList.toggle('stuck', st.getBoundingClientRect().top <= 1); if (bb) bb.classList.toggle('stuck', !bb.hidden && bb.getBoundingClientRect().top <= st.getBoundingClientRect().bottom + 1); } window.addEventListener('scroll', f, { passive: true }); f(); })();
   $('#prevDay').addEventListener('click', function () { setDate(addDays(selDate, -1)); });

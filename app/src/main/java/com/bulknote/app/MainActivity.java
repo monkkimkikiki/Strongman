@@ -8,6 +8,9 @@ import android.net.Uri;
 import android.provider.Settings;
 import android.app.AlarmManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.KeyEvent;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -96,6 +99,7 @@ public class MainActivity extends Activity {
 
     private class Bridge {
         @JavascriptInterface public String ping() { return "BulkNote AndroidBridge OK"; }
+        @JavascriptInterface public void exitApp() { runOnUiThread(() -> finish()); }
 
         private SecretKey getOrCreateAiKey() throws Exception {
             KeyStore ks=KeyStore.getInstance("AndroidKeyStore"); ks.load(null);
@@ -433,6 +437,26 @@ public class MainActivity extends Activity {
         }).start();
     }
 
+    // 뒤로가기 버튼을 3초 이상 누르고 있으면 묻지 않고 바로 앱을 끈다(짧게 누르면 화면이 처리).
+    private final Handler backHold = new Handler(Looper.getMainLooper());
+    private boolean backHeldExit = false;
+    private final Runnable backExit = () -> { backHeldExit = true; finish(); };
+    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (event.getRepeatCount() == 0) { backHeldExit = false; backHold.removeCallbacks(backExit); backHold.postDelayed(backExit, 3000); }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    @Override public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            backHold.removeCallbacks(backExit);
+            if (backHeldExit) { backHeldExit = false; return true; }
+            if (!event.isCanceled()) onBackPressed();
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
+    }
     /** 뒤로가기: 앱이 꺼지지 않게 한다. 열린 창 닫기 → 홈 탭으로 이동 순으로 화면(JS)이 처리한다. */
     @Override public void onBackPressed() {
         if (web == null) { moveTaskToBack(true); return; }

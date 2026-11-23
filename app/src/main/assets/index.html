@@ -3875,8 +3875,7 @@ body.typing{padding-bottom:46vh}
     renderAll(); window.scrollTo(0, 0);
   }
   $('.tabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) setTab(b.getAttribute('data-tab')); });
-  /* 뒤로가기(안드로이드): 열린 창 → 입력칸 → 다른 탭 → (홈이면) 그대로 머문다. 앱은 꺼지지 않는다. */
-  var backWarnAt = 0;
+  /* 뒤로가기(안드로이드): 열린 창 → 입력칸 → 다른 탭 → (홈이면) 끌지 묻는다. 3초 이상 길게 누르면 묻지 않고 꺼진다(MainActivity). */
   window.__nativeBack = function () {
     var ask = $('#askModal'); if (ask && !ask.hidden) { askClose(false); return true; }
     var order = ['picker', 'workoutTimeAdd', 'routineSwap', 'routinePreview', 'calSheet', 'editor'];
@@ -3887,7 +3886,7 @@ body.typing{padding-bottom:46vh}
     var sg = $('#mSug'); if (sg && !sg.hidden) { hideSug(); return true; }
     var ae = document.activeElement; if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) { ae.blur(); return true; }
     if (tab !== 'log') { setTab('log'); return true; }
-    var now = Date.now(); if (now - backWarnAt > 2500) { backWarnAt = now; toast('홈 화면이오. 앱을 나가려면 홈 버튼을 누르시오'); }
+    askConfirm('앱을 끌까요?\n(뒤로가기를 3초 넘게 누르면 묻지 않고 바로 꺼지오)', '끄겠소', function () { try { if (window.AndroidBridge && AndroidBridge.exitApp) AndroidBridge.exitApp(); } catch (e) {} });
     return true;
   };
   $('#weekStrip').addEventListener('click', function (e) { var b = e.target.closest('[data-wk]'); if (b) setDate(b.getAttribute('data-wk')); });

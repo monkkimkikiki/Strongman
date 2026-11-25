@@ -3878,8 +3878,8 @@ body.typing{padding-bottom:46vh}
   }
   $('.tabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) setTab(b.getAttribute('data-tab')); });
   /* 뒤로가기(안드로이드): 열린 창 → 입력칸 → 다른 탭이면 홈으로 → 홈에서 누르면 "한 번 더 누르면 꺼집니다" 안내,
-     안내 2초 뒤부터 4.6초까지 한 번 더 누르면 종료. 안내 직후 2초는 연타해도 꺼지지 않는다. */
-  var homeBackAt = 0, exitHintT = 0;
+     안내 후 3초 안에 한 번 더 누르면 바로 종료(연타해도 그대로 꺼진다). */
+  var homeBackAt = 0;
   function exitNow() { try { if (window.AndroidBridge && AndroidBridge.exitApp) AndroidBridge.exitApp(); } catch (e) {} }
   window.__nativeBack = function () {
     var was = homeBackAt; homeBackAt = 0;
@@ -3893,10 +3893,8 @@ body.typing{padding-bottom:46vh}
     var ae = document.activeElement; if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) { ae.blur(); return true; }
     if (tab !== 'log') { setTab('log'); return true; }
     var now = Date.now();
-    if (was && now - was < 2000) { homeBackAt = was; return true; }          // 안내 직후 2초: 연타 무시
-    if (was && now - was < 4600) { exitNow(); return true; }                 // 안내 뒤 한 번 더 → 종료
-    homeBackAt = now; toast('한 번 더 누르면 꺼집니다'); clearTimeout(exitHintT);
-    exitHintT = setTimeout(function () { if (homeBackAt) toast('한 번 더 누르면 꺼집니다'); }, 2000);
+    if (was && now - was < 3000) { exitNow(); return true; }                 // 안내 뒤 한 번 더 → 바로 종료
+    homeBackAt = now; toast('한 번 더 누르면 꺼집니다');
     return true;
   };
   $('#weekStrip').addEventListener('click', function (e) { var b = e.target.closest('[data-wk]'); if (b) setDate(b.getAttribute('data-wk')); });
